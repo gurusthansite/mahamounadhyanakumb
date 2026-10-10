@@ -114,13 +114,13 @@ function App() {
       if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
-        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! \nhttps://ahimsa-dhyana-mahasabalu.vercel.app/';
+        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! \nhttps://mahamounadhyanakumbposter.vercel.app/';
       } else {
         blob = await generateVideo(userData, '/assets/template_3.png', (progress) => {
           setVideoProgress(Math.round(progress * 100));
         });
         filename = `video-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.webm`;
-        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! మీరు కూడా ఇలాంటి వీడియో మీ ఫోటోతో పెట్టాలనుకుంటున్నారా?... \nhttps://ahimsa-dhyana-mahasabalu.vercel.app/';
+        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! మీరు కూడా ఇలాంటి వీడియో మీ ఫోటోతో పెట్టాలనుకుంటున్నారా?... \nhttps://mahamounadhyanakumbposter.vercel.app/';
       }
 
       const file = new File([blob], filename, { type: isImage ? 'image/png' : 'video/webm' });
@@ -276,3 +276,4 @@ function App() {
 }
 
 export default App;
+
