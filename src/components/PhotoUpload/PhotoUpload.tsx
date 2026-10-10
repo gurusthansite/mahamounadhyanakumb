@@ -1,5 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import type { UserData } from '../../types/poster';
+import { ImageCropper } from './ImageCropper';
+import { IMAGE_PHOTO_AREA } from '../../canvas/imageRenderer';
 
 interface Props {
   userData: UserData;
@@ -14,12 +16,23 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
 
   const isImageMode = userData.templateType === 'image';
 
+    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      setUserData(prev => ({ ...prev, photoUrl: url, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
+      if (userData.templateType === 'image' && file.type.startsWith('image/')) {
+        setCropImageSrc(url);
+      } else {
+        setUserData(prev => ({ ...prev, photoUrl: url, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
+      }
     }
+  };
+
+  const handleCropComplete = (croppedUrl: string) => {
+    setUserData(prev => ({ ...prev, photoUrl: croppedUrl, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
+    setCropImageSrc(null);
   };
 
   const startCamera = async () => {
@@ -78,7 +91,15 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
   }, [stream]);
 
   return (
-    <div className="bg-[#4a1c0b] p-6 sm:p-8 rounded-2xl shadow-xl border border-[#8b3d0b]">
+        <div className="bg-[#4a1c0b] p-6 sm:p-8 rounded-2xl shadow-xl border border-[#8b3d0b]">
+      {cropImageSrc && (
+        <ImageCropper 
+          imageSrc={cropImageSrc}
+          aspectRatio={IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height}
+          onComplete={handleCropComplete}
+          onCancel={() => setCropImageSrc(null)}
+        />
+      )}
       <h2 className="text-2xl font-bold text-[#ffca08] mb-6 flex items-center gap-2">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -201,3 +222,8 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
     </div>
   );
 };
+
+
+
+
+
