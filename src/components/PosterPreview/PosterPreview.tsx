@@ -183,7 +183,7 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData }) => {
 
         {/* Floating Controls Overlay */}
         {userData.photoUrl && (
-            <div className="controls-overlay absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-3">
+            <div className="controls-overlay absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-3">
               
               <div className="flex items-center justify-between">
                 {!isImage && (

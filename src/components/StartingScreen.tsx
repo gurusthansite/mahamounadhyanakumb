@@ -48,7 +48,7 @@ export const StartingScreen = () => {
         </svg>
 
                 <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffca08] to-[#fef08a] leading-tight text-center drop-shadow-2xl px-4">
-          ??? ??? ????? ?????
+          మహా మౌన ధ్యాన కుంభ్
         </h1>
         <p className="mt-4 font-['Poppins'] text-lg md:text-xl text-orange-200/80 tracking-[0.2em] uppercase font-light">
           A Movement of Mouna
