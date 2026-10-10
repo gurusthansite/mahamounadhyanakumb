@@ -125,8 +125,10 @@ function App() {
 
       const file = new File([blob], filename, { type: isImage ? 'image/png' : 'video/webm' });
       
-      let shareSuccess = false;
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            let shareSuccess = false;
+      // For images, we can try native share (WhatsApp preserves text for images usually)
+      // For videos, native share often strips the text, so we skip native share and force the fallback!
+      if (isImage && navigator.canShare && navigator.canShare({ files: [file] })) {
         try {
           await navigator.share({
             files: [file],
@@ -154,7 +156,10 @@ function App() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
 
-        alert("Your browser/device blocked direct sharing to WhatsApp (likely because the video took too long to generate). The file has been downloaded instead! We will now open WhatsApp so you can attach it manually.");
+        const msg = isImage 
+          ? "Your browser/device blocked direct sharing to WhatsApp. The poster has been downloaded instead! We will now open WhatsApp so you can attach it manually."
+          : "The personalized video has been downloaded to your device! We will now open WhatsApp with your pre-filled text so you can easily attach and share it.";
+        alert(msg);
         
         setTimeout(() => {
           window.open('https://wa.me/?text=' + encodeURIComponent(shareText), '_blank');
@@ -276,4 +281,5 @@ function App() {
 }
 
 export default App;
+
 
