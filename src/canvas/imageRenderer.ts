@@ -68,7 +68,7 @@ export const generateImage = async (
           ctx.font = 'bold 36px "Noto Sans Telugu", sans-serif';
           ctx.fillStyle = '#b91c1c';
           ctx.textAlign = 'center';
-          ctx.fillText(userData.hours, 336, 800); 
+          ctx.fillText(userData.hours, 272, 790); 
         }
 
         canvas.toBlob((blob) => {
@@ -81,6 +81,7 @@ export const generateImage = async (
     templateImg.onerror = () => reject(new Error("Failed to load template image."));
   });
 };
+
 
 
 
