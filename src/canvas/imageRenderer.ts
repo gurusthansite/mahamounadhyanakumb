@@ -1,0 +1,89 @@
+import type { UserData } from '../types/poster';
+
+export const IMAGE_TEMPLATE_WIDTH = 715;
+export const IMAGE_TEMPLATE_HEIGHT = 1280;
+export const IMAGE_PHOTO_AREA = { x: 190, y: 323, width: 339, height: 349 };
+
+export const generateImage = async (
+  userData: UserData,
+  templateUrl: string
+): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    if (!userData.photoUrl) return reject(new Error("No image provided"));
+
+    const canvas = document.createElement('canvas');
+    canvas.width = IMAGE_TEMPLATE_WIDTH;
+    canvas.height = IMAGE_TEMPLATE_HEIGHT;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return reject(new Error("No canvas context"));
+
+    const templateImg = new Image();
+    templateImg.crossOrigin = "anonymous";
+    templateImg.src = templateUrl;
+
+    templateImg.onload = () => {
+      const userImg = new Image();
+      userImg.crossOrigin = "anonymous";
+      userImg.src = userData.photoUrl!;
+
+      userImg.onload = () => {
+        // Draw user photo
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(IMAGE_PHOTO_AREA.x, IMAGE_PHOTO_AREA.y, IMAGE_PHOTO_AREA.width, IMAGE_PHOTO_AREA.height);
+        ctx.clip();
+        
+        // Match drag and zoom math from UI
+        const baseScale = Math.max(
+          IMAGE_PHOTO_AREA.width / userImg.width,
+          IMAGE_PHOTO_AREA.height / userImg.height
+        );
+        const userScale = userData.videoScale || 1.0;
+        const finalScale = baseScale * userScale;
+
+        const drawWidth = userImg.width * finalScale;
+        const drawHeight = userImg.height * finalScale;
+        
+        const offsetX = userData.videoOffset?.x || 0;
+        const offsetY = userData.videoOffset?.y || 0;
+        
+        const drawX = IMAGE_PHOTO_AREA.x + (IMAGE_PHOTO_AREA.width - drawWidth) / 2 + offsetX;
+        const drawY = IMAGE_PHOTO_AREA.y + (IMAGE_PHOTO_AREA.height - drawHeight) / 2 + offsetY;
+
+        ctx.drawImage(userImg, drawX, drawY, drawWidth, drawHeight);
+        ctx.restore();
+
+        // Draw template overlay
+        ctx.drawImage(templateImg, 0, 0, IMAGE_TEMPLATE_WIDTH, IMAGE_TEMPLATE_HEIGHT);
+
+                                                        // Draw text
+        if (userData.fullName) {
+          ctx.font = 'bold 32px "Noto Sans Telugu", sans-serif';
+          ctx.fillStyle = '#8b3d0b'; 
+          ctx.textAlign = 'center';
+          ctx.fillText(userData.fullName, 357, 715); 
+        }
+
+        if (userData.hours) {
+          ctx.font = 'bold 36px "Noto Sans Telugu", sans-serif';
+          ctx.fillStyle = '#b91c1c';
+          ctx.textAlign = 'center';
+          ctx.fillText(userData.hours, 336, 800); 
+        }
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Blob generation failed"));
+        }, 'image/png');
+      };
+      userImg.onerror = () => reject(new Error("Failed to load user image."));
+    };
+    templateImg.onerror = () => reject(new Error("Failed to load template image."));
+  });
+};
+
+
+
+
+
+
