@@ -35,7 +35,7 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData }) => {
 
   // --- Dragging Logic ---
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (!userData.photoUrl) return;
+    if (!userData.photoUrl || isImage) return;
     if ((e.target as HTMLElement).closest('.controls-overlay')) return;
     
     setIsDragging(true);
@@ -86,7 +86,17 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData }) => {
 
   // --- Math for CSS ---
   let videoStyle: React.CSSProperties = { display: 'none' };
-  if (videoDims.w > 0 && videoDims.h > 0) {
+  if (isImage && userData.photoUrl) {
+    videoStyle = {
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      left: 0,
+      top: 0,
+      objectFit: 'cover',
+      pointerEvents: 'none'
+    };
+  } else if (videoDims.w > 0 && videoDims.h > 0) {
     const baseScale = Math.max(T_AREA.width / videoDims.w, T_AREA.height / videoDims.h);
     const userScale = userData.videoScale || 1.0;
     const finalScale = baseScale * userScale;
@@ -120,7 +130,7 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData }) => {
       {/* Container */}
       <div 
         ref={containerRef}
-        className={`relative w-full max-w-md mx-auto bg-[#240b03] rounded-xl overflow-hidden border-4 border-[#8b3d0b] shadow-2xl ${userData.photoUrl ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : ''} group`}
+        className={`relative w-full max-w-md mx-auto bg-[#240b03] rounded-xl overflow-hidden border-4 border-[#8b3d0b] shadow-2xl ${userData.photoUrl && !isImage ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : ''} group`}
         style={{ aspectRatio: `${T_WIDTH} / ${T_HEIGHT}`, touchAction: 'none', containerType: 'inline-size' }}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -181,8 +191,8 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData }) => {
           </div>
         )}
 
-        {/* Floating Controls Overlay */}
-        {userData.photoUrl && (
+        {/* Floating Controls Overlay - Only for video */}
+        {!isImage && userData.photoUrl && (
             <div className="controls-overlay absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent z-20 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-300 flex flex-col gap-3">
               
               <div className="flex items-center justify-between">

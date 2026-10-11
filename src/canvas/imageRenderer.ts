@@ -27,30 +27,12 @@ export const generateImage = async (
       userImg.src = userData.photoUrl!;
 
       userImg.onload = () => {
-        // Draw user photo
+        // Draw user photo (already cropped to exact aspect ratio)
         ctx.save();
         ctx.beginPath();
         ctx.rect(IMAGE_PHOTO_AREA.x, IMAGE_PHOTO_AREA.y, IMAGE_PHOTO_AREA.width, IMAGE_PHOTO_AREA.height);
         ctx.clip();
-        
-        // Match drag and zoom math from UI
-        const baseScale = Math.max(
-          IMAGE_PHOTO_AREA.width / userImg.width,
-          IMAGE_PHOTO_AREA.height / userImg.height
-        );
-        const userScale = userData.videoScale || 1.0;
-        const finalScale = baseScale * userScale;
-
-        const drawWidth = userImg.width * finalScale;
-        const drawHeight = userImg.height * finalScale;
-        
-        const offsetX = userData.videoOffset?.x || 0;
-        const offsetY = userData.videoOffset?.y || 0;
-        
-        const drawX = IMAGE_PHOTO_AREA.x + (IMAGE_PHOTO_AREA.width - drawWidth) / 2 + offsetX;
-        const drawY = IMAGE_PHOTO_AREA.y + (IMAGE_PHOTO_AREA.height - drawHeight) / 2 + offsetY;
-
-        ctx.drawImage(userImg, drawX, drawY, drawWidth, drawHeight);
+        ctx.drawImage(userImg, IMAGE_PHOTO_AREA.x, IMAGE_PHOTO_AREA.y, IMAGE_PHOTO_AREA.width, IMAGE_PHOTO_AREA.height);
         ctx.restore();
 
         // Draw template overlay
