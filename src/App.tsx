@@ -201,8 +201,15 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
           
           <div className="flex-1 text-center lg:text-left">
-            <div className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-sm tracking-widest mb-6 uppercase shadow-sm">
-              A Movement of Mouna
+            <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
+              <img 
+                src="/assets/logo.png" 
+                alt="Emblem" 
+                className="w-12 h-12 rounded-full drop-shadow-[0_0_12px_rgba(255,202,8,0.5)] border border-[#ffca08]/50 object-cover"
+              />
+              <div className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-sm tracking-widest uppercase shadow-sm">
+                A Movement of Mouna
+              </div>
             </div>
             <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg tracking-wide">
               మహా మౌన <br />

@@ -42,12 +42,15 @@ export const StartingScreen = () => {
           isZooming ? 'scale-110' : 'scale-100'
         }`}
       >
-        {/* Gurusthan Logo */}
-        <img 
-          src="/assets/logo.jpeg" 
-          alt="Gurusthan Logo" 
-          className="w-24 h-24 md:w-32 md:h-32 object-contain mb-6 drop-shadow-[0_0_25px_rgba(255,202,8,0.4)] rounded-2xl"
-        />
+        {/* Gurusthan Premium Emblem Logo */}
+        <div className="relative mb-6 group">
+          <div className="absolute inset-0 rounded-full bg-[#ffca08] opacity-30 blur-2xl group-hover:opacity-50 transition-opacity"></div>
+          <img 
+            src="/assets/logo.png" 
+            alt="Maha Mouna Dhyana Kumbh Emblem" 
+            className="relative w-36 h-36 md:w-48 md:h-48 object-contain drop-shadow-[0_10px_35px_rgba(255,202,8,0.45)]"
+          />
+        </div>
 
                 <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffca08] to-[#fef08a] leading-tight text-center drop-shadow-2xl px-4">
           మహా మౌన ధ్యాన కుంభ్
