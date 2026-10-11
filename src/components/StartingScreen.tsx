@@ -42,10 +42,12 @@ export const StartingScreen = () => {
           isZooming ? 'scale-110' : 'scale-100'
         }`}
       >
-        {/* Lotus icon placeholder (could use SVG) */}
-        <svg className="w-16 h-16 text-[#ffca08] mb-6 drop-shadow-[0_0_15px_rgba(255,202,8,0.5)]" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 22s-3.5-3.5-3.5-7c0-2 1-4 3.5-6 2.5 2 3.5 4 3.5 6 0 3.5-3.5 7-3.5 7zm0-13c-3-2-6-4.5-6-8 0 0 1.5.5 3 2.5C10.5 5.5 12 8 12 9zm0 0c3-2 6-4.5 6-8 0 0-1.5.5-3 2.5C13.5 5.5 12 8 12 9zM6 15c-3.5 0-6-1.5-6-4 0 0 2.5 1 5 1.5 2.5.5 4.5 2.5 4.5 2.5-.5.5-2.5 1-3.5 0zm12 0c3.5 0 6-1.5 6-4 0 0-2.5 1-5 1.5-2.5.5-4.5 2.5-4.5 2.5.5.5 2.5 1 3.5 0z" />
-        </svg>
+        {/* Gurusthan Logo */}
+        <img 
+          src="/assets/logo.jpeg" 
+          alt="Gurusthan Logo" 
+          className="w-24 h-24 md:w-32 md:h-32 object-contain mb-6 drop-shadow-[0_0_25px_rgba(255,202,8,0.4)] rounded-2xl"
+        />
 
                 <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffca08] to-[#fef08a] leading-tight text-center drop-shadow-2xl px-4">
           మహా మౌన ధ్యాన కుంభ్

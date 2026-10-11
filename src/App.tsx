@@ -8,13 +8,23 @@ import type { UserData } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage } from './canvas/imageRenderer';
 
+  const getInitialTemplate = (): 'video' | 'image' => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const mode = params.get('mode') || params.get('type');
+      if (mode === 'image' || mode === 'photo' || mode === 'poster') return 'image';
+      if (mode === 'video') return 'video';
+    }
+    return 'video';
+  };
+
 function App() {
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     phoneNumber: '',
     location: '',
     photoUrl: null,
-    templateType: 'video'
+    templateType: getInitialTemplate()
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
@@ -110,19 +120,22 @@ function App() {
       let blob: Blob;
       let filename: string;
       let shareText: string;
+      const baseAppUrl = "https://mahamounadhyanakumbposter.vercel.app";
+      const imageGenUrl = `${baseAppUrl}/?mode=image`;
+      const videoGenUrl = `${baseAppUrl}/?mode=video`;
 
-      const campaignShareText = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014`;
+      const campaignBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీ ఫోటోతో పోస్టర్ తయారు చేయడానికి:\n${imageGenUrl}\n\nమీ ఫోటోతో వీడియో తయారు చేయడానికి:\n${videoGenUrl}`;
 
       if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
-        shareText = campaignShareText;
+        shareText = campaignBody;
       } else {
         blob = await generateVideo(userData, '/assets/template_3.png', (progress) => {
           setVideoProgress(Math.round(progress * 100));
         });
         filename = `video-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.webm`;
-        shareText = campaignShareText;
+        shareText = campaignBody;
       }
 
       const file = new File([blob], filename, { type: isImage ? 'image/png' : 'video/webm' });
