@@ -111,16 +111,18 @@ function App() {
       let filename: string;
       let shareText: string;
 
+      const campaignShareText = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014`;
+
       if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
-        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! \nhttps://mahamounadhyanakumbposter.vercel.app/';
+        shareText = campaignShareText;
       } else {
         blob = await generateVideo(userData, '/assets/template_3.png', (progress) => {
           setVideoProgress(Math.round(progress * 100));
         });
         filename = `video-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.webm`;
-        shareText = 'మహా మౌన ధ్యాన కుంభ్ - తరలిరండి అరుణాచలం! మీరు కూడా ఇలాంటి వీడియో మీ ఫోటోతో పెట్టాలనుకుంటున్నారా?... \nhttps://mahamounadhyanakumbposter.vercel.app/';
+        shareText = campaignShareText;
       }
 
       const file = new File([blob], filename, { type: isImage ? 'image/png' : 'video/webm' });
