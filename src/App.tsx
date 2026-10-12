@@ -4,9 +4,11 @@ import { PhotoUpload } from './components/PhotoUpload/PhotoUpload';
 import { PosterPreview } from './components/PosterPreview/PosterPreview';
 import { ActionButtons } from './components/GenerateButton/ActionButtons';
 import { StartingScreen } from './components/StartingScreen';
-import type { UserData } from './types/poster';
+import { ImageCropper } from './components/PhotoUpload/ImageCropper';
+import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
-import { generateImage } from './canvas/imageRenderer';
+import { generateImage, IMAGE_PHOTO_AREA } from './canvas/imageRenderer';
+import { PHOTO_AREA } from './canvas/coordinates';
 
   const getInitialTemplate = (): 'video' | 'image' => {
     if (typeof window !== 'undefined') {
@@ -28,7 +30,34 @@ function App() {
   });
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
+  const [isCropperOpen, setIsCropperOpen] = useState(false);
   const lastSubmittedData = useRef<string | null>(null);
+
+  const handleCropComplete = (data: { croppedUrl?: string; cropArea: CropArea; cropPixels: CropArea }) => {
+    const isImage = userData.templateType === 'image';
+    if (isImage) {
+      setUserData(prev => ({
+        ...prev,
+        photoUrl: data.croppedUrl || prev.photoUrl,
+        rawMediaUrl: prev.rawMediaUrl || prev.photoUrl || data.croppedUrl,
+        cropArea: data.cropArea,
+        cropPixels: data.cropPixels,
+        videoScale: 1.0,
+        videoOffset: { x: 0, y: 0 }
+      }));
+    } else {
+      setUserData(prev => ({
+        ...prev,
+        photoUrl: prev.rawMediaUrl || prev.photoUrl,
+        rawMediaUrl: prev.rawMediaUrl || prev.photoUrl,
+        cropArea: data.cropArea,
+        cropPixels: data.cropPixels,
+        videoScale: 1.0,
+        videoOffset: { x: 0, y: 0 }
+      }));
+    }
+    setIsCropperOpen(false);
+  };
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
 
@@ -262,7 +291,7 @@ function App() {
             </div>
 
             <UserForm userData={userData} setUserData={setUserData} />
-            <PhotoUpload userData={userData} setUserData={setUserData} />
+            <PhotoUpload userData={userData} setUserData={setUserData} onOpenCropper={() => setIsCropperOpen(true)} />
             
             <div className="hidden lg:block">
               {videoProgress !== null && (
@@ -277,7 +306,7 @@ function App() {
           </div>
 
           <div className="flex flex-col">
-            <PosterPreview userData={userData} setUserData={setUserData} />
+            <PosterPreview userData={userData} setUserData={setUserData} onEditCrop={() => setIsCropperOpen(true)} />
             
             <div className="block lg:hidden mt-6">
               {videoProgress !== null && (
@@ -298,6 +327,20 @@ function App() {
           Developed by Sai Ram Lohith
         </a>
       </footer>
+
+      {isCropperOpen && (userData.rawMediaUrl || userData.photoUrl) && (
+        <ImageCropper
+          mediaSrc={(userData.rawMediaUrl || userData.photoUrl)!}
+          isVideo={userData.templateType === 'video'}
+          aspectRatio={
+            userData.templateType === 'image'
+              ? IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height
+              : PHOTO_AREA.width / PHOTO_AREA.height
+          }
+          onComplete={handleCropComplete}
+          onCancel={() => setIsCropperOpen(false)}
+        />
+      )}
     </div>
   );
 }

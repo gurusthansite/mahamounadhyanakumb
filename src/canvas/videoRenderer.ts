@@ -94,7 +94,12 @@ export const generateVideo = async (
           ctx.beginPath();
           ctx.rect(PHOTO_AREA.x, PHOTO_AREA.y, PHOTO_AREA.width, PHOTO_AREA.height);
           ctx.clip();
-          ctx.drawImage(videoEl, drawX, drawY, drawWidth, drawHeight);
+          if (userData.cropPixels) {
+            const { x, y, width, height } = userData.cropPixels;
+            ctx.drawImage(videoEl, x, y, width, height, PHOTO_AREA.x, PHOTO_AREA.y, PHOTO_AREA.width, PHOTO_AREA.height);
+          } else {
+            ctx.drawImage(videoEl, drawX, drawY, drawWidth, drawHeight);
+          }
           ctx.restore();
 
           ctx.drawImage(templateImg, 0, 0, POSTER_WIDTH, POSTER_HEIGHT);

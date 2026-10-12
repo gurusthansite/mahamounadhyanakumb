@@ -1,14 +1,13 @@
 import React, { useRef, useState, useEffect } from 'react';
 import type { UserData } from '../../types/poster';
-import { ImageCropper } from './ImageCropper';
-import { IMAGE_PHOTO_AREA } from '../../canvas/imageRenderer';
 
 interface Props {
   userData: UserData;
   setUserData: React.Dispatch<React.SetStateAction<UserData>>;
+  onOpenCropper: () => void;
 }
 
-export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
+export const PhotoUpload: React.FC<Props> = ({ userData, setUserData, onOpenCropper }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -16,23 +15,18 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
 
   const isImageMode = userData.templateType === 'image';
 
-    const [cropImageSrc, setCropImageSrc] = useState<string | null>(null);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      if (userData.templateType === 'image' && file.type.startsWith('image/')) {
-        setCropImageSrc(url);
-      } else {
-        setUserData(prev => ({ ...prev, photoUrl: url, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
-      }
+      setUserData(prev => ({ 
+        ...prev, 
+        rawMediaUrl: url,
+        photoUrl: url
+      }));
+      onOpenCropper();
+      e.target.value = '';
     }
-  };
-
-  const handleCropComplete = (croppedUrl: string) => {
-    setUserData(prev => ({ ...prev, photoUrl: croppedUrl, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
-    setCropImageSrc(null);
   };
 
   const startCamera = async () => {
@@ -74,8 +68,13 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
         canvas.toBlob(blob => {
           if (blob) {
             const url = URL.createObjectURL(blob);
-            setUserData(prev => ({ ...prev, photoUrl: url, videoScale: 1.0, videoOffset: {x: 0, y: 0} }));
+            setUserData(prev => ({ 
+              ...prev, 
+              rawMediaUrl: url,
+              photoUrl: url
+            }));
             stopCamera();
+            onOpenCropper();
           }
         }, 'image/jpeg', 0.9);
       }
@@ -91,15 +90,7 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
   }, [stream]);
 
   return (
-        <div className="bg-[#4a1c0b] p-6 sm:p-8 rounded-2xl shadow-xl border border-[#8b3d0b]">
-      {cropImageSrc && (
-        <ImageCropper 
-          imageSrc={cropImageSrc}
-          aspectRatio={IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height}
-          onComplete={handleCropComplete}
-          onCancel={() => setCropImageSrc(null)}
-        />
-      )}
+    <div className="bg-[#4a1c0b] p-6 sm:p-8 rounded-2xl shadow-xl border border-[#8b3d0b]">
       <h2 className="text-2xl font-bold text-[#ffca08] mb-6 flex items-center gap-2">
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -156,28 +147,51 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
               accept={isImageMode ? 'image/*' : 'video/*'} 
               className="hidden" 
             />
+            
             {userData.photoUrl ? (
-              <div className="flex flex-col items-center relative z-10">
+              <div className="flex flex-col items-center relative z-10" onClick={(e) => e.stopPropagation()}>
                 <div className="relative">
                   {isImageMode ? (
                     <img 
                       src={userData.photoUrl}
                       alt="Uploaded preview"
-                      className="w-48 h-48 object-cover rounded-xl mb-4 shadow-xl border-2 border-[#ffca08]/50"
+                      className="w-48 h-48 object-cover rounded-xl mb-3 shadow-xl border-2 border-[#ffca08]/50"
                     />
                   ) : (
                     <video 
                       src={userData.photoUrl}
-                      className="w-48 h-48 object-cover rounded-xl mb-4 shadow-xl border-2 border-[#ffca08]/50"
+                      muted
+                      playsInline
+                      className="w-48 h-48 object-cover rounded-xl mb-3 shadow-xl border-2 border-[#ffca08]/50"
                     />
                   )}
-                  <div className="absolute -bottom-2 -right-2 bg-[#ffca08] text-[#381609] p-1.5 rounded-full shadow-lg">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
-                  </div>
                 </div>
-                <span className="text-sm text-[#ffca08] font-semibold mt-2 group-hover:underline">
-                  Click to change {isImageMode ? 'photo' : 'video'}
-                </span>
+
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onOpenCropper();
+                    }}
+                    className="bg-[#ffca08] hover:bg-[#ffd943] text-[#381609] font-extrabold py-2.5 px-5 rounded-xl transition-all shadow-md flex items-center gap-2 text-sm hover:scale-105 active:scale-95"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                    Edit Crop
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
+                    className="bg-[#381609] hover:bg-[#240b03] text-orange-200 border border-[#d97706] font-semibold py-2.5 px-4 rounded-xl transition-all text-sm flex items-center gap-2 hover:text-white"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+                    Change {isImageMode ? 'Photo' : 'Video'}
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="text-orange-200/60 relative z-10 flex flex-col items-center">
@@ -222,8 +236,3 @@ export const PhotoUpload: React.FC<Props> = ({ userData, setUserData }) => {
     </div>
   );
 };
-
-
-
-
-
