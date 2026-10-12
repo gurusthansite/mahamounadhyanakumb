@@ -29,35 +29,28 @@ export const StartingScreen = () => {
 
   return (
     <div 
-      className={`fixed inset-0 z-50 flex flex-col overflow-hidden items-center justify-center pointer-events-none bg-gradient-to-b from-[#240b03] to-[#4a1c0b] transition-opacity duration-1000 ease-in-out ${
+      className={`fixed inset-0 z-50 flex flex-col overflow-hidden items-center justify-center pointer-events-none bg-gradient-to-b from-[#1c0802] via-[#240b03] to-[#381407] transition-opacity duration-1000 ease-in-out ${
         isFadingOut ? 'opacity-0' : 'opacity-100'
       }`}
     >
-      {/* Background glowing effects */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-[#ffca08] opacity-10 rounded-full blur-3xl"></div>
+      {/* Divine Golden Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] max-w-[700px] max-h-[700px] bg-[#ffca08] opacity-20 rounded-full blur-3xl pointer-events-none"></div>
       
-      {/* Content wrapper with zoom-in animation */}
+      {/* Content wrapper with smooth zoom-in animation */}
       <div 
-        className={`relative z-10 flex flex-col items-center transition-transform duration-[3000ms] ease-out ${
-          isZooming ? 'scale-110' : 'scale-100'
+        className={`relative z-10 flex flex-col items-center justify-center w-full h-full p-4 transition-transform duration-[3000ms] ease-out ${
+          isZooming ? 'scale-105' : 'scale-95'
         }`}
       >
-        {/* Gurusthan Premium Emblem Logo */}
-        <div className="relative mb-6 group">
-          <div className="absolute inset-0 rounded-full bg-[#ffca08] opacity-30 blur-2xl group-hover:opacity-50 transition-opacity"></div>
+        {/* Full-screen prominent Gurusthan Emblem Logo */}
+        <div className="relative w-[92vw] max-w-[540px] md:max-w-[620px] max-h-[85vh] aspect-square flex items-center justify-center">
+          <div className="absolute inset-0 rounded-full bg-[#ffca08] opacity-25 blur-3xl"></div>
           <img 
             src="/assets/logo.png" 
-            alt="Maha Mouna Dhyana Kumbh Emblem" 
-            className="relative w-36 h-36 md:w-48 md:h-48 object-contain drop-shadow-[0_10px_35px_rgba(255,202,8,0.45)]"
+            alt="Maha Mouna Dhyana Kumbh" 
+            className="relative w-full h-full object-contain drop-shadow-[0_15px_50px_rgba(255,202,8,0.55)]"
           />
         </div>
-
-                <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ffca08] to-[#fef08a] leading-tight text-center drop-shadow-2xl px-4">
-          మహా మౌన ధ్యాన కుంభ్
-        </h1>
-        <p className="mt-4 font-['Poppins'] text-lg md:text-xl text-orange-200/80 tracking-[0.2em] uppercase font-light">
-          A Movement of Mouna
-        </p>
       </div>
     </div>
   );
