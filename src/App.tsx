@@ -24,9 +24,10 @@ import { PHOTO_AREA } from './canvas/coordinates';
   const getInitialPage = (): 'poster' | 'form' => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      const page = params.get('page') || params.get('view');
-      if (page === 'form' || page === 'registration') return 'form';
-      if (window.location.pathname.includes('/form')) return 'form';
+      const page = (params.get('page') || params.get('view') || '').toLowerCase();
+      if (page === 'form' || page === 'registration' || page === 'srnagar' || page === 'sr-nagar') return 'form';
+      const path = window.location.pathname.toLowerCase();
+      if (path.includes('/form') || path.includes('/srnagar') || path.includes('/sr-nagar')) return 'form';
     }
     return 'poster';
   };
@@ -297,35 +298,6 @@ function App() {
         </div>
       </header>
 
-      {/* Top Page Navigation Bar */}
-      <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
-        <div className="flex bg-[#240b03] p-1.5 rounded-2xl border-2 border-[#8b3d0b] shadow-xl max-w-md mx-auto">
-          <button
-            type="button"
-            onClick={() => navigateTo('poster')}
-            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 ${
-              currentPage === 'poster'
-                ? 'bg-[#ffca08] text-[#381609] shadow-lg scale-[1.02]'
-                : 'text-orange-200/70 hover:text-white hover:bg-[#4a1c0b]/50'
-            }`}
-          >
-            <span>🎨</span>
-            <span>పోస్టర్ & వీడియో (Poster)</span>
-          </button>
-          <button
-            type="button"
-            onClick={() => navigateTo('form')}
-            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 ${
-              currentPage === 'form'
-                ? 'bg-[#ffca08] text-[#381609] shadow-lg scale-[1.02]'
-                : 'text-orange-200/70 hover:text-white hover:bg-[#4a1c0b]/50'
-            }`}
-          >
-            <span>📝</span>
-            <span>వివరాల నమోదు (Form)</span>
-          </button>
-        </div>
-      </nav>
 
       {currentPage === 'form' ? (
         <RegistrationFormPage 

@@ -77,23 +77,7 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl, onNavig
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
-      {/* Top Breadcrumb / Navigation */}
-      <div className="flex items-center justify-between mb-8">
-        {onNavigateToPoster && (
-          <button
-            type="button"
-            onClick={onNavigateToPoster}
-            className="flex items-center gap-2 text-[#ffca08] hover:text-white font-semibold text-sm sm:text-base py-2 px-4 rounded-xl bg-[#240b03]/80 hover:bg-[#240b03] border border-[#d97706]/40 transition-all shadow"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            పోస్టర్ & వీడియో మేకర్ (Poster Maker)
-          </button>
-        )}
-      </div>
-
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-16">
       {/* Main Form Card */}
       <div className="bg-[#4a1c0b] rounded-3xl p-6 sm:p-10 shadow-2xl border-2 border-[#8b3d0b] relative overflow-hidden">
         {/* Divine Background Glow */}
@@ -109,14 +93,14 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl, onNavig
               className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-[0_0_20px_rgba(255,202,8,0.4)]"
             />
           </div>
-          <span className="inline-block px-4 py-1 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-xs sm:text-sm tracking-widest uppercase mb-3">
-            వివరాల నమోదు • Registration
+          <span className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-xs sm:text-sm tracking-widest uppercase mb-3 shadow-sm">
+            వివరాల నమోదు • Registration Data
           </span>
-          <h1 className="font-['Noto_Sans_Telugu'] text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
-            మహా మౌన ధ్యాన కుంభ్
+          <h1 className="font-['Poppins',sans-serif] text-2xl sm:text-3xl font-extrabold text-white leading-tight drop-shadow-md tracking-wide">
+            S.R.Nagar Register Data 03-25 to 10-26
           </h1>
           <p className="font-['Noto_Sans_Telugu'] text-orange-200/80 text-sm sm:text-base mt-2">
-            దయచేసి క్రింది ఫారమ్‌లో మీ వివరాలను నమోదు చేయండి
+            మహా మౌన ధ్యాన కుంభ్ • దయచేసి క్రింది ఫారమ్‌లో మీ వివరాలను నమోదు చేయండి
           </p>
         </div>
 
