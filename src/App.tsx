@@ -87,7 +87,7 @@ function App() {
   };
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
-  const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyas27BcLkuDSO1aZdgTU2rrAHPqi1LDSX9omltFmtQOHuWvPXoC9YvJBSTkijQAHY/exec";
+  const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpRpJMxjQoDsXIkMe2PYSRAK0UwoIVcNVqqCvn3JZwhARIKUZRO1l1xrrV7aHX2N8DXg/exec";
 
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
