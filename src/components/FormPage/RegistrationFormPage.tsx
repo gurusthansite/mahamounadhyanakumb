@@ -17,14 +17,41 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
 
+  // In-Memory cache of existing contacts for 0ms instant checks
+  const [cachedRecords, setCachedRecords] = useState<Map<string, ExistingRecord>>(new Map());
+  const [isCacheLoaded, setIsCacheLoaded] = useState(false);
+
   // Step states: 'check' | 'exists' | 'fill' | 'saved'
   const [step, setStep] = useState<'check' | 'exists' | 'fill' | 'saved'>('check');
   const [isChecking, setIsChecking] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingRecord, setExistingRecord] = useState<ExistingRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const phoneInputRef = useRef<HTMLInputElement>(null);
+
+  // Background preload of all existing numbers on page load
+  React.useEffect(() => {
+    let isMounted = true;
+    const preloadExisting = async () => {
+      try {
+        const response = await fetch(`${googleScriptUrl}?action=get_all`);
+        const json = await response.json();
+        if (isMounted && json.records && Array.isArray(json.records)) {
+          const map = new Map<string, ExistingRecord>();
+          json.records.forEach((rec: any) => {
+            const clean = (rec.contact || '').toString().replace(/\D/g, '').slice(-10);
+            if (clean) map.set(clean, rec);
+          });
+          setCachedRecords(map);
+          setIsCacheLoaded(true);
+        }
+      } catch (err) {
+        console.warn("Preload in background skipped, fallback to live check:", err);
+      }
+    };
+    preloadExisting();
+    return () => { isMounted = false; };
+  }, [googleScriptUrl]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -45,6 +72,20 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
       return;
     }
 
+    // 1. INSTANT CHECK (0ms!) if cached in memory
+    if (isCacheLoaded || cachedRecords.size > 0) {
+      if (cachedRecords.has(contact)) {
+        setExistingRecord(cachedRecords.get(contact) || {});
+        setStep('exists');
+        return;
+      } else {
+        // Not in sheet, instant reveal!
+        setStep('fill');
+        return;
+      }
+    }
+
+    // 2. LIVE CHECK FALLBACK
     setIsChecking(true);
     setExistingRecord(null);
 
@@ -63,15 +104,17 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
       const result = await response.json();
 
       if (result.status === 'exists') {
-        setExistingRecord(result.data || {});
+        const rec = result.data || {};
+        setExistingRecord(rec);
         setStep('exists');
+        // Store in cache
+        setCachedRecords(prev => new Map(prev).set(contact, rec));
       } else {
-        // Not found in sheet, proceed to fill full form
         setStep('fill');
       }
     } catch (err) {
       console.error("Check failed:", err);
-      // If error or CORS issues, allow them to fill full form
+      // Allow them to proceed to fill form
       setStep('fill');
     } finally {
       setIsChecking(false);
@@ -90,7 +133,7 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
     }, 100);
   };
 
-  const handleSaveToSheet = async (e: React.FormEvent) => {
+  const handleSaveToSheet = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
@@ -104,30 +147,38 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
       return;
     }
 
-    setIsSubmitting(true);
+    const newRecord: ExistingRecord = {
+      name: name.trim(),
+      contact: contact.trim(),
+      address: address.trim(),
+      timestamp: new Date().toISOString()
+    };
 
-    try {
-      await fetch(googleScriptUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "text/plain;charset=utf-8",
-        },
-        body: JSON.stringify({
-          action: "submit",
-          name: name.trim(),
-          contact: contact.trim(),
-          address: address.trim()
-        })
-      });
+    // 1. INSTANT CACHE UPDATE (so checking this number again recognizes it instantly)
+    setCachedRecords(prev => {
+      const updated = new Map(prev);
+      updated.set(contact.trim(), newRecord);
+      return updated;
+    });
 
-      setStep('saved');
-    } catch (err) {
-      console.error("Save failed:", err);
-      // Standard Apps Script opaque success handling
-      setStep('saved');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // 2. INSTANT UI UPDATE (0ms - No waiting!)
+    setStep('saved');
+
+    // 3. BACKGROUND FIRE-AND-FORGET POST (Sends directly to Google Sheet)
+    fetch(googleScriptUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8",
+      },
+      body: JSON.stringify({
+        action: "submit",
+        name: newRecord.name,
+        contact: newRecord.contact,
+        address: newRecord.address
+      })
+    }).catch(err => {
+      console.error("Background sync warning:", err);
+    });
   };
 
   return (
@@ -314,25 +365,12 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] font-extrabold text-base sm:text-lg transition-all shadow-lg flex items-center justify-center gap-2 disabled:opacity-50 hover:scale-[1.02] active:scale-[0.98] order-1 sm:order-2"
+                className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] font-extrabold text-base sm:text-lg transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] order-1 sm:order-2"
               >
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin h-5 w-5 text-[#381609]" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-                    </svg>
-                    <span>ఎక్సెల్‌లో సేవ్ చేస్తున్నాము...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>💾 ఎక్సెల్‌లో సేవ్ చేయండి (Save to Excel)</span>
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </>
-                )}
+                <span>💾 ఎక్సెల్‌లో సేవ్ చేయండి (Save to Excel)</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
+                </svg>
               </button>
             </div>
           </form>
