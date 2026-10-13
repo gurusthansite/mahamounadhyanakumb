@@ -5,6 +5,7 @@ import { PosterPreview } from './components/PosterPreview/PosterPreview';
 import { ActionButtons } from './components/GenerateButton/ActionButtons';
 import { StartingScreen } from './components/StartingScreen';
 import { ImageCropper } from './components/PhotoUpload/ImageCropper';
+import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage, IMAGE_PHOTO_AREA } from './canvas/imageRenderer';
@@ -20,7 +21,18 @@ import { PHOTO_AREA } from './canvas/coordinates';
     return 'video';
   };
 
+  const getInitialPage = (): 'poster' | 'form' => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const page = params.get('page') || params.get('view');
+      if (page === 'form' || page === 'registration') return 'form';
+      if (window.location.pathname.includes('/form')) return 'form';
+    }
+    return 'poster';
+  };
+
 function App() {
+  const [currentPage, setCurrentPage] = useState<'poster' | 'form'>(getInitialPage());
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     phoneNumber: '',
@@ -32,6 +44,20 @@ function App() {
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const lastSubmittedData = useRef<string | null>(null);
+
+  const navigateTo = (page: 'poster' | 'form') => {
+    setCurrentPage(page);
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (page === 'form') {
+        url.searchParams.set('page', 'form');
+      } else {
+        url.searchParams.delete('page');
+      }
+      window.history.pushState({}, '', url.toString());
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
 
   const handleCropComplete = (data: { croppedUrl?: string; cropArea: CropArea; cropPixels: CropArea }) => {
     const isImage = userData.templateType === 'image';
@@ -60,6 +86,7 @@ function App() {
   };
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
+  const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyas27BcLkuDSO1aZdgTU2rrAHPqi1LDSX9omltFmtQOHuWvPXoC9YvJBSTkijQAHY/exec";
 
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
@@ -270,7 +297,43 @@ function App() {
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
+      {/* Top Page Navigation Bar */}
+      <nav className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-8">
+        <div className="flex bg-[#240b03] p-1.5 rounded-2xl border-2 border-[#8b3d0b] shadow-xl max-w-md mx-auto">
+          <button
+            type="button"
+            onClick={() => navigateTo('poster')}
+            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 ${
+              currentPage === 'poster'
+                ? 'bg-[#ffca08] text-[#381609] shadow-lg scale-[1.02]'
+                : 'text-orange-200/70 hover:text-white hover:bg-[#4a1c0b]/50'
+            }`}
+          >
+            <span>🎨</span>
+            <span>పోస్టర్ & వీడియో (Poster)</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => navigateTo('form')}
+            className={`flex-1 py-3 px-4 rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 ${
+              currentPage === 'form'
+                ? 'bg-[#ffca08] text-[#381609] shadow-lg scale-[1.02]'
+                : 'text-orange-200/70 hover:text-white hover:bg-[#4a1c0b]/50'
+            }`}
+          >
+            <span>📝</span>
+            <span>వివరాల నమోదు (Form)</span>
+          </button>
+        </div>
+      </nav>
+
+      {currentPage === 'form' ? (
+        <RegistrationFormPage 
+          googleScriptUrl={FORM_RESPONSES_SCRIPT_URL} 
+          onNavigateToPoster={() => navigateTo('poster')} 
+        />
+      ) : (
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div className="flex flex-col gap-6">
             
@@ -321,6 +384,7 @@ function App() {
           </div>
         </div>
       </main>
+      )}
 
       <footer className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-6 text-left flex justify-start">
         <a href="#" className="font-['Poppins'] text-xs font-medium text-orange-200/40 hover:text-[#ffca08] transition-colors duration-300 tracking-wider uppercase">
