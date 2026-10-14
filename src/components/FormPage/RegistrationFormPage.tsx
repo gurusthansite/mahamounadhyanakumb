@@ -4,6 +4,7 @@ interface Props {
   googleScriptUrl: string;
   title?: string;
   subtitle?: string;
+  includeAadhar?: boolean;
   onNavigateToPoster?: () => void;
 }
 
@@ -11,17 +12,20 @@ interface ExistingRecord {
   name?: string;
   contact?: string;
   address?: string;
+  aadhar?: string;
   timestamp?: string;
 }
 
 export const RegistrationFormPage: React.FC<Props> = ({ 
   googleScriptUrl, 
   title = "S.R.Nagar Register Data 03-25 to 10-26",
-  subtitle = "ఫోన్ నెంబర్ తనిఖీ చేసి కొత్త వివరాలను నమోదు చేయండి"
+  subtitle = "ఫోన్ నెంబర్ తనిఖీ చేసి కొత్త వివరాలను నమోదు చేయండి",
+  includeAadhar = false
 }) => {
   const [contact, setContact] = useState('');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  const [aadhar, setAadhar] = useState('');
 
   // In-Memory cache of existing contacts for 0ms instant checks
   const [cachedRecords, setCachedRecords] = useState<Map<string, ExistingRecord>>(new Map());
@@ -131,6 +135,7 @@ export const RegistrationFormPage: React.FC<Props> = ({
     setContact('');
     setName('');
     setAddress('');
+    setAadhar('');
     setExistingRecord(null);
     setStep('check');
     setErrorMessage(null);
@@ -148,6 +153,14 @@ export const RegistrationFormPage: React.FC<Props> = ({
       return;
     }
 
+    if (includeAadhar) {
+      const cleanAadhar = aadhar.replace(/\D/g, '');
+      if (cleanAadhar.length !== 12) {
+        setErrorMessage("దయచేసి 12 అంకెల ఆధార్ నెంబర్ నమోదు చేయండి (Please enter valid 12-digit Aadhar number)");
+        return;
+      }
+    }
+
     if (!address.trim()) {
       setErrorMessage("దయచేసి చిరునామా నమోదు చేయండి (Please enter address / area)");
       return;
@@ -157,6 +170,7 @@ export const RegistrationFormPage: React.FC<Props> = ({
       name: name.trim(),
       contact: contact.trim(),
       address: address.trim(),
+      aadhar: includeAadhar ? aadhar.replace(/\D/g, '').trim() : undefined,
       timestamp: new Date().toISOString()
     };
 
@@ -180,7 +194,8 @@ export const RegistrationFormPage: React.FC<Props> = ({
         action: "submit",
         name: newRecord.name,
         contact: newRecord.contact,
-        address: newRecord.address
+        address: newRecord.address,
+        aadhar: newRecord.aadhar || ''
       })
     }).catch(err => {
       console.error("Background sync warning:", err);
@@ -300,6 +315,11 @@ export const RegistrationFormPage: React.FC<Props> = ({
                     <strong className="text-[#ffca08]">చిరునామా (Address):</strong> {existingRecord.address}
                   </p>
                 )}
+                {existingRecord.aadhar && (
+                  <p className="text-white">
+                    <strong className="text-[#ffca08]">ఆధార్ (Aadhar):</strong> {existingRecord.aadhar}
+                  </p>
+                )}
               </div>
             )}
 
@@ -344,17 +364,36 @@ export const RegistrationFormPage: React.FC<Props> = ({
               />
             </div>
 
+            {/* Field: Aadhar Number (Only if includeAadhar is true) */}
+            {includeAadhar && (
+              <div>
+                <label htmlFor="entry-aadhar" className="block text-sm font-bold text-[#ffca08] mb-2 font-['Noto_Sans_Telugu']">
+                  2. ఆధార్ సంఖ్య (12 Digit Aadhar Number) <span className="text-rose-400">*</span>
+                </label>
+                <input
+                  id="entry-aadhar"
+                  type="text"
+                  maxLength={12}
+                  value={aadhar}
+                  onChange={(e) => setAadhar(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                  placeholder="12 అంకెల ఆధార్ నెంబర్ (e.g. 123456789012)"
+                  required
+                  className="w-full bg-[#1c0802] border-2 border-[#8b3d0b] focus:border-[#ffca08] rounded-xl px-4 py-3 text-white placeholder-orange-200/30 focus:outline-none transition-all shadow-inner text-base tracking-widest font-mono"
+                />
+              </div>
+            )}
+
             {/* Field: Address */}
             <div>
               <label htmlFor="entry-address" className="block text-sm font-bold text-[#ffca08] mb-2 font-['Noto_Sans_Telugu']">
-                2. చిరునామా / ప్రాంతం (Address / Area) <span className="text-rose-400">*</span>
+                {includeAadhar ? "3." : "2."} చిరునామా / ప్రాంతం (Address / Area) <span className="text-rose-400">*</span>
               </label>
               <textarea
                 id="entry-address"
                 rows={3}
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                placeholder="ప్రాంతం లేదా చిరునామా (e.g. Srnagar, Hyderabad)"
+                placeholder="ప్రాంతం లేదా చిరునామా (e.g. Hyderabad)"
                 required
                 className="w-full bg-[#1c0802] border-2 border-[#8b3d0b] focus:border-[#ffca08] rounded-xl px-4 py-3 text-white placeholder-orange-200/30 focus:outline-none transition-all shadow-inner text-base resize-none"
               />

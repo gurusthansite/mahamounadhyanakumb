@@ -360,6 +360,7 @@ function App() {
           googleScriptUrl={ARUNACHALAM_SCRIPT_URL}
           title="Arunachalam Register Data"
           subtitle="అరుణాచలం రిజిస్ట్రేషన్ డేటా - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
+          includeAadhar={true}
           onNavigateToPoster={() => navigateTo('poster')} 
         />
       ) : (
