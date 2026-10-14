@@ -401,20 +401,20 @@ export const RegistrationFormPage: React.FC<Props> = ({
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 pt-2">
               <button
-                type="button"
-                onClick={handleResetForNextEntry}
-                className="py-3.5 px-6 rounded-xl border border-white/20 text-white font-bold hover:bg-white/10 transition-colors text-sm sm:text-base order-2 sm:order-1"
-              >
-                రద్దు చేయండి (Cancel)
-              </button>
-              <button
                 type="submit"
-                className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] font-extrabold text-base sm:text-lg transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] order-1 sm:order-2"
+                className="flex-1 py-3.5 px-6 rounded-xl bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] font-extrabold text-base sm:text-lg transition-all shadow-lg flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
               >
                 <span>💾 ఎక్సెల్‌లో సేవ్ చేయండి (Save to Excel)</span>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
                 </svg>
+              </button>
+              <button
+                type="button"
+                onClick={handleResetForNextEntry}
+                className="py-3.5 px-6 rounded-xl border border-white/20 text-white font-bold hover:bg-white/10 transition-colors text-sm sm:text-base"
+              >
+                రద్దు చేయండి (Cancel)
               </button>
             </div>
           </form>
