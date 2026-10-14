@@ -153,10 +153,10 @@ export const RegistrationFormPage: React.FC<Props> = ({
       return;
     }
 
-    if (includeAadhar) {
+    if (includeAadhar && aadhar.trim()) {
       const cleanAadhar = aadhar.replace(/\D/g, '');
       if (cleanAadhar.length !== 12) {
-        setErrorMessage("దయచేసి 12 అంకెల ఆధార్ నెంబర్ నమోదు చేయండి (Please enter valid 12-digit Aadhar number)");
+        setErrorMessage("దయచేసి 12 అంకెల ఆధార్ నెంబర్ నమోదు చేయండి లేదా ఖాళీగా ఉంచండి (Please enter valid 12-digit Aadhar number or leave empty)");
         return;
       }
     }
@@ -364,11 +364,11 @@ export const RegistrationFormPage: React.FC<Props> = ({
               />
             </div>
 
-            {/* Field: Aadhar Number (Only if includeAadhar is true) */}
+            {/* Field: Aadhar Number (Optional, only if includeAadhar is true) */}
             {includeAadhar && (
               <div>
                 <label htmlFor="entry-aadhar" className="block text-sm font-bold text-[#ffca08] mb-2 font-['Noto_Sans_Telugu']">
-                  2. ఆధార్ సంఖ్య (12 Digit Aadhar Number) <span className="text-rose-400">*</span>
+                  2. ఆధార్ సంఖ్య (Aadhar Number - <span className="text-orange-200/70 font-normal">ఐచ్ఛికం / Optional</span>)
                 </label>
                 <input
                   id="entry-aadhar"
@@ -376,8 +376,7 @@ export const RegistrationFormPage: React.FC<Props> = ({
                   maxLength={12}
                   value={aadhar}
                   onChange={(e) => setAadhar(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                  placeholder="12 అంకెల ఆధార్ నెంబర్ (e.g. 123456789012)"
-                  required
+                  placeholder="12 అంకెల ఆధార్ నెంబర్ (Optional)"
                   className="w-full bg-[#1c0802] border-2 border-[#8b3d0b] focus:border-[#ffca08] rounded-xl px-4 py-3 text-white placeholder-orange-200/30 focus:outline-none transition-all shadow-inner text-base tracking-widest font-mono"
                 />
               </div>
