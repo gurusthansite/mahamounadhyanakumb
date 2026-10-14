@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 
 interface Props {
   googleScriptUrl: string;
+  title?: string;
+  subtitle?: string;
   onNavigateToPoster?: () => void;
 }
 
@@ -12,7 +14,11 @@ interface ExistingRecord {
   timestamp?: string;
 }
 
-export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
+export const RegistrationFormPage: React.FC<Props> = ({ 
+  googleScriptUrl, 
+  title = "S.R.Nagar Register Data 03-25 to 10-26",
+  subtitle = "ఫోన్ నెంబర్ తనిఖీ చేసి కొత్త వివరాలను నమోదు చేయండి"
+}) => {
   const [contact, setContact] = useState('');
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
@@ -201,10 +207,10 @@ export const RegistrationFormPage: React.FC<Props> = ({ googleScriptUrl }) => {
             డేటా ఎంట్రీ • Direct Excel Entry
           </span>
           <h1 className="font-['Poppins',sans-serif] text-2xl sm:text-3xl font-extrabold text-white leading-tight drop-shadow-md tracking-wide">
-            S.R.Nagar Register Data 03-25 to 10-26
+            {title}
           </h1>
           <p className="font-['Noto_Sans_Telugu'] text-orange-200/80 text-sm sm:text-base mt-2">
-            ఫోన్ నెంబర్ తనిఖీ చేసి కొత్త వివరాలను నమోదు చేయండి
+            {subtitle}
           </p>
         </div>
 

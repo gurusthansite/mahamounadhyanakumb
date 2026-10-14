@@ -21,19 +21,45 @@ import { PHOTO_AREA } from './canvas/coordinates';
     return 'video';
   };
 
-  const getInitialPage = (): 'poster' | 'form' => {
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony';
+
+  const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
-      if (page === 'form' || page === 'registration' || page === 'srnagar' || page === 'sr-nagar') return 'form';
       const path = window.location.pathname.toLowerCase();
-      if (path.includes('/form') || path.includes('/srnagar') || path.includes('/sr-nagar')) return 'form';
+
+      // Check for Srinagar Colony
+      if (
+        page === 'srinagar' || 
+        page === 'srinagarcolony' || 
+        page === 'srinagar-colony' || 
+        page === 'scolony' ||
+        path.includes('/srinagar-colony') ||
+        path.includes('/srinagarcolony') ||
+        path.includes('/srinagar')
+      ) {
+        return 'srinagar_colony';
+      }
+
+      // Check for S.R.Nagar
+      if (
+        page === 'form' || 
+        page === 'registration' || 
+        page === 'srnagar' || 
+        page === 'sr-nagar' ||
+        path.includes('/form') || 
+        path.includes('/srnagar') || 
+        path.includes('/sr-nagar')
+      ) {
+        return 'srnagar';
+      }
     }
     return 'poster';
   };
 
 function App() {
-  const [currentPage, setCurrentPage] = useState<'poster' | 'form'>(getInitialPage());
+  const [currentPage, setCurrentPage] = useState<PageType>(getInitialPage());
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     phoneNumber: '',
@@ -46,12 +72,14 @@ function App() {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const lastSubmittedData = useRef<string | null>(null);
 
-  const navigateTo = (page: 'poster' | 'form') => {
+  const navigateTo = (page: PageType) => {
     setCurrentPage(page);
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
-      if (page === 'form') {
-        url.searchParams.set('page', 'form');
+      if (page === 'srnagar') {
+        url.searchParams.set('page', 'srnagar');
+      } else if (page === 'srinagar_colony') {
+        url.searchParams.set('page', 'srinagar-colony');
       } else {
         url.searchParams.delete('page');
       }
@@ -88,6 +116,7 @@ function App() {
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
   const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpRpJMxjQoDsXIkMe2PYSRAK0UwoIVcNVqqCvn3JZwhARIKUZRO1l1xrrV7aHX2N8DXg/exec";
+  const SRINAGAR_COLONY_SCRIPT_URL = "YOUR_SRINAGAR_COLONY_WEB_APP_URL";
 
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
@@ -299,9 +328,18 @@ function App() {
       </header>
 
 
-      {currentPage === 'form' ? (
+      {currentPage === 'srnagar' ? (
         <RegistrationFormPage 
-          googleScriptUrl={FORM_RESPONSES_SCRIPT_URL} 
+          googleScriptUrl={FORM_RESPONSES_SCRIPT_URL}
+          title="S.R.Nagar Register Data 03-25 to 10-26"
+          subtitle="ఫోన్ నెంబర్ తనిఖీ చేసి కొత్త వివరాలను నమోదు చేయండి"
+          onNavigateToPoster={() => navigateTo('poster')} 
+        />
+      ) : currentPage === 'srinagar_colony' ? (
+        <RegistrationFormPage 
+          googleScriptUrl={SRINAGAR_COLONY_SCRIPT_URL}
+          title="Srinagar Colony Register Data"
+          subtitle="శ్రీనగర్ కాలనీ రిజిస్ట్రేషన్ డేటా - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
           onNavigateToPoster={() => navigateTo('poster')} 
         />
       ) : (
