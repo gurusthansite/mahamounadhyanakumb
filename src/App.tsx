@@ -116,7 +116,7 @@ function App() {
 
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
   const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpRpJMxjQoDsXIkMe2PYSRAK0UwoIVcNVqqCvn3JZwhARIKUZRO1l1xrrV7aHX2N8DXg/exec";
-  const SRINAGAR_COLONY_SCRIPT_URL = "YOUR_SRINAGAR_COLONY_WEB_APP_URL";
+  const SRINAGAR_COLONY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMNxfGYriaM8ulnNc2DSyf3Ki1sU06le2E6FNOKYb_vEpFo8t3WFW0P9AnYK1A0L7q/exec";
 
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
