@@ -169,12 +169,12 @@ export const PosterPreview: React.FC<Props> = ({ userData, setUserData, onEditCr
         
         {/* Dynamic Text for Image Template */}
         {isImage && userData.fullName && (
-          <div className="absolute z-50 w-full text-center text-[#8b3d0b] font-extrabold drop-shadow-md" style={{ top: '52.8%', left: 0, fontSize: 'clamp(14px, 4cqi, 32px)', fontFamily: '"Noto Sans Telugu", sans-serif' }}>
+          <div className="absolute z-50 w-full text-center text-[#8b3d0b] font-extrabold drop-shadow-md" style={{ top: '52.0%', left: 0, fontSize: 'clamp(14px, 4cqi, 32px)', fontFamily: '"Noto Sans Telugu", sans-serif' }}>
             {userData.fullName}
           </div>
         )}
         {isImage && userData.hours && (
-          <div className="absolute z-50 text-[#b91c1c] font-bold drop-shadow-md" style={{ top: '61.7%', left: '38.0%', transform: 'translate(-50%, -50%)', fontSize: 'clamp(16px, 4.5cqi, 36px)', fontFamily: '"Noto Sans Telugu", sans-serif', textShadow: '0px 0px 4px white' }}>
+          <div className="absolute z-50 text-[#b91c1c] font-bold drop-shadow-md" style={{ top: '64.0%', left: '42.0%', transform: 'translate(-50%, -50%)', fontSize: 'clamp(16px, 4.5cqi, 36px)', fontFamily: '"Noto Sans Telugu", sans-serif', textShadow: '0px 0px 4px white' }}>
             {userData.hours}
           </div>
         )}
