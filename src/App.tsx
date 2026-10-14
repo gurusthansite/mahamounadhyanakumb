@@ -21,13 +21,23 @@ import { PHOTO_AREA } from './canvas/coordinates';
     return 'video';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony';
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
+
+      // Check for Arunachalam
+      if (
+        page === 'arunachalam' || 
+        page === 'arunachala' || 
+        path.includes('/arunachalam') ||
+        path.includes('/arunachala')
+      ) {
+        return 'arunachalam';
+      }
 
       // Check for Srinagar Colony
       if (
@@ -80,6 +90,8 @@ function App() {
         url.searchParams.set('page', 'srnagar');
       } else if (page === 'srinagar_colony') {
         url.searchParams.set('page', 'srinagar-colony');
+      } else if (page === 'arunachalam') {
+        url.searchParams.set('page', 'arunachalam');
       } else {
         url.searchParams.delete('page');
       }
@@ -117,6 +129,7 @@ function App() {
   const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
   const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpRpJMxjQoDsXIkMe2PYSRAK0UwoIVcNVqqCvn3JZwhARIKUZRO1l1xrrV7aHX2N8DXg/exec";
   const SRINAGAR_COLONY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMNxfGYriaM8ulnNc2DSyf3Ki1sU06le2E6FNOKYb_vEpFo8t3WFW0P9AnYK1A0L7q/exec";
+  const ARUNACHALAM_SCRIPT_URL = "YOUR_ARUNACHALAM_WEB_APP_URL";
 
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
@@ -340,6 +353,13 @@ function App() {
           googleScriptUrl={SRINAGAR_COLONY_SCRIPT_URL}
           title="Srinagar Colony Register Data"
           subtitle="శ్రీనగర్ కాలనీ రిజిస్ట్రేషన్ డేటా - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
+          onNavigateToPoster={() => navigateTo('poster')} 
+        />
+      ) : currentPage === 'arunachalam' ? (
+        <RegistrationFormPage 
+          googleScriptUrl={ARUNACHALAM_SCRIPT_URL}
+          title="Arunachalam Register Data"
+          subtitle="అరుణాచలం రిజిస్ట్రేషన్ డేటా - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
           onNavigateToPoster={() => navigateTo('poster')} 
         />
       ) : (
