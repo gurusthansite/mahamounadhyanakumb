@@ -10,6 +10,7 @@ export interface UserData {
   phoneNumber: string;
   location: string;
   hours?: string;
+  plates?: string;
   photoUrl: string | null;
   rawMediaUrl?: string | null;
   cropArea?: CropArea;

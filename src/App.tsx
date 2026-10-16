@@ -6,9 +6,11 @@ import { ActionButtons } from './components/GenerateButton/ActionButtons';
 import { StartingScreen } from './components/StartingScreen';
 import { ImageCropper } from './components/PhotoUpload/ImageCropper';
 import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
+import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
+import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
-import { generateImage, IMAGE_PHOTO_AREA } from './canvas/imageRenderer';
+import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
 import { PHOTO_AREA } from './canvas/coordinates';
 
   const getInitialTemplate = (): 'video' | 'image' => {
@@ -21,13 +23,27 @@ import { PHOTO_AREA } from './canvas/coordinates';
     return 'video';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam';
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'annaprasadam';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
+
+      // Check for Annaprasadam Poster Generator
+      if (
+        page === 'annaprasadam' ||
+        page === 'annadanam' ||
+        page === 'prasadam' ||
+        page === 'seva' ||
+        path.includes('/annaprasadam') ||
+        path.includes('/annadanam') ||
+        path.includes('/prasadam') ||
+        path.includes('/seva')
+      ) {
+        return 'annaprasadam';
+      }
 
       // Check for Arunachalam
       if (
@@ -92,6 +108,8 @@ function App() {
         url.searchParams.set('page', 'srinagar-colony');
       } else if (page === 'arunachalam') {
         url.searchParams.set('page', 'arunachalam');
+      } else if (page === 'annaprasadam') {
+        url.searchParams.set('page', 'annaprasadam');
       } else {
         url.searchParams.delete('page');
       }
@@ -101,7 +119,7 @@ function App() {
   };
 
   const handleCropComplete = (data: { croppedUrl?: string; cropArea: CropArea; cropPixels: CropArea }) => {
-    const isImage = userData.templateType === 'image';
+    const isImage = userData.templateType === 'image' || currentPage === 'annaprasadam';
     if (isImage) {
       setUserData(prev => ({
         ...prev,
@@ -176,7 +194,17 @@ function App() {
     try {
       submitToGoogleSheets();
 
-      if (userData.templateType === 'image') {
+      if (currentPage === 'annaprasadam') {
+        const blob = await generateImage(userData, '/assets/Arunachalam.png', true);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `annaprasadam-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } else if (userData.templateType === 'image') {
         const blob = await generateImage(userData, '/assets/image_template.png');
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -215,17 +243,25 @@ function App() {
     try {
       submitToGoogleSheets();
 
-      const isImage = userData.templateType === 'image';
+      const isAnnaprasadam = currentPage === 'annaprasadam';
+      const isImage = userData.templateType === 'image' || isAnnaprasadam;
       let blob: Blob;
       let filename: string;
       let shareText: string;
       const baseAppUrl = "https://mahamounadhyanakumbposter.vercel.app";
       const imageGenUrl = `${baseAppUrl}/?mode=image`;
       const videoGenUrl = `${baseAppUrl}/?mode=video`;
+      const annaprasadamGenUrl = `${baseAppUrl}/annaprasadam`;
 
       const campaignBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీ ఫోటోతో పోస్టర్ తయారు చేయడానికి:\n${imageGenUrl}\n\nమీ ఫోటోతో వీడియో తయారు చేయడానికి:\n${videoGenUrl}`;
 
-      if (isImage) {
+      const annaprasadamBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*మహా మౌన ధ్యాన కుంభ్ - అరుణాచలం*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*మహా అన్నప్రసాద వితరణ సేవ*\n\nమీరు కూడా అన్నప్రసాద సేవలో భాగస్వామ్యం అవ్వండి!\n\nమీ పేరు, ఫోటోతో అన్నప్రసాద పోస్టర్ తయారు చేయడానికి:\n${annaprasadamGenUrl}\n\nమరిన్ని వివరాలకు:\n9133016016`;
+
+      if (isAnnaprasadam) {
+        blob = await generateImage(userData, '/assets/Arunachalam.png', true);
+        filename = `annaprasadam-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        shareText = annaprasadamBody;
+      } else if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
         shareText = campaignBody;
@@ -363,6 +399,38 @@ function App() {
           includeAadhar={true}
           onNavigateToPoster={() => navigateTo('poster')} 
         />
+      ) : currentPage === 'annaprasadam' ? (
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
+          {/* Header Banner for Annaprasadam */}
+          <div className="text-center mb-8">
+            <span className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-xs sm:text-sm tracking-widest uppercase mb-3 shadow-sm">
+              మహా అన్నప్రసాద వితరణ సేవ • Annaprasadam Seva
+            </span>
+            <h2 className="font-['Noto_Sans_Telugu'] text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
+              అరుణాచలం అన్నప్రసాద పోస్టర్
+            </h2>
+            <p className="text-orange-200/80 text-sm sm:text-base mt-2">
+              మీ ఫోటో, పేరు మరియు ప్లేట్స్ సంఖ్యతో వ్యక్తిగతీకరించిన అన్నప్రసాద సేవ పోస్టర్ తయారు చేయండి.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+            <div className="flex flex-col gap-6">
+              <AnnaprasadamForm userData={userData} setUserData={setUserData} />
+              <PhotoUpload userData={userData} setUserData={setUserData} onOpenCropper={() => setIsCropperOpen(true)} />
+              <div className="hidden lg:block">
+                <ActionButtons onDownload={handleDownload} onShare={handleShare} isGenerating={isGenerating} />
+              </div>
+            </div>
+
+            <div className="flex flex-col">
+              <AnnaprasadamPreview userData={userData} setUserData={setUserData} onEditCrop={() => setIsCropperOpen(true)} />
+              <div className="block lg:hidden mt-6">
+                <ActionButtons onDownload={handleDownload} onShare={handleShare} isGenerating={isGenerating} />
+              </div>
+            </div>
+          </div>
+        </main>
       ) : (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
@@ -426,9 +494,11 @@ function App() {
       {isCropperOpen && (userData.rawMediaUrl || userData.photoUrl) && (
         <ImageCropper
           mediaSrc={(userData.rawMediaUrl || userData.photoUrl)!}
-          isVideo={userData.templateType === 'video'}
+          isVideo={currentPage !== 'annaprasadam' && userData.templateType === 'video'}
           aspectRatio={
-            userData.templateType === 'image'
+            currentPage === 'annaprasadam'
+              ? ARUNACHALAM_PHOTO_AREA.width / ARUNACHALAM_PHOTO_AREA.height
+              : userData.templateType === 'image'
               ? IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height
               : PHOTO_AREA.width / PHOTO_AREA.height
           }
