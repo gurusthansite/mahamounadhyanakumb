@@ -27,20 +27,51 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
       </div>
 
       <div className="space-y-5">
-        {/* Donor Name */}
+        {/* Donor Name with Sri / Srimathi Selector */}
         <div>
           <label className="block text-sm font-semibold text-orange-100 mb-2 font-['Noto_Sans_Telugu']">
-            1. దాత / వాలంటీర్ పేరు (Full Name) <span className="text-rose-400">*</span>
+            1. గౌరవ సంబోధన & దాత పేరు (Title & Full Name) <span className="text-rose-400">*</span>
           </label>
-          <input
-            type="text"
-            name="fullName"
-            value={userData.fullName}
-            onChange={handleChange}
-            className="w-full px-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50"
-            placeholder="ఉదా: కొండ్రెడ్డి లక్ష్మీ దేవి"
-            required
-          />
+          
+          <div className="flex gap-2 mb-2.5">
+            {[
+              { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
+              { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
+              { id: 'శ్రీ / శ్రీమతి', label: 'శ్రీ / శ్రీమతి' }
+            ].map(opt => {
+              const isSelected = (userData.titlePrefix || 'శ్రీ') === opt.id;
+              return (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => setUserData(prev => ({ ...prev, titlePrefix: opt.id }))}
+                  className={`flex-1 py-2 px-3 rounded-xl font-bold text-sm transition-all border ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-[#ffca08] to-[#ffd943] text-[#381609] border-[#ffca08] shadow-md scale-[1.02]'
+                      : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:border-[#ffca08]/50'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="relative">
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ffca08] font-bold text-base select-none pointer-events-none">
+              {userData.titlePrefix || 'శ్రీ'}
+            </span>
+            <input
+              type="text"
+              name="fullName"
+              value={userData.fullName}
+              onChange={handleChange}
+              style={{ paddingLeft: `${(userData.titlePrefix || 'శ్రీ').length * 15 + 24}px` }}
+              className="w-full pr-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50"
+              placeholder="పేరు రాయండి (e.g. రమేష్ బాబు)"
+              required
+            />
+          </div>
         </div>
 
         {/* Plates Count */}

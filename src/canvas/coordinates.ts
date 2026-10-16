@@ -14,3 +14,15 @@ export const TEXT_AREA = {
   width: 659,
   height: 60,
 };
+
+// Text coordinates in percentages for Annaprasadam
+export const ANNAPRASADAM_TEXT_POSITIONS = {
+  plates: {
+    topPercent: 40.4,   // from top %
+    rightPercent: 42.5, // from right %
+  },
+  name: {
+    topPercent: 50.0,   // from top %
+    rightPercent: 21.5, // from right %
+  }
+};

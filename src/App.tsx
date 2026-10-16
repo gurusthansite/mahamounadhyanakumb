@@ -417,7 +417,12 @@ function App() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="flex flex-col gap-6">
               <AnnaprasadamForm userData={userData} setUserData={setUserData} />
-              <PhotoUpload userData={userData} setUserData={setUserData} onOpenCropper={() => setIsCropperOpen(true)} />
+              <PhotoUpload 
+                userData={userData} 
+                setUserData={setUserData} 
+                onOpenCropper={() => setIsCropperOpen(true)} 
+                forceImageMode={true}
+              />
               <div className="hidden lg:block">
                 <ActionButtons onDownload={handleDownload} onShare={handleShare} isGenerating={isGenerating} />
               </div>

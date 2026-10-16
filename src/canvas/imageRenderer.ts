@@ -1,4 +1,5 @@
 import type { UserData } from '../types/poster';
+import { ANNAPRASADAM_TEXT_POSITIONS } from './coordinates';
 
 export const IMAGE_TEMPLATE_WIDTH = 715;
 export const IMAGE_TEMPLATE_HEIGHT = 1280;
@@ -50,25 +51,28 @@ export const generateImage = async (
         ctx.drawImage(templateImg, 0, 0, width, height);
 
         if (isAnnaprasadam) {
-          // Annaprasadam Custom Text
-          // 1. Plates count (in green box before "ప్లేట్స్ అన్నప్రసాదం")
+          // Annaprasadam Custom Text - Dynamically uses ANNAPRASADAM_TEXT_POSITIONS
+          // 1. Plates count
           if (userData.plates) {
             ctx.font = 'bold 50px "Noto Sans Telugu", sans-serif';
             ctx.fillStyle = '#ffeb3b'; // vibrant yellow
             ctx.textAlign = 'right';
             ctx.textBaseline = 'middle';
-            // Green box is around y: 605, "ప్లేట్స్" starts around x: 490
-            ctx.fillText(userData.plates, 475, 606);
+            const platesX = Math.round(width * (1 - (ANNAPRASADAM_TEXT_POSITIONS.plates.rightPercent / 100)));
+            const platesY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent / 100));
+            ctx.fillText(userData.plates, platesX, platesY);
           }
 
-          // 2. Donor Name (to the left of "గారికి")
+          // 2. Donor Name
           if (userData.fullName) {
             ctx.font = 'bold 38px "Noto Sans Telugu", sans-serif';
             ctx.fillStyle = '#1e3a1e'; // deep dark forest green
             ctx.textAlign = 'right';
             ctx.textBaseline = 'middle';
-            // "గారికి" is around x: 820, y: 760
-            ctx.fillText(userData.fullName, 805, 758);
+            const nameX = Math.round(width * (1 - (ANNAPRASADAM_TEXT_POSITIONS.name.rightPercent / 100)));
+            const nameY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.name.topPercent / 100));
+            const displayName = `${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName}`;
+            ctx.fillText(displayName, nameX, nameY);
           }
         } else {
           // Standard Image Template Text

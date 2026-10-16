@@ -11,6 +11,7 @@ export interface UserData {
   location: string;
   hours?: string;
   plates?: string;
+  titlePrefix?: string;
   photoUrl: string | null;
   rawMediaUrl?: string | null;
   cropArea?: CropArea;

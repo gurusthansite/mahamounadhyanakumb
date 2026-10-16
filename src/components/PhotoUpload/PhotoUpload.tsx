@@ -5,15 +5,16 @@ interface Props {
   userData: UserData;
   setUserData: React.Dispatch<React.SetStateAction<UserData>>;
   onOpenCropper: () => void;
+  forceImageMode?: boolean;
 }
 
-export const PhotoUpload: React.FC<Props> = ({ userData, setUserData, onOpenCropper }) => {
+export const PhotoUpload: React.FC<Props> = ({ userData, setUserData, onOpenCropper, forceImageMode = false }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
 
-  const isImageMode = userData.templateType === 'image';
+  const isImageMode = forceImageMode || userData.templateType === 'image';
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

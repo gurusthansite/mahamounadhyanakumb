@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import type { UserData } from '../../types/poster';
 import { ARUNACHALAM_TEMPLATE_WIDTH, ARUNACHALAM_TEMPLATE_HEIGHT, ARUNACHALAM_PHOTO_AREA } from '../../canvas/imageRenderer';
+import { ANNAPRASADAM_TEXT_POSITIONS } from '../../canvas/coordinates';
 
 interface Props {
   userData: UserData;
@@ -51,16 +52,13 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
           className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
         />
 
-        {/* Dynamic Plates Count inside Green Box:
-            Green Box is around y: 39.4% (606/1536).
-            "ప్లేట్స్" text starts around x: 47.8% (490/1024).
-            Number is positioned directly before "ప్లేట్స్" */}
+        {/* Dynamic Plates Count inside Green Box */}
         {userData.plates && (
           <div 
             className="absolute z-20 text-[#ffeb3b] font-black drop-shadow-md tracking-tight flex items-center justify-end"
             style={{ 
-              top: '39.4%', 
-              right: '53.5%',
+              top: `${ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent}%`, 
+              right: `${ANNAPRASADAM_TEXT_POSITIONS.plates.rightPercent}%`,
               transform: 'translateY(-50%)', 
               fontSize: 'clamp(14px, 4.8cqi, 40px)', 
               fontFamily: '"Noto Sans Telugu", sans-serif',
@@ -71,14 +69,13 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
           </div>
         )}
 
-        {/* Dynamic Donor Name to the left of "గారికి":
-            "గారికి" is around y: 49.3% (758/1536), right side around x: 80% (820/1024) */}
+        {/* Dynamic Donor Name to the left of "గారికి" */}
         {userData.fullName && (
           <div 
             className="absolute z-20 text-[#1e3a1e] font-extrabold drop-shadow-sm flex items-center justify-end max-w-[48%]"
             style={{ 
-              top: '49.3%', 
-              right: '21.5%',
+              top: `${ANNAPRASADAM_TEXT_POSITIONS.name.topPercent}%`, 
+              right: `${ANNAPRASADAM_TEXT_POSITIONS.name.rightPercent}%`,
               transform: 'translateY(-50%)', 
               fontSize: 'clamp(12px, 3.8cqi, 32px)', 
               fontFamily: '"Noto Sans Telugu", sans-serif',
@@ -87,7 +84,7 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
               textOverflow: 'ellipsis'
             }}
           >
-            {userData.fullName}
+            {`${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName}`}
           </div>
         )}
 
