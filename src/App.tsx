@@ -424,14 +424,14 @@ function App() {
                 forceImageMode={true}
               />
               <div className="hidden lg:block">
-                <ActionButtons onDownload={handleDownload} onShare={handleShare} isGenerating={isGenerating} />
+                <ActionButtons onShare={handleShare} isGenerating={isGenerating} showDownload={false} />
               </div>
             </div>
 
             <div className="flex flex-col">
               <AnnaprasadamPreview userData={userData} setUserData={setUserData} onEditCrop={() => setIsCropperOpen(true)} />
               <div className="block lg:hidden mt-6">
-                <ActionButtons onDownload={handleDownload} onShare={handleShare} isGenerating={isGenerating} />
+                <ActionButtons onShare={handleShare} isGenerating={isGenerating} showDownload={false} />
               </div>
             </div>
           </div>

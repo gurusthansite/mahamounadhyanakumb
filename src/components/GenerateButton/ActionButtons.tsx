@@ -1,36 +1,44 @@
 import React from 'react';
 
 interface Props {
-  onDownload: () => void;
+  onDownload?: () => void;
   onShare: () => void;
   isGenerating?: boolean;
+  showDownload?: boolean;
 }
 
-export const ActionButtons: React.FC<Props> = ({ onDownload, onShare, isGenerating = false }) => {
+export const ActionButtons: React.FC<Props> = ({ 
+  onDownload, 
+  onShare, 
+  isGenerating = false, 
+  showDownload = true 
+}) => {
   return (
     <div className="mt-2 flex flex-col gap-4">
-      <button 
-        className="group bg-[#ffca08] hover:bg-[#e5b607] disabled:bg-[#ffca08]/50 disabled:cursor-not-allowed text-[#381609] font-bold py-4 px-8 rounded-xl shadow-lg transition-all w-full text-lg flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,202,8,0.3)] active:translate-y-0"
-        onClick={onDownload}
-        disabled={isGenerating}
-      >
-        {isGenerating ? (
-          <>
-            <svg className="animate-spin h-6 w-6 text-[#381609]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Generating...
-          </>
-        ) : (
-          <>
-            <svg className="w-6 h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-            </svg>
-            Download Poster
-          </>
-        )}
-      </button>
+      {showDownload && onDownload && (
+        <button 
+          className="group bg-[#ffca08] hover:bg-[#e5b607] disabled:bg-[#ffca08]/50 disabled:cursor-not-allowed text-[#381609] font-bold py-4 px-8 rounded-xl shadow-lg transition-all w-full text-lg flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(255,202,8,0.3)] active:translate-y-0"
+          onClick={onDownload}
+          disabled={isGenerating}
+        >
+          {isGenerating ? (
+            <>
+              <svg className="animate-spin h-6 w-6 text-[#381609]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Generating...
+            </>
+          ) : (
+            <>
+              <svg className="w-6 h-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+              </svg>
+              Download Poster
+            </>
+          )}
+        </button>
+      )}
 
       <button 
         className="group bg-[#22c55e] hover:bg-[#16a34a] disabled:bg-green-600/50 disabled:cursor-not-allowed text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-all w-full text-lg flex items-center justify-center gap-3 hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(34,197,94,0.3)] active:translate-y-0"
