@@ -129,8 +129,8 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
                     amount: amountInRupees * 100, // Amount in paise
                     currency: "INR",
                     name: "Vasudhaika Foundation",
-                    description: `మహా అన్నప్రసాదం - ${platesNum} ప్లేట్లు (₹${amountInRupees}/-)`,
-                    image: "/assets/logo.png",
+                    description: `మహా అన్నప్రసాదం - ${platesNum} ప్లేట్లు`,
+                    image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
                     prefill: {
                       name: displayName,
                       contact: userData.phoneNumber || ""
