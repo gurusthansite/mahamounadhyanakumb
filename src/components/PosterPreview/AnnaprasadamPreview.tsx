@@ -55,36 +55,37 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
         {/* Dynamic Plates Count inside Green Box */}
         {userData.plates && (
           <div 
-            className="absolute z-20 text-[#ffeb3b] font-black drop-shadow-md tracking-tight flex items-center justify-end"
+            className="absolute z-20 text-[#ffeb3b] font-black drop-shadow-md tracking-tight flex items-center justify-center whitespace-nowrap"
             style={{ 
               top: `${ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent}%`, 
-              right: `${ANNAPRASADAM_TEXT_POSITIONS.plates.rightPercent}%`,
-              transform: 'translateY(-50%)', 
-              fontSize: 'clamp(14px, 4.8cqi, 40px)', 
+              left: `${ANNAPRASADAM_TEXT_POSITIONS.plates.centerPercent}%`,
+              transform: 'translate(-50%, -50%)', 
+              fontSize: 'clamp(14px, 4.2cqi, 36px)', 
               fontFamily: '"Noto Sans Telugu", sans-serif',
               textShadow: '0 2px 4px rgba(0,0,0,0.6)'
             }}
           >
-            {userData.plates}
+            <span>{userData.plates}</span>
+            <span className="text-white ml-2 text-[0.85em] font-bold">ప్లేట్స్ అన్నప్రసాదం</span>
           </div>
         )}
 
-        {/* Dynamic Donor Name to the left of "గారికి" */}
+        {/* Dynamic Donor Name with [గారికి] automatically added */}
         {userData.fullName && (
           <div 
-            className="absolute z-20 text-[#1e3a1e] font-extrabold drop-shadow-sm flex items-center justify-end max-w-[48%]"
+            className="absolute z-20 text-[#1e3a1e] font-extrabold drop-shadow-sm flex items-center justify-end max-w-[55%]"
             style={{ 
               top: `${ANNAPRASADAM_TEXT_POSITIONS.name.topPercent}%`, 
               right: `${ANNAPRASADAM_TEXT_POSITIONS.name.rightPercent}%`,
               transform: 'translateY(-50%)', 
-              fontSize: 'clamp(12px, 3.8cqi, 32px)', 
+              fontSize: 'clamp(12px, 3.6cqi, 30px)', 
               fontFamily: '"Noto Sans Telugu", sans-serif',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis'
             }}
           >
-            {`${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName}`}
+            {`${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName} గారికి`}
           </div>
         )}
 

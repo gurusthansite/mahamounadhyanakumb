@@ -18,11 +18,11 @@ export const TEXT_AREA = {
 // Text coordinates in percentages for Annaprasadam
 export const ANNAPRASADAM_TEXT_POSITIONS = {
   plates: {
-    topPercent: 40.4,   // from top %
-    rightPercent: 42.5, // from right %
+    topPercent: 40.8,   // Center inside the green box (y: 642/1536)
+    centerPercent: 70.1, // Center horizontally in green box (x: 718/1024)
   },
   name: {
-    topPercent: 50.0,   // from top %
-    rightPercent: 21.5, // from right %
+    topPercent: 50.0,   // Middle of space above "హృదయపూర్వక కృతజ్ఞతలు" (y: 768/1536)
+    rightPercent: 15.0, // Right margin % from right border
   }
 };

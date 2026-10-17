@@ -52,18 +52,35 @@ export const generateImage = async (
 
         if (isAnnaprasadam) {
           // Annaprasadam Custom Text - Dynamically uses ANNAPRASADAM_TEXT_POSITIONS
-          // 1. Plates count
+          // 1. Plates count + 'ప్లేట్స్ అన్నప్రసాదం'
           if (userData.plates) {
+            const platesX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.plates.centerPercent / 100));
+            const platesY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent / 100));
+            
+            // First measure both texts to center them together
+            ctx.font = 'bold 50px "Noto Sans Telugu", sans-serif';
+            const platesNumWidth = ctx.measureText(String(userData.plates)).width;
+            
+            ctx.font = 'bold 44px "Noto Sans Telugu", sans-serif';
+            const labelWidth = ctx.measureText(' ప్లేట్స్ అన్నప్రసాదం').width;
+            
+            const totalWidth = platesNumWidth + labelWidth;
+            const startX = platesX - (totalWidth / 2);
+
+            // Draw number in yellow
             ctx.font = 'bold 50px "Noto Sans Telugu", sans-serif';
             ctx.fillStyle = '#ffeb3b'; // vibrant yellow
-            ctx.textAlign = 'right';
+            ctx.textAlign = 'left';
             ctx.textBaseline = 'middle';
-            const platesX = Math.round(width * (1 - (ANNAPRASADAM_TEXT_POSITIONS.plates.rightPercent / 100)));
-            const platesY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent / 100));
-            ctx.fillText(userData.plates, platesX, platesY);
+            ctx.fillText(String(userData.plates), startX, platesY);
+
+            // Draw label in white
+            ctx.font = 'bold 44px "Noto Sans Telugu", sans-serif';
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(' ప్లేట్స్ అన్నప్రసాదం', startX + platesNumWidth, platesY);
           }
 
-          // 2. Donor Name
+          // 2. Donor Name + [గారికి] automatically
           if (userData.fullName) {
             ctx.font = 'bold 38px "Noto Sans Telugu", sans-serif';
             ctx.fillStyle = '#1e3a1e'; // deep dark forest green
@@ -71,7 +88,7 @@ export const generateImage = async (
             ctx.textBaseline = 'middle';
             const nameX = Math.round(width * (1 - (ANNAPRASADAM_TEXT_POSITIONS.name.rightPercent / 100)));
             const nameY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.name.topPercent / 100));
-            const displayName = `${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName}`;
+            const displayName = `${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName} గారికి`;
             ctx.fillText(displayName, nameX, nameY);
           }
         } else {
