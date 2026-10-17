@@ -74,20 +74,95 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
           </div>
         </div>
 
-        {/* Plates Count */}
+        {/* Plates Count & Real-time ₹51 Calculation */}
         <div>
           <label className="block text-sm font-semibold text-orange-100 mb-2 font-['Noto_Sans_Telugu']">
             2. ఎన్ని ప్లేట్స్ అన్నప్రసాదం? (Number of Plates) <span className="text-rose-400">*</span>
           </label>
           <input
-            type="text"
+            type="number"
+            min="1"
             name="plates"
             value={userData.plates || ''}
             onChange={handleChange}
             className="w-full px-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-bold text-lg text-[#ffca08]"
-            placeholder="ఉదా: 50, 100, 500"
+            placeholder="ఉదా: 10, 50, 100"
             required
           />
+
+          {/* Real-time Amount Calculation Card */}
+          {parseInt(userData.plates || '0', 10) > 0 && (
+            <div className="mt-3 p-4 bg-gradient-to-r from-[#240b03] via-[#3a1305] to-[#240b03] rounded-xl border border-[#ffca08]/40 shadow-inner">
+              <div className="flex items-center justify-between text-sm sm:text-base mb-1">
+                <span className="text-orange-200">
+                  లెక్క (1 ప్లేట్ = ₹51):
+                </span>
+                <span className="text-white font-mono font-semibold">
+                  {parseInt(userData.plates || '0', 10)} × ₹51
+                </span>
+              </div>
+              
+              <div className="flex items-center justify-between pt-2 border-t border-[#8b3d0b]/80">
+                <span className="text-[#ffca08] font-bold text-base sm:text-lg">
+                  మొత్తం విరాళం (Total Amount):
+                </span>
+                <span className="text-2xl font-black text-[#ffca08] font-mono tracking-wide">
+                  ₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')}/-
+                </span>
+              </div>
+
+              {/* Direct Pay Button */}
+              <button
+                type="button"
+                onClick={() => {
+                  const platesNum = parseInt(userData.plates || '0', 10);
+                  if (!platesNum || platesNum <= 0) {
+                    alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి");
+                    return;
+                  }
+                  const amountInRupees = platesNum * 51;
+                  const displayName = `${userData.titlePrefix || 'శ్రీ'} ${userData.fullName || 'భక్తుడు'}`.trim();
+
+                  // Razorpay Standard Checkout options
+                  const options = {
+                    key: "rzp_live_SKNRUkvvsRpl7YX",
+                    amount: amountInRupees * 100, // Amount in paise
+                    currency: "INR",
+                    name: "Vasudhaika Foundation",
+                    description: `మహా అన్నప్రసాదం - ${platesNum} ప్లేట్లు (₹${amountInRupees}/-)`,
+                    image: "/assets/logo.png",
+                    prefill: {
+                      name: displayName,
+                      contact: userData.phoneNumber || ""
+                    },
+                    theme: {
+                      color: "#381609"
+                    },
+                    handler: function (response: any) {
+                      alert(`చెల్లింపు విజయవంతమైంది! (Payment Successful)\nPayment ID: ${response.razorpay_payment_id}`);
+                    }
+                  };
+
+                  if ((window as any).Razorpay) {
+                    const rzp = new (window as any).Razorpay(options);
+                    rzp.on('payment.failed', function (resp: any) {
+                      console.error("Razorpay Payment Failed:", resp.error);
+                      alert("Payment Failed / Error: " + (resp.error?.description || resp.error?.reason || "Please check console"));
+                    });
+                    rzp.open();
+                  } else {
+                    alert("Razorpay payment gateway is loading, please try again in a moment.");
+                  }
+                }}
+                className="mt-3.5 w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-base shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <span>💳 ఆన్‌లైన్‌లో చెల్లించండి (Pay ₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')})</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Phone Number */}
