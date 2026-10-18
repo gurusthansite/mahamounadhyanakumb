@@ -8,6 +8,7 @@ import { ImageCropper } from './components/PhotoUpload/ImageCropper';
 import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
+import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
@@ -490,11 +491,7 @@ function App() {
       </main>
       )}
 
-      <footer className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 pb-6 text-left flex justify-start">
-        <a href="#" className="font-['Poppins'] text-xs font-medium text-orange-200/40 hover:text-[#ffca08] transition-colors duration-300 tracking-wider uppercase">
-          Developed by Sai Ram Lohith
-        </a>
-      </footer>
+      <ComplianceFooter />
 
       {isCropperOpen && (userData.rawMediaUrl || userData.photoUrl) && (
         <ImageCropper
