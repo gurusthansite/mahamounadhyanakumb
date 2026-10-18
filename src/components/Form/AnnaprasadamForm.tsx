@@ -7,9 +7,88 @@ interface Props {
 }
 
 export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => {
+  const [isPaying, setIsPaying] = React.useState(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setUserData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePayment = async () => {
+    const platesNum = parseInt(userData.plates || '0', 10);
+    if (!platesNum || platesNum <= 0) {
+      alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి");
+      return;
+    }
+    const amountInRupees = platesNum * 51;
+    const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
+
+    if (!(window as any).Razorpay) {
+      alert("Razorpay payment gateway is loading, please try again in a moment.");
+      return;
+    }
+
+    setIsPaying(true);
+    try {
+      const resp = await fetch('/api/initiatePayment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amountInRupees,
+          donor_name: userData.fullName || 'Devotee',
+          donor_mobile: cleanPhone || '9133014014',
+          donor_email: 'annaprasadam@gurusthanmeditation.org'
+        })
+      });
+
+      const data = await resp.json();
+      if (!data.success || !data.razorpayOptions) {
+        throw new Error(data.message || data.error || 'Could not initiate payment order');
+      }
+
+      const options = {
+        ...data.razorpayOptions,
+        image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
+        handler: function (response: any) {
+          // Report verification to Gurusthan backend
+          fetch('/api/verifyPayment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_signature: response.razorpay_signature,
+              our_order_id: data.razorpayOptions.our_order_id,
+              donor_name: userData.fullName || 'Devotee',
+              donor_mobile: cleanPhone || '9133014014',
+              amount: amountInRupees,
+              category: 'guruprasadam',
+              type: 'donation'
+            })
+          }).catch(err => console.warn('Verification report warning:', err));
+
+          alert(`చెల్లింపు విజయవంతమైంది! (Payment Successful)\nPayment ID: ${response.razorpay_payment_id}`);
+        },
+        modal: {
+          ondismiss: function () {
+            console.log("Payment modal closed by user");
+          }
+        }
+      };
+
+      const rzp = new (window as any).Razorpay(options);
+      rzp.on('payment.failed', function (paymentResp: any) {
+        console.error("Razorpay Payment Failed:", paymentResp.error);
+        const errDesc = paymentResp.error?.description || paymentResp.error?.reason || 'Payment was not completed';
+        alert(`Payment Notice: ${errDesc}`);
+      });
+      rzp.open();
+    } catch (err: any) {
+      console.error("Payment initiation error:", err);
+      alert("Payment error: " + (err.message || "Failed to initialize payment gateway."));
+    } finally {
+      setIsPaying(false);
+    }
   };
 
   return (
@@ -114,61 +193,26 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
               {/* Direct Pay Button */}
               <button
                 type="button"
-                onClick={() => {
-                  const platesNum = parseInt(userData.plates || '0', 10);
-                  if (!platesNum || platesNum <= 0) {
-                    alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి");
-                    return;
-                  }
-                  const amountInRupees = platesNum * 51;
-                  // Ensure name and description contain only standard ASCII to avoid payment gateway encoding crash
-                  const asciiName = (userData.fullName || '').replace(/[^\x20-\x7E]/g, '').trim();
-                  const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
-
-                  // Razorpay Standard Checkout options
-                  const options = {
-                    key: "rzp_live_SKNRUkvvsRpl7YX",
-                    amount: amountInRupees * 100, // Amount in paise
-                    currency: "INR",
-                    name: "Vasudhaika Foundation",
-                    description: `Annaprasadam Seva - ${platesNum} Plates`,
-                    image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
-                    prefill: {
-                      ...(asciiName ? { name: asciiName } : {}),
-                      ...(cleanPhone ? { contact: cleanPhone } : {})
-                    },
-                    notes: {
-                      donor_name: userData.fullName || "Devotee",
-                      plates: platesNum.toString(),
-                      event: "Arunachalam Mahamouna Dhyanakumbh"
-                    },
-                    theme: {
-                      color: "#381609"
-                    },
-                    handler: function (response: any) {
-                      alert(`చెల్లింపు విజయవంతమైంది! (Payment Successful)\nPayment ID: ${response.razorpay_payment_id}`);
-                    }
-                  };
-
-                  if ((window as any).Razorpay) {
-                    const rzp = new (window as any).Razorpay(options);
-                    rzp.on('payment.failed', function (resp: any) {
-                      console.error("Razorpay Payment Failed:", resp.error);
-                      const errCode = resp.error?.code || 'FAILED';
-                      const errDesc = resp.error?.description || resp.error?.reason || 'Payment could not be completed';
-                      alert(`Payment Notice [${errCode}]:\n${errDesc}`);
-                    });
-                    rzp.open();
-                  } else {
-                    alert("Razorpay payment gateway is loading, please try again in a moment.");
-                  }
-                }}
-                className="mt-3.5 w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-500 text-white font-black text-base shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
+                disabled={isPaying}
+                onClick={handlePayment}
+                className="mt-3.5 w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-600 hover:from-emerald-400 hover:to-green-500 disabled:opacity-75 disabled:cursor-wait text-white font-black text-base shadow-lg hover:shadow-emerald-500/30 transition-all flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
               >
-                <span>💳 ఆన్‌లైన్‌లో చెల్లించండి (Pay ₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')})</span>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
+                {isPaying ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    <span>చెల్లింపు గేట్‌వే సిద్ధమవుతోంది... (Connecting...)</span>
+                  </>
+                ) : (
+                  <>
+                    <span>💳 ఆన్‌లైన్‌లో చెల్లించండి (Pay ₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')})</span>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
           )}
