@@ -121,7 +121,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
                     return;
                   }
                   const amountInRupees = platesNum * 51;
-                  const displayName = `${userData.titlePrefix || 'శ్రీ'} ${userData.fullName || 'భక్తుడు'}`.trim();
+                  // Ensure name and description contain only standard ASCII to avoid payment gateway encoding crash
+                  const asciiName = (userData.fullName || '').replace(/[^\x20-\x7E]/g, '').trim();
+                  const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
                   // Razorpay Standard Checkout options
                   const options = {
@@ -129,11 +131,16 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
                     amount: amountInRupees * 100, // Amount in paise
                     currency: "INR",
                     name: "Vasudhaika Foundation",
-                    description: `మహా అన్నప్రసాదం - ${platesNum} ప్లేట్లు`,
+                    description: `Annaprasadam Seva - ${platesNum} Plates`,
                     image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
                     prefill: {
-                      name: displayName,
-                      contact: userData.phoneNumber || ""
+                      ...(asciiName ? { name: asciiName } : {}),
+                      ...(cleanPhone ? { contact: cleanPhone } : {})
+                    },
+                    notes: {
+                      donor_name: userData.fullName || "Devotee",
+                      plates: platesNum.toString(),
+                      event: "Arunachalam Mahamouna Dhyanakumbh"
                     },
                     theme: {
                       color: "#381609"
@@ -147,7 +154,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData }) => 
                     const rzp = new (window as any).Razorpay(options);
                     rzp.on('payment.failed', function (resp: any) {
                       console.error("Razorpay Payment Failed:", resp.error);
-                      alert("Payment Failed / Error: " + (resp.error?.description || resp.error?.reason || "Please check console"));
+                      const errCode = resp.error?.code || 'FAILED';
+                      const errDesc = resp.error?.description || resp.error?.reason || 'Payment could not be completed';
+                      alert(`Payment Notice [${errCode}]:\n${errDesc}`);
                     });
                     rzp.open();
                   } else {
