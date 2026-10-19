@@ -12,6 +12,10 @@ export interface UserData {
   hours?: string;
   plates?: string;
   titlePrefix?: string;
+  isPaid?: boolean;
+  paymentId?: string;
+  receiptNo?: string;
+  receiptDate?: string;
   photoUrl: string | null;
   rawMediaUrl?: string | null;
   cropArea?: CropArea;

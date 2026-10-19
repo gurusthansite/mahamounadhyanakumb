@@ -21,6 +21,21 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
 
   return (
     <div className="flex flex-col items-center">
+      {/* Status Notice on top of Preview */}
+      <div className="mb-3 w-full max-w-[420px] flex items-center justify-center">
+        {userData.isPaid ? (
+          <div className="w-full py-2 px-3 rounded-xl bg-emerald-500/20 border border-emerald-500 text-emerald-300 text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
+            <span>✅</span>
+            <span>చెల్లింపు పూర్తయింది • పోస్టర్ సిద్ధమైంది</span>
+          </div>
+        ) : (
+          <div className="w-full py-2 px-3 rounded-xl bg-[#ffca08]/15 border border-[#ffca08]/40 text-orange-200 text-xs font-semibold flex items-center justify-center gap-2 shadow-sm">
+            <span>🔒</span>
+            <span>చెల్లింపు తర్వాత వివరాలు పోస్టర్‌లో కనిపిస్తాయి</span>
+          </div>
+        )}
+      </div>
+
       <div 
         ref={containerRef}
         className="relative w-full max-w-[420px] aspect-[1024/1536] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#ffca08]/40 bg-[#1c0802]"
@@ -52,26 +67,41 @@ export const AnnaprasadamPreview: React.FC<Props> = ({ userData, onEditCrop }) =
           className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
         />
 
-        {/* Dynamic Plates Count inside Green Box */}
-        {userData.plates && (
+        {/* Dynamic Plates Count inside Green Box - ONLY AFTER PAYMENT */}
+        {userData.isPaid ? (
+          userData.plates && (
+            <div 
+              className="absolute z-20 text-[#ffeb3b] font-black drop-shadow-md tracking-tight flex items-center justify-center whitespace-nowrap"
+              style={{ 
+                top: `${ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent}%`, 
+                left: `${ANNAPRASADAM_TEXT_POSITIONS.plates.centerPercent}%`,
+                transform: 'translate(-50%, -50%)', 
+                fontSize: 'clamp(14px, 4.2cqi, 36px)', 
+                fontFamily: '"Noto Sans Telugu", sans-serif',
+                textShadow: '0 2px 4px rgba(0,0,0,0.6)'
+              }}
+            >
+              <span>{userData.plates}</span>
+              <span className="text-white ml-2 text-[0.85em] font-bold">ప్లేట్స్ అన్నప్రసాదం</span>
+            </div>
+          )
+        ) : (
           <div 
-            className="absolute z-20 text-[#ffeb3b] font-black drop-shadow-md tracking-tight flex items-center justify-center whitespace-nowrap"
+            className="absolute z-20 text-white/50 font-bold tracking-tight flex items-center justify-center whitespace-nowrap"
             style={{ 
               top: `${ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent}%`, 
               left: `${ANNAPRASADAM_TEXT_POSITIONS.plates.centerPercent}%`,
               transform: 'translate(-50%, -50%)', 
-              fontSize: 'clamp(14px, 4.2cqi, 36px)', 
-              fontFamily: '"Noto Sans Telugu", sans-serif',
-              textShadow: '0 2px 4px rgba(0,0,0,0.6)'
+              fontSize: 'clamp(10px, 2.7cqi, 20px)', 
+              fontFamily: '"Noto Sans Telugu", sans-serif'
             }}
           >
-            <span>{userData.plates}</span>
-            <span className="text-white ml-2 text-[0.85em] font-bold">ప్లేట్స్ అన్నప్రసాదం</span>
+            <span>🔒 లాక్ చేయబడింది (చెల్లింపు తర్వాత)</span>
           </div>
         )}
 
-        {/* Dynamic Donor Name with [గారికి] automatically added */}
-        {userData.fullName && (
+        {/* Dynamic Donor Name with [గారికి] automatically added - ONLY AFTER PAYMENT */}
+        {userData.isPaid && userData.fullName && (
           <div 
             className="absolute z-20 text-[#1e3a1e] font-extrabold drop-shadow-sm flex items-center justify-end max-w-[55%]"
             style={{ 

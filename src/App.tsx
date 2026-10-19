@@ -8,11 +8,19 @@ import { ImageCropper } from './components/PhotoUpload/ImageCropper';
 import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
+import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
 import { PHOTO_AREA } from './canvas/coordinates';
+import {
+  GOOGLE_SCRIPT_URL,
+  FORM_RESPONSES_SCRIPT_URL,
+  SRINAGAR_COLONY_SCRIPT_URL,
+  ARUNACHALAM_SCRIPT_URL,
+  ANNAPRASADAM_PAYMENTS_SHEET_URL
+} from './config/sheets';
 
   const getInitialTemplate = (): 'video' | 'image' => {
     if (typeof window !== 'undefined') {
@@ -97,6 +105,7 @@ function App() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoProgress, setVideoProgress] = useState<number | null>(null);
   const [isCropperOpen, setIsCropperOpen] = useState(false);
+  const [annaprasadamView, setAnnaprasadamView] = useState<'poster' | 'receipt'>('poster');
   const lastSubmittedData = useRef<string | null>(null);
 
   const navigateTo = (page: PageType) => {
@@ -145,19 +154,22 @@ function App() {
     setIsCropperOpen(false);
   };
 
-  const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx1PBmNDZvbN3cQrx27gMfvFOFRnbP-wTGZIH7MAVAfuG1Qi2kQxKSsOudPdk2MUSHYlA/exec";
-  const FORM_RESPONSES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwpRpJMxjQoDsXIkMe2PYSRAK0UwoIVcNVqqCvn3JZwhARIKUZRO1l1xrrV7aHX2N8DXg/exec";
-  const SRINAGAR_COLONY_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMNxfGYriaM8ulnNc2DSyf3Ki1sU06le2E6FNOKYb_vEpFo8t3WFW0P9AnYK1A0L7q/exec";
-  const ARUNACHALAM_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx54Q33jaoQJg4bvkTb1DAbJHlpkMTX5lIY9O-8AhuIYpQFARuVlZ344pju3NfZ7shs/exec";
-
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
 
+    const platesNum = parseInt(userData.plates || '0', 10);
     const currentDataStr = JSON.stringify({
       fullName: userData.fullName,
       phoneNumber: userData.phoneNumber,
       location: userData.location,
-      hours: userData.hours || ''
+      hours: userData.hours || '',
+      plates: platesNum > 0 ? platesNum : undefined,
+      amount: platesNum > 0 ? platesNum * 51 : undefined,
+      isPaid: userData.isPaid || false,
+      paymentId: userData.paymentId || '',
+      receiptNo: userData.receiptNo || '',
+      category: currentPage === 'annaprasadam' ? 'Annaprasadam Seva' : 'Poster Generator',
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
     });
 
     if (lastSubmittedData.current === currentDataStr) return;
@@ -165,7 +177,11 @@ function App() {
     lastSubmittedData.current = currentDataStr;
 
     try {
-      fetch(GOOGLE_SCRIPT_URL, {
+      const targetUrl = (currentPage === 'annaprasadam' && userData.isPaid)
+        ? ANNAPRASADAM_PAYMENTS_SHEET_URL
+        : GOOGLE_SCRIPT_URL;
+
+      fetch(targetUrl, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=utf-8", 
@@ -178,6 +194,21 @@ function App() {
   };
 
   const validateInput = (): boolean => {
+    if (currentPage === 'annaprasadam') {
+      if (!userData.fullName.trim()) {
+        alert("దయచేసి మీ పూర్తి పేరు నమోదు చేయండి (Please enter your full name)");
+        return false;
+      }
+      if (!userData.plates || parseInt(userData.plates, 10) <= 0) {
+        alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి (Please enter number of plates)");
+        return false;
+      }
+      if (!userData.isPaid) {
+        alert("దయచేసి ముందుగా ఆన్‌లైన్ పేమెంట్ పూర్తి చేయండి. చెల్లింపు పూర్తయిన తర్వాత మాత్రమే మీ వివరాలతో పోస్టర్ తయారవుతుంది.\n\n(Please complete the online payment first. Your details will appear on the poster after payment).");
+        return false;
+      }
+    }
+
     if (userData.phoneNumber) {
       const phoneDigits = userData.phoneNumber.replace(/\D/g, '');
       if (phoneDigits.length > 0 && phoneDigits.length !== 10) {
@@ -417,23 +448,83 @@ function App() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="flex flex-col gap-6">
-              <AnnaprasadamForm userData={userData} setUserData={setUserData} />
+              <AnnaprasadamForm
+                userData={userData}
+                setUserData={setUserData}
+                onViewReceipt={() => setAnnaprasadamView('receipt')}
+              />
               <PhotoUpload 
                 userData={userData} 
                 setUserData={setUserData} 
                 onOpenCropper={() => setIsCropperOpen(true)} 
                 forceImageMode={true}
               />
-              <div className="hidden lg:block">
-                <ActionButtons onShare={handleShare} isGenerating={isGenerating} showDownload={false} />
-              </div>
+              {annaprasadamView === 'poster' && (
+                <div className="hidden lg:block">
+                  <ActionButtons 
+                    onShare={handleShare} 
+                    isGenerating={isGenerating} 
+                    showDownload={false}
+                    shareDisabled={!userData.isPaid}
+                    shareLabel={userData.isPaid ? "Share to WhatsApp" : "🔒 పేమెంట్ తర్వాత షేర్ చేయండి (Complete Payment to Share)"}
+                  />
+                </div>
+              )}
             </div>
 
             <div className="flex flex-col">
-              <AnnaprasadamPreview userData={userData} setUserData={setUserData} onEditCrop={() => setIsCropperOpen(true)} />
-              <div className="block lg:hidden mt-6">
-                <ActionButtons onShare={handleShare} isGenerating={isGenerating} showDownload={false} />
-              </div>
+              {/* Tab Selector when payment is completed */}
+              {userData.isPaid && (
+                <div className="bg-[#4a1c0b] p-1.5 rounded-2xl shadow-xl border border-[#8b3d0b] flex mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setAnnaprasadamView('poster')}
+                    className={`flex-1 py-2.5 text-center rounded-xl font-bold text-sm sm:text-base transition-all ${
+                      annaprasadamView === 'poster'
+                        ? 'bg-[#ffca08] text-[#381609] shadow-md'
+                        : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/30'
+                    }`}
+                  >
+                    🖼️ అన్నప్రసాద పోస్టర్ (Poster)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAnnaprasadamView('receipt')}
+                    className={`flex-1 py-2.5 text-center rounded-xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-1.5 ${
+                      annaprasadamView === 'receipt'
+                        ? 'bg-[#ffca08] text-[#381609] shadow-md'
+                        : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/30'
+                    }`}
+                  >
+                    <span>🧾 విరాళ రశీదు (Receipt)</span>
+                    <span className="px-1.5 py-0.5 text-[10px] bg-emerald-600 text-white font-bold rounded-full">✓ Paid</span>
+                  </button>
+                </div>
+              )}
+
+              {annaprasadamView === 'receipt' && userData.isPaid ? (
+                <ReceiptPreview
+                  userData={userData}
+                  onBackToPoster={() => setAnnaprasadamView('poster')}
+                />
+              ) : (
+                <>
+                  <AnnaprasadamPreview
+                    userData={userData}
+                    setUserData={setUserData}
+                    onEditCrop={() => setIsCropperOpen(true)}
+                  />
+                  <div className="block lg:hidden mt-6">
+                    <ActionButtons 
+                      onShare={handleShare} 
+                      isGenerating={isGenerating} 
+                      showDownload={false}
+                      shareDisabled={!userData.isPaid}
+                      shareLabel={userData.isPaid ? "Share to WhatsApp" : "🔒 పేమెంట్ తర్వాత షేర్ చేయండి (Complete Payment to Share)"}
+                    />
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </main>
