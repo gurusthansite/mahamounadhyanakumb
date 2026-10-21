@@ -10,6 +10,7 @@ import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
+import { DeveloperSignature } from './components/Footer/DeveloperSignature';
 import { LanguageSwitcher } from './components/Language/LanguageSwitcher';
 import { TRANSLATIONS, type SupportedLanguage } from './i18n/annaprasadamTranslations';
 import type { UserData, CropArea } from './types/poster';
@@ -57,18 +58,16 @@ import {
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
 
-      // Check for Annaprasadam Poster Generator
+      // Check for Poster Generator (Video/Photo status)
       if (
-        page === 'annaprasadam' ||
-        page === 'annadanam' ||
-        page === 'prasadam' ||
-        page === 'seva' ||
-        path.includes('/annaprasadam') ||
-        path.includes('/annadanam') ||
-        path.includes('/prasadam') ||
-        path.includes('/seva')
+        page === 'poster' ||
+        page === 'video' ||
+        page === 'status' ||
+        path.includes('/poster') ||
+        path.includes('/video') ||
+        path.includes('/status')
       ) {
-        return 'annaprasadam';
+        return 'poster';
       }
 
       // Check for Arunachalam
@@ -107,7 +106,8 @@ import {
         return 'srnagar';
       }
     }
-    return 'poster';
+    // Default main landing page is Annaprasadam Seva
+    return 'annaprasadam';
   };
 
 function App() {
@@ -150,8 +150,8 @@ function App() {
         url.searchParams.set('page', 'srinagar-colony');
       } else if (page === 'arunachalam') {
         url.searchParams.set('page', 'arunachalam');
-      } else if (page === 'annaprasadam') {
-        url.searchParams.set('page', 'annaprasadam');
+      } else if (page === 'poster') {
+        url.searchParams.set('page', 'poster');
       } else {
         url.searchParams.delete('page');
       }
@@ -642,86 +642,8 @@ function App() {
       </main>
       )}
 
-      {/* Developer Details Section (Before Footer) */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 sm:mt-18">
-        <div className="bg-gradient-to-r from-[#240b03] via-[#3a1305] to-[#240b03] border-2 border-[#ffca08]/40 rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-5 relative overflow-hidden">
-          <div className="flex items-center gap-4 text-center md:text-left">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-[#ffca08] to-[#ffd943] text-[#381609] flex items-center justify-center text-3xl font-black shadow-lg shrink-0">
-              👨‍💻
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1">
-                <span className="text-xs uppercase tracking-wider text-orange-200/70 font-bold">
-                  Designed & Developed by
-                </span>
-                <span className="text-[10px] bg-[#ffca08] text-[#381609] font-black px-2 py-0.5 rounded-full uppercase">
-                  Developer
-                </span>
-              </div>
-              <h3 className="text-lg sm:text-xl font-extrabold developer-animated-text">
-                Sripada Sai ram lohith
-              </h3>
-              <p className="text-xs text-orange-200/80 mt-0.5">
-                For web application support, feedback, or queries:
-              </p>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2.5 shrink-0">
-            {/* Number 1: 8374446877 */}
-            <div className="flex items-center gap-2 bg-[#1b0701] px-3.5 py-2 rounded-2xl border border-[#8b3d0b]/80 shadow-inner">
-              <a 
-                href="tel:8374446877"
-                className="text-xs sm:text-sm font-mono font-bold text-white hover:text-[#ffca08] transition-colors"
-              >
-                +91 83744 46877
-              </a>
-              <a
-                href="tel:8374446877"
-                className="py-1 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-transform active:scale-95"
-                title="Call 8374446877"
-              >
-                📞 Call
-              </a>
-              <a
-                href="https://wa.me/918374446877?text=Hi%20Sai%20Ram%20Lohith,%20contacting%20regarding%20Maha%20Mouna%20Dhyana%20Kumbh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-1 px-2 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-transform active:scale-95"
-                title="WhatsApp 8374446877"
-              >
-                💬 Chat
-              </a>
-            </div>
-
-            {/* Number 2: 6301865010 */}
-            <div className="flex items-center gap-2 bg-[#1b0701] px-3.5 py-2 rounded-2xl border border-[#8b3d0b]/80 shadow-inner">
-              <a 
-                href="tel:6301865010"
-                className="text-xs sm:text-sm font-mono font-bold text-white hover:text-[#ffca08] transition-colors"
-              >
-                +91 63018 65010
-              </a>
-              <a
-                href="tel:6301865010"
-                className="py-1 px-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-transform active:scale-95"
-                title="Call 6301865010"
-              >
-                📞 Call
-              </a>
-              <a
-                href="https://wa.me/916301865010?text=Hi%20Sai%20Ram%20Lohith,%20contacting%20regarding%20Maha%20Mouna%20Dhyana%20Kumbh"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="py-1 px-2 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-transform active:scale-95"
-                title="WhatsApp 6301865010"
-              >
-                💬 Chat
-              </a>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* Developer Signature Small Text with Popover */}
+      <DeveloperSignature />
 
       <ComplianceFooter />
 
