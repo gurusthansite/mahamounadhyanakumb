@@ -26,6 +26,23 @@ export const AnnaprasadamForm: React.FC<Props> = ({
   const [isPaying, setIsPaying] = useState(false);
   const [dobError, setDobError] = useState<string | null>(null);
 
+  // Date of Birth picker ref
+  const dobInputRef = useRef<HTMLInputElement>(null);
+
+  const openDatePicker = () => {
+    if (dobInputRef.current) {
+      if ('showPicker' in HTMLInputElement.prototype) {
+        try {
+          dobInputRef.current.showPicker();
+          return;
+        } catch {
+          // fallback
+        }
+      }
+      dobInputRef.current.focus();
+    }
+  };
+
   // Camera state
   const fileInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -374,21 +391,36 @@ export const AnnaprasadamForm: React.FC<Props> = ({
           </label>
           <div className="relative">
             <input
+              ref={dobInputRef}
               type="date"
               name="dob"
               disabled={Boolean(userData.isPaid)}
               max={new Date().toISOString().split('T')[0]}
               value={userData.dob || ''}
               onChange={handleDobChange}
-              className={`w-full px-4 py-3 bg-[#240b03] border ${
+              onClick={() => {
+                if (!userData.isPaid) openDatePicker();
+              }}
+              className={`w-full pl-4 pr-12 py-3 bg-[#240b03] border ${
                 userData.isPaid
                   ? 'border-emerald-500/70 text-emerald-300 bg-[#180601] cursor-not-allowed'
                   : dobError
                   ? 'border-rose-500 ring-1 ring-rose-500'
                   : 'border-[#8b3d0b]'
-              } text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all`}
+              } text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all cursor-pointer`}
               required
             />
+            {!userData.isPaid && (
+              <button
+                type="button"
+                onClick={openDatePicker}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-[#3a1305] hover:bg-[#8b3d0b] text-[#ffca08] hover:text-white transition-all cursor-pointer text-lg leading-none shadow-sm active:scale-95"
+                title="Open Calendar Picker"
+                aria-label="Open Calendar"
+              >
+                📅
+              </button>
+            )}
           </div>
           {dobError ? (
             <p className="text-xs text-rose-400 mt-1 font-medium">{dobError}</p>
@@ -624,14 +656,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm sm:text-base mb-2">
-                  <span className="text-orange-200">{t.platesSummaryLabel}</span>
-                  <span className="text-white font-mono font-semibold">
-                    {platesNum} {t.plateUnit} ({platesNum} × ₹1)
-                  </span>
-                </div>
-                
-                <div className="flex items-center justify-between pt-2 border-t border-[#8b3d0b]/80">
+                <div className="flex items-center justify-between pt-1 border-t border-[#8b3d0b]/80">
                   <span className="text-[#ffca08] font-bold text-base sm:text-lg">
                     {t.totalAmountLabel}
                   </span>

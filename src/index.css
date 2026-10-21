@@ -56,3 +56,15 @@ body {
   filter: drop-shadow(0 0 10px rgba(255, 202, 8, 0.9));
   transform: scale(1.05);
 }
+
+/* Custom golden calendar icon for date inputs */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  filter: invert(0.85) sepia(1) saturate(5) hue-rotate(5deg);
+  opacity: 0.95;
+  transition: transform 0.2s ease;
+}
+
+input[type="date"]::-webkit-calendar-picker-indicator:hover {
+  transform: scale(1.15);
+}
