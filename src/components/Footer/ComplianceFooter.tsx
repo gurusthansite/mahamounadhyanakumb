@@ -110,17 +110,28 @@ export const ComplianceFooter: React.FC = () => {
         {/* Footer Bottom credits with Developer Signature */}
         <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-orange-200/60">
           <p>© {new Date().getFullYear()} Vasudhaika Foundation · Gurusthan Meditation</p>
-          <button
-            type="button"
-            onClick={() => setShowDeveloperModal(true)}
-            className="group inline-flex items-center gap-1.5 py-1.5 px-3 rounded-full bg-[#ffca08]/10 hover:bg-[#ffca08]/20 border border-[#ffca08]/30 hover:border-[#ffca08] text-[#ffca08] transition-all cursor-pointer text-xs font-semibold shadow-sm hover:scale-105 active:scale-95"
-          >
-            <span className="text-sm">👨‍💻</span>
-            <span>Developed by <strong className="underline decoration-[#ffca08]/60 underline-offset-2 text-white group-hover:text-[#ffd943]">Sripada Sai ram lohith</strong></span>
-            <span className="text-[10px] bg-[#ffca08] text-[#381609] px-2 py-0.5 rounded-full font-extrabold ml-1 uppercase tracking-wider">
-              Contact
-            </span>
-          </button>
+          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+            <span className="text-sm select-none">👨‍💻</span>
+            <span>Developed by</span>
+            <a
+              href="https://gurusthanmeditation.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="developer-animated-text cursor-pointer hover:opacity-100"
+              title="Visit Gurusthan Meditation Website"
+            >
+              Sripada Sai ram lohith
+            </a>
+            <button
+              type="button"
+              onClick={() => setShowDeveloperModal(true)}
+              className="inline-flex items-center gap-1 py-1 px-2.5 rounded-full bg-[#ffca08]/15 hover:bg-[#ffca08]/30 border border-[#ffca08]/40 hover:border-[#ffca08] text-[#ffca08] text-[11px] font-bold transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 ml-1"
+              title="Click to view contact numbers"
+            >
+              <span>📞</span>
+              <span>Contact</span>
+            </button>
+          </div>
         </div>
       </div>
 
