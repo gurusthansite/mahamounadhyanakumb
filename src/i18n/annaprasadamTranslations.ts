@@ -1,4 +1,4 @@
-export type SupportedLanguage = 'te' | 'en' | 'ta' | 'hi';
+export type SupportedLanguage = 'te' | 'en' | 'ta' | 'hi' | 'kn';
 
 export interface LanguageOption {
   code: SupportedLanguage;
@@ -11,6 +11,7 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
   { code: 'en', label: 'English', nativeLabel: 'English' },
   { code: 'ta', label: 'Tamil', nativeLabel: 'தமிழ்' },
   { code: 'hi', label: 'Hindi', nativeLabel: 'हिन्दी' },
+  { code: 'kn', label: 'Kannada', nativeLabel: 'ಕನ್ನಡ' },
 ];
 
 export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage = 'te'): string {
@@ -19,6 +20,7 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
       case 'en': return 'Maharaja Poshakulu';
       case 'ta': return 'மகாராஜ போஷகர்கள்';
       case 'hi': return 'महाराज पोषक';
+      case 'kn': return 'ಮಹಾರಾಜ ಪೋಷಕರು';
       default: return 'మహారాజ పోషకులు';
     }
   }
@@ -27,6 +29,7 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
       case 'en': return 'Raja Poshakulu';
       case 'ta': return 'ராஜ போஷகர்கள்';
       case 'hi': return 'राज पोषक';
+      case 'kn': return 'ರಾಜ ಪೋಷಕರು';
       default: return 'రాజ పోషకులు';
     }
   }
@@ -35,6 +38,7 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
       case 'en': return 'Sahasraja Poshakulu';
       case 'ta': return 'சஹஸ்ராஜ போஷகர்கள்';
       case 'hi': return 'सहस्राज पोषक';
+      case 'kn': return 'ಸಹಸ್ರರಾಜ ಪೋಷಕರು';
       default: return 'సహస్రాజ పోషకులు';
     }
   }
@@ -42,6 +46,7 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
     case 'en': return 'Poshakulu (Donor)';
     case 'ta': return 'போஷகர்கள்';
     case 'hi': return 'पोषक';
+    case 'kn': return 'ಪೋಷಕರು';
     default: return 'పోషకులు';
   }
 }
@@ -274,5 +279,62 @@ export const TRANSLATIONS = {
     line1Text: 'प्लेट अन्नप्रसाद',
     line2Text: 'भक्तिपूर्वक अर्पित करने हेतु',
     shareWhatsApp: 'व्हाट्सएप पर शेयर करें (Share to WhatsApp)'
+  },
+  kn: {
+    bannerPill: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
+    bannerTitle: 'ಅರುಣಾಚಲ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್',
+    bannerSubtitle: 'ಅರುಣಾಚಲದಲ್ಲಿ ನಡೆಯುವ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ನಿಮ್ಮ ಅಥವಾ ನಿಮ್ಮ ಪ್ರೀತಿಪಾತ್ರರ ಹೆಸರಿನಲ್ಲಿ ಅನ್ನಪ್ರಸಾದವನ್ನು ಅರ್ಪಿಸಿ ಪುನೀತರಾಗಿ',
+    formTitle: 'ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ವಿವರಗಳು',
+    formSubtitle: 'ಅರುಣಾಚಲ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ',
+    nameLabel: '1. ಗೌರವ ಸಂಬೋಧನೆ ಮತ್ತು ದಾನಿಗಳ ಹೆಸರು (Title & Full Name) *',
+    namePlaceholder: 'ಪೂರ್ಣ ಹೆಸರು ಬರೆಯಿರಿ (ಉದಾ: ರಮೇಶ್ ಬಾಬು)',
+    titles: [
+      { id: 'ಶ್ರೀ', label: 'ಶ್ರೀ (Sri)' },
+      { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' }
+    ],
+    defaultTitle: 'ಶ್ರೀ',
+    nameSuffix: 'ರವರಿಗೆ',
+    dobLabel: '2. ಹುಟ್ಟಿದ ದಿನಾಂಕ (Date of Birth / D.O.B) *',
+    dobHelp: '* ಈ ಜನ್ಮ ದಿನಾಂಕವನ್ನು ನಿಮ್ಮ ಅಧಿಕೃತ ದೇಣಿಗೆ ರಸೀದಿಯಲ್ಲಿ ಮುದ್ರಿಸಲಾಗುತ್ತದೆ.',
+    dobRequired: 'ದಯವಿಟ್ಟು ಹುಟ್ಟಿದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ',
+    dobFuture: 'ಭವಿಷ್ಯದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಲಾಗುವುದಿಲ್ಲ',
+    dobInvalid: 'ದಯವಿಟ್ಟು ಸರಿಯಾದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ',
+    platesLabel: '3. ಎಷ್ಟು ಪ್ಲೇಟ್ ಅನ್ನಪ್ರಸಾದ? (Number of Plates) *',
+    platesPlaceholder: '1 ಪ್ಲೇಟ್ = ₹1 (ಉದಾ: 10, 20, 50, 100)',
+    plateUnit: 'ಪ್ಲೇಟ್‌ಗಳು',
+    plateSingular: 'ಪ್ಲೇಟ್',
+    tierLabel: 'ಶ್ರೇಣಿ:',
+    paidPlatesLocked: '🔒 ಪಾವತಿ ಪೂರ್ಣಗೊಂಡಿದೆ - ಪ್ಲೇಟ್‌ಗಳ ಸಂಖ್ಯೆಯನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ',
+    phoneLabel: '4. ಫೋನ್ ಸಂಖ್ಯೆ (Phone - ಐಚ್ಛಿಕ)',
+    phonePlaceholder: '10 ಅಂಕಿಯ ಮೊಬೈಲ್ ಸಂಖ್ಯೆ',
+    locationLabel: '5. ಊರು / ನಗರ (Location - ಐಚ್ಛಿಕ)',
+    locationPlaceholder: 'ಉದಾ: ಬೆಂಗಳೂರು / ತಿರುವಣ್ಣಾಮಲೈ',
+    photoLabel: '6. ನಿಮ್ಮ ಫೋಟೋ ಆಯ್ಕೆ / ಅಪ್‌ಲೋಡ್ (Select / Upload Photo)',
+    photoSelectedTitle: 'ಫೋಟೋ ಸಿದ್ಧವಾಗಿದೆ (Photo Selected)',
+    photoSelectedSub: '✓ ಪೋಸ್ಟರ್‌ನಲ್ಲಿ ಲೈವ್ ಆಗಿ ಕಾಣಿಸುತ್ತದೆ',
+    photoCropBtn: '✂️ ಕ್ರಾಪ್',
+    photoChangeBtn: 'ಬದಲಾಯಿಸಿ',
+    photoPrompt: 'ಪೋಸ್ಟರ್‌ನಲ್ಲಿ ಮುದ್ರಿಸಲು ನಿಮ್ಮ ಅಥವಾ ದಾನಿಗಳ ಫೋಟೋ ಆಯ್ಕೆಮಾಡಿ:',
+    photoGalleryBtn: '📁 ಗ್ಯಾಲರಿಯಿಂದ ಆಯ್ಕೆಮಾಡಿ',
+    photoCameraBtn: '📸 ಕ್ಯಾಮೆರಾದಿಂದ ತೆಗೆಯಿರಿ',
+    photoCaptureBtn: '📸 ಫೋಟೋ ತೆಗೆಯಿರಿ',
+    photoCancelBtn: 'ರದ್ದುಮಾಡಿ',
+    paymentHeading: 'ಅನ್ನಪ್ರಸಾದ ದೇಣಿಗೆ ಆನ್‌ಲೈನ್ ಪಾವತಿ (Online Payment)',
+    paymentInNameOf: 'ರವರ ಹೆಸರಿನಲ್ಲಿ',
+    platesSummaryLabel: 'ಅನ್ನಪ್ರಸಾದ ಪ್ಲೇಟ್‌ಗಳು:',
+    assignedPlateSummaryLabel: 'ನಿಯೋಜಿಸಲಾದ ಪ್ಲೇಟ್ ಸಂಖ್ಯೆ:',
+    totalAmountLabel: 'ಒಟ್ಟು ದೇಣಿಗೆ ಮೊತ್ತ (Total Amount):',
+    payButton: '💳 ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪಾವತಿಸಿ',
+    connectingGateway: 'ಪಾವತಿ ಗೇಟ್‌ವೇ ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ...',
+    paymentSuccess: 'ಪಾವತಿ ಯಶಸ್ವಿಯಾಗಿದೆ (Payment Successful)',
+    paymentSuccessSub: 'ನಿಮ್ಮ ಅಧಿಕೃತ ದೇಣಿಗೆ ರಸೀದಿ ಮತ್ತು ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ ಸಿದ್ಧವಾಗಿದೆ!',
+    viewReceiptBtn: '🧾 ಅಧಿಕೃತ ದೇಣಿಗೆ ರಸೀದಿ ವೀಕ್ಷಿಸಿ (View Receipt)',
+    securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
+    fillRequiredPrompt: 'ℹ️ ಪಾವತಿಸಲು ದಯವಿಟ್ಟು ಹೆಸರು ಮತ್ತು ಪ್ಲೇಟ್‌ಗಳ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.',
+    posterTab: '🖼️ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ (Poster)',
+    receiptTab: '🧾 ದೇಣಿಗೆ ರಸೀದಿ (Receipt)',
+    line1Text: 'ಪ್ಲೇಟ್ ಅನ್ನಪ್ರಸಾದ',
+    line2Text: 'ಭಕ್ತಿಯಿಂದ ಸಮರ್ಪಿಸುತ್ತಿರುವುದಕ್ಕೆ',
+    shareWhatsApp: 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ (Share to WhatsApp)'
   }
 };

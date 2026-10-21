@@ -28,11 +28,11 @@ import {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const langParam = params.get('lang');
-      if (langParam === 'en' || langParam === 'ta' || langParam === 'hi' || langParam === 'te') {
+      if (langParam === 'en' || langParam === 'ta' || langParam === 'hi' || langParam === 'te' || langParam === 'kn') {
         return langParam;
       }
       const saved = localStorage.getItem('annaprasadam_lang');
-      if (saved === 'en' || saved === 'ta' || saved === 'hi' || saved === 'te') {
+      if (saved === 'en' || saved === 'ta' || saved === 'hi' || saved === 'te' || saved === 'kn') {
         return saved as SupportedLanguage;
       }
     }
@@ -326,7 +326,8 @@ function App() {
         te: `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*మహా మౌన ధ్యాన కుంభ్ - అరుణాచలం*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*మహా అన్నప్రసాద వితరణ సేవ*\n\nమీరు కూడా అన్నప్రసాద సేవలో భాగస్వామ్యం అవ్వండి!\n\nమీ పేరు, ఫోటోతో అన్నప్రసాద పోస్టర్ తయారు చేయడానికి:\n${annaprasadamGenUrl}\n\nమరిన్ని వివరాలకు:\n9133016016`,
         en: `Warm Welcome to All \n\n*Maha Mouna Dhyana Kumbh - Arunachalam*\n(November 11 to 15)\n\n*Maha Annaprasadam Seva*\n\nBe a blessed sponsor in holy Annaprasadam Seva!\n\nCreate your personalized Annaprasadam poster with your photo & name:\n${annaprasadamGenUrl}?lang=en\n\nFor more details:\n9133016016`,
         ta: `அனைவருக்கும் அன்பான வரவேற்பு \n\n*மகா மௌன தியான கும்ப் - அருணாச்சலம்*\n(நவம்பர் 11 முதல் 15 வரை)\n\n*மகா அன்னபிரசாத விநியோக சேவை*\n\nநீங்களும் இந்த புனித அன்னபிரசாத சேவையில் பங்கெடுங்கள்!\n\nஉங்கள் புகைப்படம் மற்றும் பெயருடன் அன்னபிரசாத போஸ்டர் உருவாக்க:\n${annaprasadamGenUrl}?lang=ta\n\nமேலும் விவரங்களுக்கு:\n9133016016`,
-        hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016`
+        hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016`,
+        kn: `ಎಲ್ಲರಿಗೂ ಆತ್ಮೀಯ ಆಹ್ವಾನ \n\n*ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ - ಅರುಣಾಚಲ*\n(ನವೆಂಬರ್ 11 ರಿಂದ 15 ರವರೆಗೆ)\n\n*ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ*\n\nನೀವು ಕೂಡ ಈ ಪವಿತ್ರ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಿ!\n\nನಿಮ್ಮ ಹೆಸರು, ಫೋಟೋದೊಂದಿಗೆ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ ತಯಾರಿಸಲು:\n${annaprasadamGenUrl}?lang=kn\n\nಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ:\n9133016016`
       };
 
       if (isAnnaprasadam) {

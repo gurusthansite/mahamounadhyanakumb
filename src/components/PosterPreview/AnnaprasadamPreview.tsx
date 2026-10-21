@@ -27,6 +27,8 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
     ? '"Noto Sans Tamil", sans-serif'
     : lang === 'hi'
     ? '"Noto Sans Devanagari", sans-serif'
+    : lang === 'kn'
+    ? '"Noto Sans Kannada", sans-serif'
     : lang === 'en'
     ? '"Noto Sans", sans-serif'
     : '"Noto Sans Telugu", sans-serif';
