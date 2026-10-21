@@ -3,6 +3,52 @@ import type { UserData } from '../types/poster';
 export const RECEIPT_WIDTH = 1280;
 export const RECEIPT_HEIGHT = 853;
 
+export interface ReceiptOffsets {
+  receiptNo?: { x: number; y: number };
+  date?: { x: number; y: number };
+  donorName?: { x: number; y: number };
+  location?: { x: number; y: number };
+  phone?: { x: number; y: number };
+  dob?: { x: number; y: number };
+  amountWords?: { x: number; y: number };
+  amountBox?: { x: number; y: number };
+  paymentRef?: { x: number; y: number };
+  sevaDescription?: { x: number; y: number };
+}
+
+export interface ReceiptCustomData {
+  receiptNo?: string;
+  day?: string;
+  month?: string;
+  year?: string;
+  donorName?: string;
+  dob?: string;
+  plateNumber?: string;
+  location?: string;
+  phoneNumber?: string;
+  amount?: number;
+  plates?: number;
+  amountWords?: string;
+  paymentRef?: string;
+  sevaDescription?: string;
+  offsets?: ReceiptOffsets;
+}
+
+export const DEFAULT_RECEIPT_COORDINATES = {
+  receiptNo: { x: 235, y: 308 },
+  dateDD: { x: 1052, y: 308 },
+  dateMM: { x: 1108, y: 308 },
+  dateYYYY: { x: 1192, y: 308 },
+  donorName: { x: 385, y: 350 },
+  location: { x: 260, y: 386 },
+  phone: { x: 745, y: 386 },
+  dob: { x: 1010, y: 386 },
+  amountWords: { x: 275, y: 428 },
+  amountBox: { x: 1145, y: 411 },
+  paymentRef: { x: 270, y: 464 },
+  sevaDescription: { x: 720, y: 464 }
+};
+
 /**
  * Converts a number to words in Indian numbering system
  */
@@ -36,6 +82,7 @@ export function numToWords(n: number): string {
 export async function renderReceiptToCanvas(
   canvas: HTMLCanvasElement,
   userData: UserData,
+  customData?: ReceiptCustomData,
   templateUrl: string = '/receipt.png'
 ): Promise<void> {
   canvas.width = RECEIPT_WIDTH;
@@ -64,103 +111,189 @@ export async function renderReceiptToCanvas(
   // Draw background receipt template
   ctx.drawImage(templateImg, 0, 0, RECEIPT_WIDTH, RECEIPT_HEIGHT);
 
-  const plates = parseInt(userData.plates || '1', 10) || 1;
-  const amount = plates * 1;
-  const amountWords = `${numToWords(amount)} (${plates} ${plates === 1 ? 'Plate' : 'Plates'})`;
+  const plates = customData?.plates !== undefined 
+    ? customData.plates 
+    : (parseInt(userData.plates || '1', 10) || 1);
+
+  const amount = customData?.amount !== undefined 
+    ? customData.amount 
+    : (plates * 1);
+
+  const amountWords = customData?.amountWords || `${numToWords(amount)} (${plates} ${plates === 1 ? 'Plate' : 'Plates'})`;
 
   // Determine receipt date
   const now = new Date();
-  const dayStr = String(now.getDate()).padStart(2, '0');
-  const monthStr = String(now.getMonth() + 1).padStart(2, '0');
-  const yearStr = String(now.getFullYear());
+  const defaultDay = String(now.getDate()).padStart(2, '0');
+  const defaultMonth = String(now.getMonth() + 1).padStart(2, '0');
+  const defaultYear = String(now.getFullYear());
+
+  const dayStr = customData?.day || defaultDay;
+  const monthStr = customData?.month || defaultMonth;
+  const yearStr = customData?.year || defaultYear;
 
   // Deterministic or stored Receipt Number
   const receiptNo =
+    customData?.receiptNo ||
     userData.receiptNo ||
-    `MK-${dayStr}${monthStr}-${(userData.paymentId || '108').slice(-4).toUpperCase()}`;
+    `MK-${defaultDay}${defaultMonth}-${(userData.paymentId || '108').slice(-4).toUpperCase()}`;
 
-  // 1. Receipt No Box
+  const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : '';
+  const donorName = (customData?.donorName !== undefined ? customData.donorName : `${prefix}${userData.fullName || 'Devotee'}`).trim();
+
+  const phone = customData?.phoneNumber !== undefined 
+    ? customData.phoneNumber 
+    : (userData.phoneNumber ? `+91 ${userData.phoneNumber.replace(/\D/g, '')}` : '—');
+
+  const location = customData?.location !== undefined 
+    ? customData.location 
+    : (userData.location || '');
+
+  const payId = customData?.paymentRef !== undefined 
+    ? customData.paymentRef 
+    : (userData.paymentId ? `Online / ${userData.paymentId}` : 'Online Payment');
+
+  const plateNo = customData?.plateNumber || userData.plateNumber || '';
+  const sevaDesc = customData?.sevaDescription !== undefined 
+    ? customData.sevaDescription 
+    : `Arunachalam Seva (${plates} Plates${plateNo ? ` • Plate #${plateNo}` : ''})`;
+
+  const rawDob = customData?.dob !== undefined ? customData.dob : (userData.dob || '');
+  let formattedDob = rawDob;
+  if (rawDob && rawDob.includes('-')) {
+    const parts = rawDob.split('-');
+    if (parts.length === 3 && parts[0].length === 4) {
+      formattedDob = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+  }
+
+  const offsets = customData?.offsets || {};
+
+  // 1. Receipt No Box (Centered on the Receipt No dotted line)
   ctx.save();
   ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#b91c1c';
   ctx.font = 'bold 24px monospace, sans-serif';
-  ctx.fillText(receiptNo, 244, 308);
+  const rNoX = DEFAULT_RECEIPT_COORDINATES.receiptNo.x + (offsets.receiptNo?.x || 0);
+  const rNoY = DEFAULT_RECEIPT_COORDINATES.receiptNo.y + (offsets.receiptNo?.y || 0);
+  ctx.fillText(receiptNo, rNoX, rNoY);
   ctx.restore();
 
-  // 2. Date Box (DD / MM / YYYY)
+  // 2. Date Box (DD / MM / YYYY positioned directly atop each date line)
   ctx.save();
-  ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
   ctx.font = 'bold 22px sans-serif';
-  ctx.fillText(dayStr, 1045, 300);
-  ctx.fillText(monthStr, 1108, 300);
-  ctx.fillText(yearStr, 1170, 300);
+  const dateOffX = offsets.date?.x || 0;
+  const dateOffY = offsets.date?.y || 0;
+  ctx.fillText(dayStr, DEFAULT_RECEIPT_COORDINATES.dateDD.x + dateOffX, DEFAULT_RECEIPT_COORDINATES.dateDD.y + dateOffY);
+  ctx.fillText(monthStr, DEFAULT_RECEIPT_COORDINATES.dateMM.x + dateOffX, DEFAULT_RECEIPT_COORDINATES.dateMM.y + dateOffY);
+  ctx.fillText(yearStr, DEFAULT_RECEIPT_COORDINATES.dateYYYY.x + dateOffX, DEFAULT_RECEIPT_COORDINATES.dateYYYY.y + dateOffY);
   ctx.restore();
 
-  // 3. Donor Name Line
+  // 3. Donor Name Line (Aligned nicely above the dotted line)
   ctx.save();
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
   ctx.font = 'bold 24px "Noto Sans Telugu", "Noto Sans", sans-serif';
-  const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : '';
-  const donorName = `${prefix}${userData.fullName || 'Devotee'}`.trim();
-  ctx.fillText(donorName, 395, 320);
+  const nameX = DEFAULT_RECEIPT_COORDINATES.donorName.x + (offsets.donorName?.x || 0);
+  const nameY = DEFAULT_RECEIPT_COORDINATES.donorName.y + (offsets.donorName?.y || 0);
+  // Fit wide names within line length
+  let nameFont = 24;
+  while (ctx.measureText(donorName).width > 800 && nameFont > 14) {
+    nameFont -= 1;
+    ctx.font = `bold ${nameFont}px "Noto Sans Telugu", "Noto Sans", sans-serif`;
+  }
+  ctx.fillText(donorName, nameX, nameY);
   ctx.restore();
 
-  // 4. Contact No Line
+  // 4. Address / Location Line (if available)
+  if (location) {
+    ctx.save();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#0f1e4a';
+    ctx.font = 'bold 20px "Noto Sans Telugu", "Noto Sans", sans-serif';
+    const locX = DEFAULT_RECEIPT_COORDINATES.location.x + (offsets.location?.x || 0);
+    const locY = DEFAULT_RECEIPT_COORDINATES.location.y + (offsets.location?.y || 0);
+    ctx.fillText(location, locX, locY);
+    ctx.restore();
+  }
+
+  // 5. Contact No Line (Right-aligned dotted line after Contact prompt)
   ctx.save();
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
   ctx.font = 'bold 22px sans-serif';
-  const phone = userData.phoneNumber ? `+91 ${userData.phoneNumber.replace(/\D/g, '')}` : '—';
-  ctx.fillText(phone, 725, 360);
+  const phoneX = DEFAULT_RECEIPT_COORDINATES.phone.x + (offsets.phone?.x || 0);
+  const phoneY = DEFAULT_RECEIPT_COORDINATES.phone.y + (offsets.phone?.y || 0);
+  ctx.fillText(phone, phoneX, phoneY);
   ctx.restore();
 
-  // 5. Sum of Rupees (In Words) Line
+  // 5b. Date of Birth (D.O.B.) if available
+  if (formattedDob) {
+    ctx.save();
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#0f1e4a';
+    ctx.font = 'bold 20px sans-serif';
+    const dobX = DEFAULT_RECEIPT_COORDINATES.dob.x + (offsets.dob?.x || 0);
+    const dobY = DEFAULT_RECEIPT_COORDINATES.dob.y + (offsets.dob?.y || 0);
+    ctx.fillText(`DOB: ${formattedDob}`, dobX, dobY);
+    ctx.restore();
+  }
+
+  // 6. Sum of Rupees (In Words) Line
   ctx.save();
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
   ctx.font = 'bold 18px sans-serif';
-  // If words are too long, fit them within 700px
+  const wordsX = DEFAULT_RECEIPT_COORDINATES.amountWords.x + (offsets.amountWords?.x || 0);
+  const wordsY = DEFAULT_RECEIPT_COORDINATES.amountWords.y + (offsets.amountWords?.y || 0);
+  // If words are too long, fit them within 680px
   let wordsFont = 18;
-  while (ctx.measureText(amountWords).width > 700 && wordsFont > 12) {
+  while (ctx.measureText(amountWords).width > 680 && wordsFont > 12) {
     wordsFont -= 1;
     ctx.font = `bold ${wordsFont}px sans-serif`;
   }
-  ctx.fillText(amountWords, 275, 402);
+  ctx.fillText(amountWords, wordsX, wordsY);
   ctx.restore();
 
-  // 6. Rs. Box (Centered in white amount box)
+  // 7. Rs. Box (Vertically and horizontally centered in white amount box)
   ctx.save();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#b91c1c';
-  ctx.font = 'bold 32px sans-serif';
-  ctx.fillText(`${amount.toLocaleString('en-IN')}/-`, 1150, 416);
+  ctx.font = 'bold 30px sans-serif';
+  const boxX = DEFAULT_RECEIPT_COORDINATES.amountBox.x + (offsets.amountBox?.x || 0);
+  const boxY = DEFAULT_RECEIPT_COORDINATES.amountBox.y + (offsets.amountBox?.y || 0);
+  ctx.fillText(`${amount.toLocaleString('en-IN')}/-`, boxX, boxY);
   ctx.restore();
 
-  // 7. by Cash / Online / UTR No Line
+  // 8. by Cash / Online / UTR No Line
   ctx.save();
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
-  ctx.font = 'bold 18px monospace, sans-serif';
-  const payId = userData.paymentId ? `Online / ${userData.paymentId}` : 'Online Payment';
-  ctx.fillText(payId, 272, 442);
+  ctx.font = 'bold 17px monospace, sans-serif';
+  const payX = DEFAULT_RECEIPT_COORDINATES.paymentRef.x + (offsets.paymentRef?.x || 0);
+  const payY = DEFAULT_RECEIPT_COORDINATES.paymentRef.y + (offsets.paymentRef?.y || 0);
+  ctx.fillText(payId, payX, payY);
   ctx.restore();
 
-  // 8. Cheque No. & Dt. / Bank Name Line
+  // 9. Cheque No. & Dt. / Bank Name Line
   ctx.save();
   ctx.textAlign = 'left';
-  ctx.textBaseline = 'top';
+  ctx.textBaseline = 'bottom';
   ctx.fillStyle = '#0f1e4a';
   ctx.font = 'bold 18px sans-serif';
-  ctx.fillText(`Arunachalam Seva (${plates} Plates)`, 810, 442);
+  const sevaX = DEFAULT_RECEIPT_COORDINATES.sevaDescription.x + (offsets.sevaDescription?.x || 0);
+  const sevaY = DEFAULT_RECEIPT_COORDINATES.sevaDescription.y + (offsets.sevaDescription?.y || 0);
+  ctx.fillText(sevaDesc, sevaX, sevaY);
   ctx.restore();
 }
 
@@ -169,10 +302,11 @@ export async function renderReceiptToCanvas(
  */
 export async function generateReceipt(
   userData: UserData,
+  customData?: ReceiptCustomData,
   templateUrl: string = '/receipt.png'
 ): Promise<Blob> {
   const canvas = document.createElement('canvas');
-  await renderReceiptToCanvas(canvas, userData, templateUrl);
+  await renderReceiptToCanvas(canvas, userData, customData, templateUrl);
 
   return new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((blob) => {

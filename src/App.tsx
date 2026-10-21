@@ -164,12 +164,15 @@ function App() {
     const platesNum = parseInt(userData.plates || '0', 10);
     const currentDataStr = JSON.stringify({
       fullName: userData.fullName,
+      dob: userData.dob || '',
       phoneNumber: userData.phoneNumber,
       location: userData.location,
       hours: userData.hours || '',
       plates: platesNum > 0 ? platesNum : undefined,
+      plateNumber: userData.plateNumber || '',
       amount: platesNum > 0 ? platesNum * 1 : undefined,
       isPaid: userData.isPaid || false,
+      isPlateLocked: userData.isPlateLocked || false,
       paymentId: userData.paymentId || '',
       receiptNo: userData.receiptNo || '',
       category: currentPage === 'annaprasadam' ? 'Annaprasadam Seva' : 'Poster Generator',
@@ -201,6 +204,10 @@ function App() {
     if (currentPage === 'annaprasadam') {
       if (!userData.fullName.trim()) {
         alert("దయచేసి మీ పూర్తి పేరు నమోదు చేయండి (Please enter your full name)");
+        return false;
+      }
+      if (!userData.dob) {
+        alert("దయచేసి మీ పుట్టిన తేదీని నమోదు చేయండి (Please enter Date of Birth)");
         return false;
       }
       if (!userData.plates || parseInt(userData.plates, 10) <= 0) {
@@ -383,8 +390,7 @@ function App() {
               <span className="text-[#ffca08]">ధ్యాన కుంభ్</span>
             </h1>
             <p className="font-['Noto_Sans_Telugu'] text-xl md:text-2xl text-orange-100 font-light mb-8 max-w-2xl mx-auto lg:mx-0">
-              తరలిరండి అరుణాచలం. <br/>
-              <span className="font-sans text-lg opacity-80 mt-2 block">Upload a short video below to generate your personalized status video.</span>
+              తరలిరండి అరుణాచలం.
             </p>
             <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
               <span className="font-['Noto_Sans_Telugu'] px-5 py-2.5 rounded-lg bg-[#8b3d0b] border border-[#d97706] text-white font-medium flex items-center gap-2 shadow-md">
@@ -452,20 +458,14 @@ function App() {
                 userData={userData}
                 setUserData={setUserData}
                 onViewReceipt={() => setAnnaprasadamView('receipt')}
-              />
-              <PhotoUpload 
-                userData={userData} 
-                setUserData={setUserData} 
-                onOpenCropper={() => setIsCropperOpen(true)} 
-                forceImageMode={true}
+                onOpenCropper={() => setIsCropperOpen(true)}
               />
               {annaprasadamView === 'poster' && (
                 <div className="hidden lg:block">
                   <ActionButtons 
-                    onDownload={handleDownload}
                     onShare={handleShare} 
                     isGenerating={isGenerating} 
-                    showDownload={true}
+                    showDownload={false}
                     shareDisabled={false}
                     shareLabel="Share to WhatsApp"
                   />
@@ -517,10 +517,9 @@ function App() {
                   />
                   <div className="block lg:hidden mt-6">
                     <ActionButtons 
-                      onDownload={handleDownload}
                       onShare={handleShare} 
                       isGenerating={isGenerating} 
-                      showDownload={true}
+                      showDownload={false}
                       shareDisabled={false}
                       shareLabel="Share to WhatsApp"
                     />

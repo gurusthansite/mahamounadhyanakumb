@@ -9,6 +9,10 @@ export interface UserData {
   fullName: string;
   phoneNumber: string;
   location: string;
+  dob?: string;
+  plateNumber?: string;
+  plateLockToken?: string;
+  isPlateLocked?: boolean;
   hours?: string;
   plates?: string;
   titlePrefix?: string;
