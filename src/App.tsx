@@ -242,6 +242,20 @@ function App() {
         alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి (Please enter number of plates)");
         return false;
       }
+      if (!userData.isPaid) {
+        alert(
+          currentLang === 'en'
+            ? 'Please complete online payment first to share the poster.'
+            : currentLang === 'ta'
+            ? 'போஸ்டரைப் பகிர முதலில் ஆன்லைன் கட்டணத்தை முடிக்கவும்.'
+            : currentLang === 'hi'
+            ? 'पोस्टर शेयर करने के लिए कृपया पहले ऑनलाइन भुगतान पूरा करें।'
+            : currentLang === 'kn'
+            ? 'ಪೋಸ್ಟರ್ ಹಂಚಿಕೊಳ್ಳಲು ದಯವಿಟ್ಟು ಮೊದಲು ಆನ್‌ಲೈನ್ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ.'
+            : 'పోస్టర్ షೇర్ చేయడానికి దಯచేసి ముందుగా ఆన్‌లైన్ పేమెంట్ పూర్తి చేయండి.'
+        );
+        return false;
+      }
     }
 
     if (userData.phoneNumber) {
@@ -498,8 +512,8 @@ function App() {
                 onOpenCropper={() => setIsCropperOpen(true)}
                 lang={currentLang}
               />
-              {annaprasadamView === 'poster' && (
-                <div className="hidden lg:block">
+              {userData.isPaid && annaprasadamView === 'poster' && (
+                <div className="hidden lg:block animate-fadeIn">
                   <ActionButtons 
                     onShare={handleShare} 
                     isGenerating={isGenerating} 
@@ -554,15 +568,21 @@ function App() {
                     onEditCrop={() => setIsCropperOpen(true)}
                     lang={currentLang}
                   />
-                  <div className="block lg:hidden mt-6">
-                    <ActionButtons 
-                      onShare={handleShare} 
-                      isGenerating={isGenerating} 
-                      showDownload={false}
-                      shareDisabled={false}
-                      shareLabel={TRANSLATIONS[currentLang].shareWhatsApp}
-                    />
-                  </div>
+                  {userData.isPaid ? (
+                    <div className="block lg:hidden mt-6 animate-fadeIn">
+                      <ActionButtons 
+                        onShare={handleShare} 
+                        isGenerating={isGenerating} 
+                        showDownload={false}
+                        shareDisabled={false}
+                        shareLabel={TRANSLATIONS[currentLang].shareWhatsApp}
+                      />
+                    </div>
+                  ) : (
+                    <div className="block lg:hidden mt-4 p-3.5 bg-[#240b03] border border-[#ffca08]/30 rounded-2xl text-center text-xs text-orange-200/80 shadow-md">
+                      <span className="font-semibold">{TRANSLATIONS[currentLang].shareUnlockPrompt}</span>
+                    </div>
+                  )}
                 </>
               )}
             </div>

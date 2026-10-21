@@ -107,7 +107,8 @@ export const TRANSLATIONS = {
     receiptTab: '🧾 విరాళ రశీదు (Receipt)',
     line1Text: 'ప్లేట్స్ అన్నప్రసాదం',
     line2Text: 'అందిస్తున్నందుకు',
-    shareWhatsApp: 'వాట్సాప్‌లో షేర్ చేయండి (Share to WhatsApp)'
+    shareWhatsApp: 'వాట్సాప్‌లో షేర్ చేయండి (Share to WhatsApp)',
+    shareUnlockPrompt: '🔒 వాట్సాప్‌లో షేర్ చేయడానికి ముందుగా పేమెంట్ పూర్తి చేయండి'
   },
   en: {
     bannerPill: 'Maha Annaprasadam Seva - Arunachalam',
@@ -164,7 +165,8 @@ export const TRANSLATIONS = {
     receiptTab: '🧾 Donation Receipt',
     line1Text: 'Plates Annaprasadam',
     line2Text: 'Offering with Devotion',
-    shareWhatsApp: 'Share to WhatsApp'
+    shareWhatsApp: 'Share to WhatsApp',
+    shareUnlockPrompt: '🔒 Complete payment to unlock WhatsApp share'
   },
   ta: {
     bannerPill: 'மகா அன்னபிரசாத விநியோக சேவை - அருணாச்சலம்',
@@ -221,7 +223,8 @@ export const TRANSLATIONS = {
     receiptTab: '🧾 நன்கொடை ரசீது',
     line1Text: 'தட்டுகள் அன்னபிரசாதம்',
     line2Text: 'பக்தியுடன் வழங்குவதற்கு',
-    shareWhatsApp: 'வாட்ஸ்அப்பில் பகிரவும் (Share to WhatsApp)'
+    shareWhatsApp: 'வாட்ஸ்அப்பில் பகிரவும் (Share to WhatsApp)',
+    shareUnlockPrompt: '🔒 வாட்ஸ்அப்பில் பகிர மேலே உள்ள கட்டணத்தை முடிக்கவும்'
   },
   hi: {
     bannerPill: 'महा अन्नप्रसाद वितरण सेवा - अरुणाचलम',
@@ -278,7 +281,8 @@ export const TRANSLATIONS = {
     receiptTab: '🧾 दान रसीद',
     line1Text: 'प्लेट अन्नप्रसाद',
     line2Text: 'भक्तिपूर्वक अर्पित करने हेतु',
-    shareWhatsApp: 'व्हाट्सएप पर शेयर करें (Share to WhatsApp)'
+    shareWhatsApp: 'व्हाट्सएप पर शेयर करें (Share to WhatsApp)',
+    shareUnlockPrompt: '🔒 व्हाट्सएप पर शेयर करने के लिए ऊपर भुगतान पूरा करें'
   },
   kn: {
     bannerPill: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
@@ -335,6 +339,7 @@ export const TRANSLATIONS = {
     receiptTab: '🧾 ದೇಣಿಗೆ ರಸೀದಿ (Receipt)',
     line1Text: 'ಪ್ಲೇಟ್ ಅನ್ನಪ್ರಸಾದ',
     line2Text: 'ಭಕ್ತಿಯಿಂದ ಸಮರ್ಪಿಸುತ್ತಿರುವುದಕ್ಕೆ',
-    shareWhatsApp: 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ (Share to WhatsApp)'
+    shareWhatsApp: 'ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಿ (Share to WhatsApp)',
+    shareUnlockPrompt: '🔒 ವಾಟ್ಸಾಪ್‌ನಲ್ಲಿ ಹಂಚಿಕೊಳ್ಳಲು ಮೇಲಿನ ಪಾವತಿಯನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ'
   }
 };
