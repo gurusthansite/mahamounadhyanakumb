@@ -10,6 +10,8 @@ import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
+import { LanguageSwitcher } from './components/Language/LanguageSwitcher';
+import { TRANSLATIONS, type SupportedLanguage } from './i18n/annaprasadamTranslations';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
@@ -21,6 +23,21 @@ import {
   ARUNACHALAM_SCRIPT_URL,
   ANNAPRASADAM_PAYMENTS_SHEET_URL
 } from './config/sheets';
+
+  const getInitialLang = (): SupportedLanguage => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const langParam = params.get('lang');
+      if (langParam === 'en' || langParam === 'ta' || langParam === 'hi' || langParam === 'te') {
+        return langParam;
+      }
+      const saved = localStorage.getItem('annaprasadam_lang');
+      if (saved === 'en' || saved === 'ta' || saved === 'hi' || saved === 'te') {
+        return saved as SupportedLanguage;
+      }
+    }
+    return 'te';
+  };
 
   const getInitialTemplate = (): 'video' | 'image' => {
     if (typeof window !== 'undefined') {
@@ -95,6 +112,7 @@ import {
 
 function App() {
   const [currentPage, setCurrentPage] = useState<PageType>(getInitialPage());
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>(getInitialLang());
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     phoneNumber: '',
@@ -108,6 +126,16 @@ function App() {
   const [isCropperOpen, setIsCropperOpen] = useState(false);
   const [annaprasadamView, setAnnaprasadamView] = useState<'poster' | 'receipt'>('poster');
   const lastSubmittedData = useRef<string | null>(null);
+
+  const handleLanguageChange = (newLang: SupportedLanguage) => {
+    setCurrentLang(newLang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('annaprasadam_lang', newLang);
+      const url = new URL(window.location.href);
+      url.searchParams.set('lang', newLang);
+      window.history.replaceState({}, '', url.toString());
+    }
+  };
 
   const navigateTo = (page: PageType) => {
     setCurrentPage(page);
@@ -234,7 +262,7 @@ function App() {
       submitToGoogleSheets();
 
       if (currentPage === 'annaprasadam') {
-        const blob = await generateImage(userData, '/assets/Arunachalam.png', true);
+        const blob = await generateImage(userData, '/assets/Arunachalam.png', true, currentLang);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -294,12 +322,17 @@ function App() {
 
       const campaignBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీ ఫోటోతో పోస్టర్ తయారు చేయడానికి:\n${imageGenUrl}\n\nమీ ఫోటోతో వీడియో తయారు చేయడానికి:\n${videoGenUrl}`;
 
-      const annaprasadamBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*మహా మౌన ధ్యాన కుంభ్ - అరుణాచలం*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*మహా అన్నప్రసాద వితరణ సేవ*\n\nమీరు కూడా అన్నప్రసాద సేవలో భాగస్వామ్యం అవ్వండి!\n\nమీ పేరు, ఫోటోతో అన్నప్రసాద పోస్టర్ తయారు చేయడానికి:\n${annaprasadamGenUrl}\n\nమరిన్ని వివరాలకు:\n9133016016`;
+      const annaprasadamBodies: Record<SupportedLanguage, string> = {
+        te: `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*మహా మౌన ధ్యాన కుంభ్ - అరుణాచలం*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*మహా అన్నప్రసాద వితరణ సేవ*\n\nమీరు కూడా అన్నప్రసాద సేవలో భాగస్వామ్యం అవ్వండి!\n\nమీ పేరు, ఫోటోతో అన్నప్రసాద పోస్టర్ తయారు చేయడానికి:\n${annaprasadamGenUrl}\n\nమరిన్ని వివరాలకు:\n9133016016`,
+        en: `Warm Welcome to All \n\n*Maha Mouna Dhyana Kumbh - Arunachalam*\n(November 11 to 15)\n\n*Maha Annaprasadam Seva*\n\nBe a blessed sponsor in holy Annaprasadam Seva!\n\nCreate your personalized Annaprasadam poster with your photo & name:\n${annaprasadamGenUrl}?lang=en\n\nFor more details:\n9133016016`,
+        ta: `அனைவருக்கும் அன்பான வரவேற்பு \n\n*மகா மௌன தியான கும்ப் - அருணாச்சலம்*\n(நவம்பர் 11 முதல் 15 வரை)\n\n*மகா அன்னபிரசாத விநியோக சேவை*\n\nநீங்களும் இந்த புனித அன்னபிரசாத சேவையில் பங்கெடுங்கள்!\n\nஉங்கள் புகைப்படம் மற்றும் பெயருடன் அன்னபிரசாத போஸ்டர் உருவாக்க:\n${annaprasadamGenUrl}?lang=ta\n\nமேலும் விவரங்களுக்கு:\n9133016016`,
+        hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016`
+      };
 
       if (isAnnaprasadam) {
-        blob = await generateImage(userData, '/assets/Arunachalam.png', true);
+        blob = await generateImage(userData, '/assets/Arunachalam.png', true, currentLang);
         filename = `annaprasadam-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
-        shareText = annaprasadamBody;
+        shareText = annaprasadamBodies[currentLang] || annaprasadamBodies.te;
       } else if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
@@ -438,17 +471,20 @@ function App() {
           onNavigateToPoster={() => navigateTo('poster')} 
         />
       ) : currentPage === 'annaprasadam' ? (
-        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
+        <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-10">
+          {/* Responsive Language Switcher */}
+          <LanguageSwitcher currentLang={currentLang} onLanguageChange={handleLanguageChange} />
+
           {/* Header Banner for Annaprasadam */}
           <div className="text-center mb-8">
             <span className="inline-flex items-center justify-center whitespace-nowrap text-[10px] min-[360px]:text-xs sm:text-sm font-bold tracking-normal sm:tracking-wider uppercase px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] mb-3 shadow-sm max-w-full">
-              మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం
+              {TRANSLATIONS[currentLang].bannerPill}
             </span>
-            <h2 className="font-['Noto_Sans_Telugu'] text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
-              అరుణాచలం అన్నప్రసాద పోస్టర్
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
+              {TRANSLATIONS[currentLang].bannerTitle}
             </h2>
-            <p className="text-orange-200/80 text-sm sm:text-base mt-2">
-              అరుణాచలంలో జరిగే అన్న ప్రసాద వితరణ సేవలో మీ లేదా మీకు ఇష్టమైన వాళ్ల పేరు మీదుగా  అన్న ప్రసాదాన్ని అందించవచ్చును
+            <p className="text-orange-200/80 text-sm sm:text-base mt-2 max-w-2xl mx-auto">
+              {TRANSLATIONS[currentLang].bannerSubtitle}
             </p>
           </div>
 
@@ -459,6 +495,7 @@ function App() {
                 setUserData={setUserData}
                 onViewReceipt={() => setAnnaprasadamView('receipt')}
                 onOpenCropper={() => setIsCropperOpen(true)}
+                lang={currentLang}
               />
               {annaprasadamView === 'poster' && (
                 <div className="hidden lg:block">
@@ -467,7 +504,7 @@ function App() {
                     isGenerating={isGenerating} 
                     showDownload={false}
                     shareDisabled={false}
-                    shareLabel="Share to WhatsApp"
+                    shareLabel={TRANSLATIONS[currentLang].shareWhatsApp}
                   />
                 </div>
               )}
@@ -486,7 +523,7 @@ function App() {
                         : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/30'
                     }`}
                   >
-                    🖼️ అన్నప్రసాద పోస్టర్ (Poster)
+                    {TRANSLATIONS[currentLang].posterTab}
                   </button>
                   <button
                     type="button"
@@ -497,7 +534,7 @@ function App() {
                         : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/30'
                     }`}
                   >
-                    <span>🧾 విరాళ రశీదు (Receipt)</span>
+                    <span>{TRANSLATIONS[currentLang].receiptTab}</span>
                     <span className="px-1.5 py-0.5 text-[10px] bg-emerald-600 text-white font-bold rounded-full">✓ Paid</span>
                   </button>
                 </div>
@@ -514,6 +551,7 @@ function App() {
                     userData={userData}
                     setUserData={setUserData}
                     onEditCrop={() => setIsCropperOpen(true)}
+                    lang={currentLang}
                   />
                   <div className="block lg:hidden mt-6">
                     <ActionButtons 
@@ -521,7 +559,7 @@ function App() {
                       isGenerating={isGenerating} 
                       showDownload={false}
                       shareDisabled={false}
-                      shareLabel="Share to WhatsApp"
+                      shareLabel={TRANSLATIONS[currentLang].shareWhatsApp}
                     />
                   </div>
                 </>
