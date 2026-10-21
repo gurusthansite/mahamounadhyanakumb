@@ -4,7 +4,6 @@ type PolicyType = 'privacy' | 'terms' | 'refund' | 'shipping' | 'contact' | null
 
 export const ComplianceFooter: React.FC = () => {
   const [activeModal, setActiveModal] = useState<PolicyType>(null);
-  const [showDeveloperModal, setShowDeveloperModal] = useState<boolean>(false);
 
   const closeModal = () => setActiveModal(null);
 
@@ -107,138 +106,14 @@ export const ComplianceFooter: React.FC = () => {
 
         </div>
 
-        {/* Footer Bottom credits with Developer Signature */}
-        <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-orange-200/60">
+        {/* Footer Bottom credits */}
+        <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-orange-200/50">
           <p>© {new Date().getFullYear()} Vasudhaika Foundation · Gurusthan Meditation</p>
-          <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
-            <span className="text-sm select-none">👨‍💻</span>
-            <span>Developed by</span>
-            <a
-              href="https://gurusthanmeditation.org/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="developer-animated-text cursor-pointer hover:opacity-100"
-              title="Visit Gurusthan Meditation Website"
-            >
-              Sripada Sai ram lohith
-            </a>
-            <button
-              type="button"
-              onClick={() => setShowDeveloperModal(true)}
-              className="inline-flex items-center gap-1 py-1 px-2.5 rounded-full bg-[#ffca08]/15 hover:bg-[#ffca08]/30 border border-[#ffca08]/40 hover:border-[#ffca08] text-[#ffca08] text-[11px] font-bold transition-all cursor-pointer shadow-sm hover:scale-105 active:scale-95 ml-1"
-              title="Click to view contact numbers"
-            >
-              <span>📞</span>
-              <span>Contact</span>
-            </button>
-          </div>
+          <p className="text-[11px] tracking-wide text-orange-200/60">
+            A Movement of Mouna · Tiruvannamalai
+          </p>
         </div>
       </div>
-
-      {/* Developer Contact Modal Popup */}
-      {showDeveloperModal && (
-        <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn"
-          onClick={() => setShowDeveloperModal(false)}
-        >
-          <div 
-            className="bg-gradient-to-b from-[#2e0e04] to-[#1c0802] border-2 border-[#ffca08]/60 rounded-3xl max-w-sm w-full p-6 text-orange-100 shadow-[0_20px_60px_rgba(0,0,0,0.85)] relative text-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setShowDeveloperModal(false)}
-              className="absolute top-4 right-4 text-orange-200/60 hover:text-white text-2xl font-bold leading-none p-1 transition-colors cursor-pointer"
-              aria-label="Close"
-            >
-              &times;
-            </button>
-
-            {/* Avatar / Icon Badge */}
-            <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-[#ffca08] to-[#ffd943] text-[#381609] flex items-center justify-center text-3xl font-black shadow-lg">
-              👨‍💻
-            </div>
-
-            <h3 className="text-xl font-extrabold text-white tracking-wide">
-              Sripada Sai ram lohith
-            </h3>
-            <p className="text-xs text-[#ffca08] font-semibold mt-0.5 mb-4 tracking-wider uppercase">
-              Web Application Developer
-            </p>
-
-            <p className="text-xs text-orange-200/80 mb-5 leading-relaxed">
-              Have any questions, support requests, or feedback? Feel free to call or WhatsApp directly:
-            </p>
-
-            {/* Contact Options */}
-            <div className="space-y-3">
-              {/* Number 1: 8374446877 */}
-              <div className="p-3 bg-[#240b03] border border-[#8b3d0b] rounded-2xl flex items-center justify-between gap-2 shadow-inner">
-                <div className="text-left">
-                  <span className="text-[10px] text-orange-300/70 block uppercase font-bold tracking-wider">Primary</span>
-                  <a href="tel:8374446877" className="text-sm font-mono font-bold text-white tracking-wide hover:text-[#ffca08] transition-colors">
-                    +91 83744 46877
-                  </a>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <a
-                    href="tel:8374446877"
-                    className="py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-transform active:scale-95 flex items-center gap-1 shadow-sm"
-                    title="Call directly"
-                  >
-                    📞 Call
-                  </a>
-                  <a
-                    href="https://wa.me/918374446877?text=Hi%20Sai%20Ram%20Lohith,%20I%20contacted%20you%20regarding%20the%20Maha%20Mouna%20Dhyana%20Kumbh%20website"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-1.5 px-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-transform active:scale-95 flex items-center gap-1 shadow-sm"
-                    title="Chat on WhatsApp"
-                  >
-                    💬 WhatsApp
-                  </a>
-                </div>
-              </div>
-
-              {/* Number 2: 6301865010 */}
-              <div className="p-3 bg-[#240b03] border border-[#8b3d0b] rounded-2xl flex items-center justify-between gap-2 shadow-inner">
-                <div className="text-left">
-                  <span className="text-[10px] text-orange-300/70 block uppercase font-bold tracking-wider">Alternate</span>
-                  <a href="tel:6301865010" className="text-sm font-mono font-bold text-white tracking-wide hover:text-[#ffca08] transition-colors">
-                    +91 63018 65010
-                  </a>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <a
-                    href="tel:6301865010"
-                    className="py-1.5 px-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition-transform active:scale-95 flex items-center gap-1 shadow-sm"
-                    title="Call directly"
-                  >
-                    📞 Call
-                  </a>
-                  <a
-                    href="https://wa.me/916301865010?text=Hi%20Sai%20Ram%20Lohith,%20I%20contacted%20you%20regarding%20the%20Maha%20Mouna%20Dhyana%20Kumbh%20website"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="py-1.5 px-2.5 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-bold transition-transform active:scale-95 flex items-center gap-1 shadow-sm"
-                    title="Chat on WhatsApp"
-                  >
-                    💬 WhatsApp
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={() => setShowDeveloperModal(false)}
-              className="mt-5 w-full py-2.5 rounded-xl bg-[#3a1305] hover:bg-[#8b3d0b] text-orange-200 hover:text-white text-xs font-bold transition-all border border-[#8b3d0b] cursor-pointer"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Compliance Policies Modal */}
       {activeModal && (
