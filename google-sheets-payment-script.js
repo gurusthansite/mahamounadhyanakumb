@@ -87,7 +87,7 @@ function doPost(e) {
     var location = (data.location || data.address || data.city || "").toString().trim();
     var plates = data.plates ? String(data.plates) : "1";
     var platesNum = parseInt(plates, 10) || 1;
-    var amount = data.amount ? String(data.amount) : String(platesNum * 51);
+    var amount = data.amount ? String(data.amount) : String(platesNum * 1);
     var paymentId = (data.paymentId || data.razorpay_payment_id || "").toString().trim();
     var orderId = (data.orderId || data.razorpay_order_id || "").toString().trim();
     var receiptNo = (data.receiptNo || "").toString().trim();

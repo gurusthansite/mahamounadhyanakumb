@@ -65,7 +65,7 @@ export async function renderReceiptToCanvas(
   ctx.drawImage(templateImg, 0, 0, RECEIPT_WIDTH, RECEIPT_HEIGHT);
 
   const plates = parseInt(userData.plates || '1', 10) || 1;
-  const amount = plates * 51;
+  const amount = plates * 1;
   const amountWords = `${numToWords(amount)} (${plates} ${plates === 1 ? 'Plate' : 'Plates'})`;
 
   // Determine receipt date

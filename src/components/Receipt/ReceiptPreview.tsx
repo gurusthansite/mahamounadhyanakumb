@@ -13,7 +13,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
   const [renderError, setRenderError] = useState<string | null>(null);
 
   const plates = parseInt(userData.plates || '1', 10) || 1;
-  const amount = plates * 51;
+  const amount = plates * 1;
 
   useEffect(() => {
     let isCancelled = false;

@@ -99,6 +99,7 @@ function App() {
     fullName: '',
     phoneNumber: '',
     location: '',
+    plates: getInitialPage() === 'annaprasadam' ? '1' : undefined,
     photoUrl: null,
     templateType: getInitialTemplate()
   });
@@ -110,6 +111,9 @@ function App() {
 
   const navigateTo = (page: PageType) => {
     setCurrentPage(page);
+    if (page === 'annaprasadam') {
+      setUserData(prev => ({ ...prev, plates: prev.plates || '1' }));
+    }
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
       if (page === 'srnagar') {
@@ -164,7 +168,7 @@ function App() {
       location: userData.location,
       hours: userData.hours || '',
       plates: platesNum > 0 ? platesNum : undefined,
-      amount: platesNum > 0 ? platesNum * 51 : undefined,
+      amount: platesNum > 0 ? platesNum * 1 : undefined,
       isPaid: userData.isPaid || false,
       paymentId: userData.paymentId || '',
       receiptNo: userData.receiptNo || '',
@@ -201,10 +205,6 @@ function App() {
       }
       if (!userData.plates || parseInt(userData.plates, 10) <= 0) {
         alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి (Please enter number of plates)");
-        return false;
-      }
-      if (!userData.isPaid) {
-        alert("దయచేసి ముందుగా ఆన్‌లైన్ పేమెంట్ పూర్తి చేయండి. చెల్లింపు పూర్తయిన తర్వాత మాత్రమే మీ వివరాలతో పోస్టర్ తయారవుతుంది.\n\n(Please complete the online payment first. Your details will appear on the poster after payment).");
         return false;
       }
     }
@@ -436,13 +436,13 @@ function App() {
           {/* Header Banner for Annaprasadam */}
           <div className="text-center mb-8">
             <span className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-xs sm:text-sm tracking-widest uppercase mb-3 shadow-sm">
-              మహా అన్నప్రసాద వితరణ సేవ • Annaprasadam Seva
+              మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం
             </span>
             <h2 className="font-['Noto_Sans_Telugu'] text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
               అరుణాచలం అన్నప్రసాద పోస్టర్
             </h2>
             <p className="text-orange-200/80 text-sm sm:text-base mt-2">
-              మీ ఫోటో, పేరు మరియు ప్లేట్స్ సంఖ్యతో వ్యక్తిగతీకరించిన అన్నప్రసాద సేవ పోస్టర్ తయారు చేయండి.
+              అరుణాచలంలో జరిగే అన్న ప్రసాద వితరణ సేవలో మీ లేదా మీకు ఇష్టమైన వాళ్ల పేరు మీదుగా  అన్న ప్రసాదాన్ని అందించవచ్చును
             </p>
           </div>
 
@@ -462,11 +462,12 @@ function App() {
               {annaprasadamView === 'poster' && (
                 <div className="hidden lg:block">
                   <ActionButtons 
+                    onDownload={handleDownload}
                     onShare={handleShare} 
                     isGenerating={isGenerating} 
-                    showDownload={false}
-                    shareDisabled={!userData.isPaid}
-                    shareLabel={userData.isPaid ? "Share to WhatsApp" : "🔒 పేమెంట్ తర్వాత షేర్ చేయండి (Complete Payment to Share)"}
+                    showDownload={true}
+                    shareDisabled={false}
+                    shareLabel="Share to WhatsApp"
                   />
                 </div>
               )}
@@ -516,11 +517,12 @@ function App() {
                   />
                   <div className="block lg:hidden mt-6">
                     <ActionButtons 
+                      onDownload={handleDownload}
                       onShare={handleShare} 
                       isGenerating={isGenerating} 
-                      showDownload={false}
-                      shareDisabled={!userData.isPaid}
-                      shareLabel={userData.isPaid ? "Share to WhatsApp" : "🔒 పేమెంట్ తర్వాత షేర్ చేయండి (Complete Payment to Share)"}
+                      showDownload={true}
+                      shareDisabled={false}
+                      shareLabel="Share to WhatsApp"
                     />
                   </div>
                 </>

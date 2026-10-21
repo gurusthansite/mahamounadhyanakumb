@@ -1,6 +1,7 @@
 import React from 'react';
 import type { UserData } from '../../types/poster';
 import { ANNAPRASADAM_PAYMENTS_SHEET_URL } from '../../config/sheets';
+import { getPoshakuluTitle } from '../../canvas/coordinates';
 
 interface Props {
   userData: UserData;
@@ -22,7 +23,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
       alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి");
       return;
     }
-    const amountInRupees = platesNum * 51;
+    const amountInRupees = platesNum * 1;
     const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
     if (!(window as any).Razorpay) {
@@ -211,7 +212,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
           </div>
         </div>
 
-        {/* Plates Count & Real-time ₹51 Calculation */}
+        {/* Plates Count & Real-time ₹1 Calculation */}
         <div>
           <label className="block text-sm font-semibold text-orange-100 mb-2 font-['Noto_Sans_Telugu']">
             2. ఎన్ని ప్లేట్స్ అన్నప్రసాదం? (Number of Plates) <span className="text-rose-400">*</span>
@@ -223,15 +224,49 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
             value={userData.plates || ''}
             onChange={handleChange}
             className="w-full px-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-bold text-lg text-[#ffca08]"
-            placeholder="ఉదా: 10, 50, 100"
+            placeholder="1 ప్లేట్ = ₹1 (ఉదా: 1, 10, 50)"
             required
           />
 
-          {/* Quick Real-time calculation badge */}
+          {/* Quick preset plate count buttons */}
+          <div className="grid grid-cols-5 gap-1.5 mt-2">
+            {[
+              { count: '1', label: '1 (₹1)' },
+              { count: '11', label: '11 (₹11)' },
+              { count: '52', label: '52 (₹52)' },
+              { count: '112', label: '112 (₹112)' },
+              { count: '222', label: '222 (₹222)' }
+            ].map(opt => {
+              const isSelected = userData.plates === opt.count;
+              return (
+                <button
+                  key={opt.count}
+                  type="button"
+                  onClick={() => setUserData(prev => ({ ...prev, plates: opt.count }))}
+                  className={`py-1.5 px-1 rounded-lg text-xs font-bold transition-all border text-center ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-[#ffca08] to-[#ffd943] text-[#381609] border-[#ffca08] shadow-md scale-[1.02]'
+                      : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:border-[#ffca08]/50'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Quick Real-time calculation badge with Poshakulu Tier */}
           {parseInt(userData.plates || '0', 10) > 0 && (
-            <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-1.5 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
-              <span>1 ప్లేట్ = ₹51 • {parseInt(userData.plates || '0', 10)} ప్లేట్లు</span>
-              <span className="font-bold font-mono text-sm">₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')}/-</span>
+            <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
+              <div className="flex flex-col gap-0.5">
+                <span>1 ప్లేట్ = ₹1 • {parseInt(userData.plates || '0', 10)} ప్లేట్లు</span>
+                <span className="text-emerald-400 font-bold">
+                  శ్రేణి: {getPoshakuluTitle(parseInt(userData.plates || '0', 10))}
+                </span>
+              </div>
+              <span className="font-bold font-mono text-base text-[#ffca08]">
+                ₹{(parseInt(userData.plates || '0', 10) * 1).toLocaleString('en-IN')}/-
+              </span>
             </div>
           )}
         </div>
@@ -308,7 +343,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
                     అన్నప్రసాదం ప్లేట్లు:
                   </span>
                   <span className="text-white font-mono font-semibold">
-                    {platesNum} ప్లేట్లు ({platesNum} × ₹51)
+                    {platesNum} ప్లేట్లు ({platesNum} × ₹1)
                   </span>
                 </div>
                 
@@ -317,7 +352,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
                     మొత్తం విరాళం (Total Amount):
                   </span>
                   <span className="text-2xl font-black text-[#ffca08] font-mono tracking-wide">
-                    ₹{(platesNum * 51).toLocaleString('en-IN')}/-
+                    ₹{(platesNum * 1).toLocaleString('en-IN')}/-
                   </span>
                 </div>
 
@@ -365,7 +400,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({ userData, setUserData, onVie
                         </>
                       ) : (
                         <>
-                          <span>💳 ఆన్‌లైన్‌లో చెల్లించండి (Pay ₹{(platesNum * 51).toLocaleString('en-IN')})</span>
+                          <span>💳 ఆన్‌లైన్‌లో చెల్లించండి (Pay ₹{(platesNum * 1).toLocaleString('en-IN')})</span>
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                           </svg>

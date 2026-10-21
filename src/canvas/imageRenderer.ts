@@ -1,5 +1,5 @@
 import type { UserData } from '../types/poster';
-import { ANNAPRASADAM_TEXT_POSITIONS } from './coordinates';
+import { ANNAPRASADAM_TEXT_POSITIONS, getPoshakuluTitle } from './coordinates';
 
 export const IMAGE_TEMPLATE_WIDTH = 715;
 export const IMAGE_TEMPLATE_HEIGHT = 1280;
@@ -8,8 +8,8 @@ export const IMAGE_PHOTO_AREA = { x: 190, y: 323, width: 339, height: 349 };
 // Annaprasadam (Arunachalam.png) Dimensions: 1024 x 1536
 export const ARUNACHALAM_TEMPLATE_WIDTH = 1024;
 export const ARUNACHALAM_TEMPLATE_HEIGHT = 1536;
-// Photo Frame coordinates
-export const ARUNACHALAM_PHOTO_AREA = { x: 83, y: 618, width: 366, height: 476 };
+// Photo Frame coordinates for Arunachalam.png
+export const ARUNACHALAM_PHOTO_AREA = { x: 48, y: 604, width: 362, height: 384 };
 
 export const generateImage = async (
   userData: UserData,
@@ -51,48 +51,56 @@ export const generateImage = async (
         ctx.drawImage(templateImg, 0, 0, width, height);
 
         if (isAnnaprasadam) {
-          // Annaprasadam Custom Text - Dynamically uses ANNAPRASADAM_TEXT_POSITIONS
-          // Text details are ONLY drawn if payment has been successfully completed
-          if (userData.isPaid) {
-            // 1. Plates count + 'ప్లేట్స్ అన్నప్రసాదం'
-            if (userData.plates) {
-              const platesX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.plates.centerPercent / 100));
-              const platesY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.plates.topPercent / 100));
-              
-              // First measure both texts to center them together
-              ctx.font = 'bold 50px "Noto Sans Telugu", sans-serif';
-              const platesNumWidth = ctx.measureText(String(userData.plates)).width;
-              
-              ctx.font = 'bold 44px "Noto Sans Telugu", sans-serif';
-              const labelWidth = ctx.measureText(' ప్లేట్స్ అన్నప్రసాదం').width;
-              
-              const totalWidth = platesNumWidth + labelWidth;
-              const startX = platesX - (totalWidth / 2);
+          const platesNum = parseInt(userData.plates || '1', 10) || 1;
+          const titleText = getPoshakuluTitle(platesNum);
 
-              // Draw number in yellow
-              ctx.font = 'bold 50px "Noto Sans Telugu", sans-serif';
-              ctx.fillStyle = '#ffeb3b'; // vibrant yellow
-              ctx.textAlign = 'left';
-              ctx.textBaseline = 'middle';
-              ctx.fillText(String(userData.plates), startX, platesY);
+          // 1. Poshakulu Title inside dark green pill box
+          const titleX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent / 100));
+          const titleY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.title.topPercent / 100));
+          ctx.font = 'bold 44px "Noto Sans Telugu", sans-serif';
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(titleText, titleX, titleY);
 
-              // Draw label in white
-              ctx.font = 'bold 44px "Noto Sans Telugu", sans-serif';
-              ctx.fillStyle = '#ffffff';
-              ctx.fillText(' ప్లేట్స్ అన్నప్రసాదం', startX + platesNumWidth, platesY);
+          // 2. Line 1: Plates count + 'ప్లేట్స్ అన్నప్రసాదం'
+          const line1X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line1.centerPercent / 100));
+          const line1Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line1.topPercent / 100));
+          ctx.font = 'bold 40px "Noto Sans Telugu", sans-serif';
+          ctx.fillStyle = '#6b1406';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(`${platesNum} ప్లేట్స్ అన్నప్రసాదం`, line1X, line1Y);
+
+          // 3. Line 2: 'అందిస్తున్నందుకు'
+          const line2X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line2.centerPercent / 100));
+          const line2Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line2.topPercent / 100));
+          ctx.font = 'bold 34px "Noto Sans Telugu", sans-serif';
+          ctx.fillStyle = '#6b1406';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('అందిస్తున్నందుకు', line2X, line2Y);
+
+          // 4. Line 3: Donor Name + [గారికి] automatically
+          if (userData.fullName) {
+            const line3X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line3.centerPercent / 100));
+            const line3Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line3.topPercent / 100));
+            const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : 'శ్రీ ';
+            const displayName = `${prefix}${userData.fullName} గారికి`;
+
+            // Auto-scale font size if name is long
+            let fontSize = 42;
+            ctx.font = `bold ${fontSize}px "Noto Sans Telugu", sans-serif`;
+            const maxNameWidth = 480;
+            while (ctx.measureText(displayName).width > maxNameWidth && fontSize > 24) {
+              fontSize -= 2;
+              ctx.font = `bold ${fontSize}px "Noto Sans Telugu", sans-serif`;
             }
 
-            // 2. Donor Name + [గారికి] automatically
-            if (userData.fullName) {
-              ctx.font = 'bold 38px "Noto Sans Telugu", sans-serif';
-              ctx.fillStyle = '#1e3a1e'; // deep dark forest green
-              ctx.textAlign = 'right';
-              ctx.textBaseline = 'middle';
-              const nameX = Math.round(width * (1 - (ANNAPRASADAM_TEXT_POSITIONS.name.rightPercent / 100)));
-              const nameY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.name.topPercent / 100));
-              const displayName = `${userData.titlePrefix ? userData.titlePrefix + ' ' : 'శ్రీ '}${userData.fullName} గారికి`;
-              ctx.fillText(displayName, nameX, nameY);
-            }
+            ctx.fillStyle = '#6b1406';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(displayName, line3X, line3Y);
           }
         } else {
           // Standard Image Template Text
