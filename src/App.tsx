@@ -117,7 +117,7 @@ function App() {
     fullName: '',
     phoneNumber: '',
     location: '',
-    plates: getInitialPage() === 'annaprasadam' ? '10' : undefined,
+    plates: '',
     photoUrl: null,
     templateType: getInitialTemplate()
   });
@@ -140,7 +140,7 @@ function App() {
   const navigateTo = (page: PageType) => {
     setCurrentPage(page);
     if (page === 'annaprasadam') {
-      setUserData(prev => ({ ...prev, plates: prev.plates || '10' }));
+      setUserData(prev => ({ ...prev, plates: prev.plates || '' }));
     }
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);

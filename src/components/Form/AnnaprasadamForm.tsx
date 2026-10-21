@@ -434,35 +434,6 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             )}
           </div>
 
-          {/* Quick preset plate count buttons (only visible before payment) */}
-          {!userData.isPaid && (
-            <div className="grid grid-cols-5 gap-1.5 mt-2">
-              {[
-                { count: '10', label: '10 (₹10)' },
-                { count: '20', label: '20 (₹20)' },
-                { count: '50', label: '50 (₹50)' },
-                { count: '100', label: '100 (₹100)' },
-                { count: '200', label: '200 (₹200)' }
-              ].map(opt => {
-                const isSelected = userData.plates === opt.count;
-                return (
-                  <button
-                    key={opt.count}
-                    type="button"
-                    onClick={() => setUserData(prev => ({ ...prev, plates: opt.count }))}
-                    className={`py-1.5 px-1 rounded-lg text-xs font-bold transition-all border text-center ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-[#ffca08] to-[#ffd943] text-[#381609] border-[#ffca08] shadow-md scale-[1.02]'
-                        : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:border-[#ffca08]/50'
-                    }`}
-                  >
-                    {opt.label}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-
           {/* Calculation Badge with Localized Poshakulu Tier */}
           {parseInt(userData.plates || '0', 10) > 0 && (
             <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
