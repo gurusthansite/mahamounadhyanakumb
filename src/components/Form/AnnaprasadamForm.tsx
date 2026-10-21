@@ -514,18 +514,18 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             value={userData.plates || ''}
             onChange={handleChange}
             className="w-full px-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-bold text-lg text-[#ffca08]"
-            placeholder="1 ప్లేట్ = ₹1 (ఉదా: 1, 11, 52, 112, 222)"
+            placeholder="1 ప్లేట్ = ₹1 (ఉదా: 10, 20, 50, 100)"
             required
           />
 
           {/* Quick preset plate count buttons */}
           <div className="grid grid-cols-5 gap-1.5 mt-2">
             {[
-              { count: '1', label: '1 (₹1)' },
-              { count: '11', label: '11 (₹11)' },
-              { count: '52', label: '52 (₹52)' },
-              { count: '112', label: '112 (₹112)' },
-              { count: '222', label: '222 (₹222)' }
+              { count: '10', label: '10 (₹10)' },
+              { count: '20', label: '20 (₹20)' },
+              { count: '50', label: '50 (₹50)' },
+              { count: '100', label: '100 (₹100)' },
+              { count: '200', label: '200 (₹200)' }
             ].map(opt => {
               const isSelected = userData.plates === opt.count;
               return (

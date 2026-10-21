@@ -99,7 +99,7 @@ function App() {
     fullName: '',
     phoneNumber: '',
     location: '',
-    plates: getInitialPage() === 'annaprasadam' ? '1' : undefined,
+    plates: getInitialPage() === 'annaprasadam' ? '10' : undefined,
     photoUrl: null,
     templateType: getInitialTemplate()
   });
@@ -112,7 +112,7 @@ function App() {
   const navigateTo = (page: PageType) => {
     setCurrentPage(page);
     if (page === 'annaprasadam') {
-      setUserData(prev => ({ ...prev, plates: prev.plates || '1' }));
+      setUserData(prev => ({ ...prev, plates: prev.plates || '10' }));
     }
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
@@ -441,7 +441,7 @@ function App() {
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 sm:mt-12">
           {/* Header Banner for Annaprasadam */}
           <div className="text-center mb-8">
-            <span className="inline-block px-4 py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] font-bold text-xs sm:text-sm tracking-widest uppercase mb-3 shadow-sm">
+            <span className="inline-flex items-center justify-center whitespace-nowrap text-[10px] min-[360px]:text-xs sm:text-sm font-bold tracking-normal sm:tracking-wider uppercase px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] mb-3 shadow-sm max-w-full">
               మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం
             </span>
             <h2 className="font-['Noto_Sans_Telugu'] text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
