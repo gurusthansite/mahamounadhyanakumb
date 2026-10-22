@@ -15,6 +15,8 @@ export interface UserData {
   isPlateLocked?: boolean;
   hours?: string;
   plates?: string;
+  donationAmount?: string;
+  sevaCategory?: 'guruprasadam' | 'mahamouna';
   titlePrefix?: string;
   isPaid?: boolean;
   paymentId?: string;

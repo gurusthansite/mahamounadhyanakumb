@@ -4,6 +4,7 @@ import { ANNAPRASADAM_PAYMENTS_SHEET_URL } from '../../config/sheets';
 import { 
   TRANSLATIONS, 
   getPoshakuluTitleByLang, 
+  getMahaMounaTitleByLang,
   type SupportedLanguage 
 } from '../../i18n/annaprasadamTranslations';
 
@@ -63,7 +64,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // Prevent modifying locked fields after payment is completed
-    if (userData.isPaid && (name === 'plates' || name === 'fullName')) {
+    if (userData.isPaid && (name === 'plates' || name === 'fullName' || name === 'donationAmount')) {
       return;
     }
     setUserData(prev => ({ ...prev, [name]: value }));
@@ -176,13 +177,23 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       return;
     }
 
+    const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const platesNum = parseInt(userData.plates || '0', 10);
-    if (!platesNum || platesNum <= 0) {
-      alert("Please enter plate count");
-      return;
+    const donationAmount = parseInt(userData.donationAmount || '0', 10);
+
+    if (isMahaMouna) {
+      if (!donationAmount || donationAmount <= 0) {
+        alert(lang === 'te' ? "దయచేసి విరాళం మొత్తం నమోదు చేయండి" : "Please enter donation amount");
+        return;
+      }
+    } else {
+      if (!platesNum || platesNum <= 0) {
+        alert(lang === 'te' ? "దయచేసి ప్లేట్ల సంఖ్య నమోదు చేయండి" : "Please enter plate count");
+        return;
+      }
     }
 
-    const amountInRupees = platesNum * 1;
+    const amountInRupees = isMahaMouna ? donationAmount : platesNum * 1;
     const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
     if (!(window as any).Razorpay) {
@@ -202,8 +213,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({
         dob: userData.dob || '',
         phoneNumber: cleanPhone || '',
         location: userData.location || '',
-        plates: platesNum,
+        plates: isMahaMouna ? undefined : platesNum,
         amount: amountInRupees,
+        category: isMahaMouna ? 'mahamouna' : 'guruprasadam',
         language: lang,
         status: "PENDING",
         timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
@@ -245,9 +257,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                 donor_name: userData.fullName || 'Devotee',
                 donor_mobile: cleanPhone || '9133014014',
                 amount: amountInRupees,
-                category: 'guruprasadam',
+                category: isMahaMouna ? 'mahamouna' : 'guruprasadam',
                 type: 'donation',
-                plates: platesNum
+                plates: isMahaMouna ? undefined : platesNum
               })
             });
           } catch (err) {
@@ -275,12 +287,14 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             dob: userData.dob || '',
             phoneNumber: cleanPhone || '',
             location: userData.location || '',
-            plates: platesNum,
+            plates: isMahaMouna ? undefined : platesNum,
             amount: amountInRupees,
             paymentId: response.razorpay_payment_id,
             orderId: response.razorpay_order_id || data.razorpayOptions.our_order_id || '',
             status: "SUCCESS",
-            sevaType: `Annaprasadam Seva - Arunachalam (${lang.toUpperCase()})`,
+            sevaType: isMahaMouna
+              ? `Maha Mouna Dhyana Kumbh - Arunachalam (${lang.toUpperCase()})`
+              : `Annaprasadam Seva - Arunachalam (${lang.toUpperCase()})`,
             timestamp: now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
           };
 
@@ -319,17 +333,19 @@ export const AnnaprasadamForm: React.FC<Props> = ({
     }
   };
 
+  const isMahaMouna = userData.sevaCategory === 'mahamouna';
+
   return (
     <div className="bg-[#4a1c0b] p-6 sm:p-8 rounded-2xl shadow-xl border border-[#8b3d0b]">
       {/* Header */}
       <div className="flex items-center gap-2 mb-6 pb-3 border-b border-[#8b3d0b]">
-        <span className="text-2xl">🍲</span>
+        <span className="text-2xl">{isMahaMouna ? '🧘' : '🍲'}</span>
         <div>
           <h2 className="text-xl sm:text-2xl font-bold text-[#ffca08] leading-tight">
-            {t.formTitle}
+            {isMahaMouna ? (t.formTitleMahaMouna || 'మహా మౌన ధ్యాన కుంభ్ విరాళ వివరాలు') : t.formTitle}
           </h2>
           <p className="text-xs sm:text-sm text-orange-200/70 mt-0.5">
-            {t.formSubtitle}
+            {isMahaMouna ? (t.formSubtitleMahaMouna || t.formSubtitle) : t.formSubtitle}
           </p>
         </div>
       </div>
@@ -432,56 +448,143 @@ export const AnnaprasadamForm: React.FC<Props> = ({
           )}
         </div>
 
-        {/* 3. Plates Count & Real-time ₹1 Calculation (PERMANENTLY LOCKED AFTER PAYMENT) */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label className="text-sm font-semibold text-orange-100">
-              {t.platesLabel}
-            </label>
-            {userData.isPaid && (
-              <span className="text-xs font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-500/60 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
-                <span>{t.paidPlatesLocked}</span>
-              </span>
-            )}
-          </div>
-          <div className="relative">
-            <input
-              type="number"
-              min="1"
-              name="plates"
+        {/* Seva Category Selector: Guru Prasadam / Maha Mouna Dhyana Kumbh */}
+        <div className="pt-2">
+          <label className="block text-sm font-semibold text-orange-100 mb-2">
+            {t.selectSevaLabel || 'సేవ వర్గాన్ని ఎంచుకోండి (Select Seva):'}
+          </label>
+          <div className="p-1.5 bg-[#240b03] border border-[#ffca08]/40 rounded-2xl flex gap-1.5 shadow-lg">
+            <button
+              type="button"
               disabled={Boolean(userData.isPaid)}
-              value={userData.plates || ''}
-              onChange={handleChange}
-              className={`w-full px-4 py-3 bg-[#240b03] border ${
-                userData.isPaid
-                  ? 'border-emerald-500/70 text-emerald-400 bg-[#180601] cursor-not-allowed'
-                  : 'border-[#8b3d0b] text-white focus:border-[#ffca08]'
-              } rounded-xl focus:ring-2 focus:ring-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-bold text-lg text-[#ffca08]`}
-              placeholder={t.platesPlaceholder}
-              required
-            />
-            {userData.isPaid && (
-              <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-400 font-bold text-xs select-none">
-                🔒 Locked
-              </span>
-            )}
+              onClick={() => !userData.isPaid && setUserData(prev => ({ ...prev, sevaCategory: 'guruprasadam' }))}
+              className={`flex-1 py-3 px-2 sm:px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-center ${
+                (userData.sevaCategory || 'guruprasadam') === 'guruprasadam'
+                  ? 'bg-gradient-to-r from-[#ffca08] to-[#ffd943] text-[#381609] shadow-md font-extrabold scale-[1.01]'
+                  : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/40'
+              } ${userData.isPaid ? 'opacity-80 cursor-not-allowed' : ''}`}
+            >
+              <span>🍲 {t.guruPrasadamTab}</span>
+            </button>
+            <button
+              type="button"
+              disabled={Boolean(userData.isPaid)}
+              onClick={() => !userData.isPaid && setUserData(prev => ({ ...prev, sevaCategory: 'mahamouna' }))}
+              className={`flex-1 py-3 px-2 sm:px-3 rounded-xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 sm:gap-2 text-center ${
+                userData.sevaCategory === 'mahamouna'
+                  ? 'bg-gradient-to-r from-[#ffca08] to-[#ffd943] text-[#381609] shadow-md font-extrabold scale-[1.01]'
+                  : 'text-orange-200 hover:text-white hover:bg-[#8b3d0b]/40'
+              } ${userData.isPaid ? 'opacity-80 cursor-not-allowed' : ''}`}
+            >
+              <span>🧘 {t.mahaMounaTab}</span>
+            </button>
           </div>
+        </div>
 
-          {/* Calculation Badge with Localized Poshakulu Tier */}
-          {parseInt(userData.plates || '0', 10) > 0 && (
-            <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
-              <div className="flex flex-col gap-0.5">
-                <span>1 {t.plateSingular} = ₹1 • {parseInt(userData.plates || '0', 10)} {t.plateUnit}</span>
-                <span className="text-emerald-400 font-bold">
-                  {t.tierLabel} {getPoshakuluTitleByLang(parseInt(userData.plates || '0', 10), lang)}
+        {/* 3. Seva Amount or Plates Count */}
+        {userData.sevaCategory === 'mahamouna' ? (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-orange-100">
+                {t.donationAmountLabel}
+              </label>
+              {userData.isPaid && (
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-500/60 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                  <span>{t.paidAmountLocked}</span>
+                </span>
+              )}
+            </div>
+
+            <div className="relative flex rounded-xl overflow-hidden border border-[#8b3d0b] bg-[#240b03] focus-within:border-[#ffca08] focus-within:ring-2 focus-within:ring-[#ffca08]">
+              <span className="px-3.5 py-3 text-[#ffca08] font-bold text-base select-none bg-[#1c0802] border-r border-[#8b3d0b]/80 shrink-0 flex items-center">
+                ₹
+              </span>
+              <input
+                type="number"
+                min="1"
+                name="donationAmount"
+                disabled={Boolean(userData.isPaid)}
+                value={userData.donationAmount || ''}
+                onChange={handleChange}
+                className={`flex-1 min-w-0 px-3 py-3 bg-transparent outline-none transition-all font-bold text-lg text-[#ffca08] placeholder-orange-700/50 ${
+                  userData.isPaid ? 'text-emerald-400 cursor-not-allowed' : ''
+                }`}
+                placeholder={t.donationPlaceholder}
+                required
+              />
+              {userData.isPaid && (
+                <span className="pr-3.5 flex items-center text-emerald-400 font-bold text-xs select-none">
+                  🔒 Locked
+                </span>
+              )}
+            </div>
+
+            {/* Maha Mouna Tier Badge */}
+            {parseInt(userData.donationAmount || '0', 10) > 0 && (
+              <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-orange-200/80">మహా మౌన ధ్యాన కుంభ్ విరాళం</span>
+                  <span className="text-emerald-400 font-bold">
+                    {t.tierLabel} {getMahaMounaTitleByLang(parseInt(userData.donationAmount || '0', 10), lang)}
+                  </span>
+                </div>
+                <span className="font-bold font-mono text-base text-[#ffca08]">
+                  ₹{parseInt(userData.donationAmount || '0', 10).toLocaleString('en-IN')}/-
                 </span>
               </div>
-              <span className="font-bold font-mono text-base text-[#ffca08]">
-                ₹{(parseInt(userData.plates || '0', 10) * 1).toLocaleString('en-IN')}/-
-              </span>
+            )}
+          </div>
+        ) : (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-sm font-semibold text-orange-100">
+                {t.platesLabel}
+              </label>
+              {userData.isPaid && (
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-950/80 border border-emerald-500/60 px-2.5 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+                  <span>{t.paidPlatesLocked}</span>
+                </span>
+              )}
             </div>
-          )}
-        </div>
+            <div className="relative">
+              <input
+                type="number"
+                min="1"
+                name="plates"
+                disabled={Boolean(userData.isPaid)}
+                value={userData.plates || ''}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 bg-[#240b03] border ${
+                  userData.isPaid
+                    ? 'border-emerald-500/70 text-emerald-400 bg-[#180601] cursor-not-allowed'
+                    : 'border-[#8b3d0b] text-white focus:border-[#ffca08]'
+                } rounded-xl focus:ring-2 focus:ring-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-bold text-lg text-[#ffca08]`}
+                placeholder={t.platesPlaceholder}
+                required
+              />
+              {userData.isPaid && (
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-emerald-400 font-bold text-xs select-none">
+                  🔒 Locked
+                </span>
+              )}
+            </div>
+
+            {/* Calculation Badge with Localized Poshakulu Tier */}
+            {parseInt(userData.plates || '0', 10) > 0 && (
+              <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
+                <div className="flex flex-col gap-0.5">
+                  <span>1 {t.plateSingular} = ₹1 • {parseInt(userData.plates || '0', 10)} {t.plateUnit}</span>
+                  <span className="text-emerald-400 font-bold">
+                    {t.tierLabel} {getPoshakuluTitleByLang(parseInt(userData.plates || '0', 10), lang)}
+                  </span>
+                </div>
+                <span className="font-bold font-mono text-base text-[#ffca08]">
+                  ₹{(parseInt(userData.plates || '0', 10) * 1).toLocaleString('en-IN')}/-
+                </span>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* 4. Phone Number & Location */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -629,14 +732,17 @@ export const AnnaprasadamForm: React.FC<Props> = ({
         {/* 7. ONLINE PAYMENT SECTION: Immediately below the Photo Option */}
         {/* ------------------------------------------------------------- */}
         {(() => {
+          const isMahaMouna = userData.sevaCategory === 'mahamouna';
           const platesNum = parseInt(userData.plates || '0', 10);
-          const isDetailsEntered = Boolean(userData.fullName && userData.fullName.trim().length > 0 && platesNum > 0);
+          const donationAmount = parseInt(userData.donationAmount || '0', 10);
+          const totalAmount = isMahaMouna ? donationAmount : platesNum * 1;
+          const isDetailsEntered = Boolean(userData.fullName && userData.fullName.trim().length > 0 && totalAmount > 0);
 
           if (!isDetailsEntered) {
             return (
               <div className="p-3.5 bg-[#240b03]/60 rounded-xl border border-dashed border-[#8b3d0b] text-center">
                 <p className="text-xs text-orange-200/70">
-                  {t.fillRequiredPrompt}
+                  {isMahaMouna ? (t.fillRequiredPromptMahaMouna || t.fillRequiredPrompt) : t.fillRequiredPrompt}
                 </p>
               </div>
             );
@@ -646,10 +752,10 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             <div className="pt-1 animate-fadeIn">
               <div className="p-4 sm:p-5 bg-gradient-to-r from-[#240b03] via-[#3a1305] to-[#240b03] rounded-2xl border-2 border-[#ffca08]/60 shadow-xl">
                 <div className="flex items-center gap-2 mb-3 pb-2 border-b border-[#8b3d0b]/80">
-                  <span className="text-xl">💳</span>
+                  <span className="text-xl">{isMahaMouna ? '🧘' : '💳'}</span>
                   <div>
                     <h3 className="text-base font-bold text-[#ffca08]">
-                      {t.paymentHeading}
+                      {isMahaMouna ? (t.paymentHeadingMahaMouna || t.paymentHeading) : t.paymentHeading}
                     </h3>
                     <p className="text-xs text-orange-200/70">
                       {userData.titlePrefix || t.defaultTitle} {userData.fullName} {t.paymentInNameOf}
@@ -662,7 +768,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                     {t.totalAmountLabel}
                   </span>
                   <span className="text-2xl font-black text-[#ffca08] font-mono tracking-wide">
-                    ₹{(platesNum * 1).toLocaleString('en-IN')}/-
+                    ₹{totalAmount.toLocaleString('en-IN')}/-
                   </span>
                 </div>
 
@@ -710,7 +816,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                         </>
                       ) : (
                         <>
-                          <span>{t.payButton} (₹{(platesNum * 1).toLocaleString('en-IN')})</span>
+                          <span>{t.payButton} (₹{totalAmount.toLocaleString('en-IN')})</span>
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                           </svg>

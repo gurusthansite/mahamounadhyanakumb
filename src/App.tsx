@@ -531,14 +531,14 @@ function App() {
           <LanguageSwitcher currentLang={currentLang} onLanguageChange={handleLanguageChange} />
 
           {/* Header Banner for Annaprasadam */}
-          <div className="text-center mb-8">
-            <span className="inline-flex items-center justify-center whitespace-nowrap text-[10px] min-[360px]:text-xs sm:text-sm font-bold tracking-normal sm:tracking-wider uppercase px-3 sm:px-4 py-1 sm:py-1.5 rounded-full border border-[#ffca08]/50 bg-[#ffca08]/20 text-[#ffca08] mb-3 shadow-sm max-w-full">
-              {TRANSLATIONS[currentLang].bannerPill}
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white leading-tight drop-shadow-md">
+          <div className="text-center mb-8 sm:mb-10 w-full px-2 sm:px-4">
+            <h2 
+              className="font-extrabold text-[#ffca08] drop-shadow-lg tracking-tight sm:tracking-normal whitespace-nowrap text-center max-w-full select-none"
+              style={{ fontSize: 'clamp(9.5px, 3.15vw, 34px)' }}
+            >
               {TRANSLATIONS[currentLang].bannerTitle}
             </h2>
-            <p className="text-orange-200/80 text-sm sm:text-base mt-2 max-w-2xl mx-auto">
+            <p className="text-orange-200/85 text-xs sm:text-base mt-2.5 max-w-2xl mx-auto leading-relaxed px-2">
               {TRANSLATIONS[currentLang].bannerSubtitle}
             </p>
           </div>

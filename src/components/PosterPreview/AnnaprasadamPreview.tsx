@@ -5,6 +5,7 @@ import { ANNAPRASADAM_TEXT_POSITIONS } from '../../canvas/coordinates';
 import { 
   TRANSLATIONS, 
   getPoshakuluTitleByLang, 
+  getMahaMounaTitleByLang,
   type SupportedLanguage 
 } from '../../i18n/annaprasadamTranslations';
 
@@ -40,8 +41,12 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
   const photoWidth = `${(ARUNACHALAM_PHOTO_AREA.width / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
   const photoHeight = `${(ARUNACHALAM_PHOTO_AREA.height / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
 
+  const isMahaMouna = userData.sevaCategory === 'mahamouna';
   const platesNum = parseInt(userData.plates || '1', 10) || 1;
-  const poshakuluTitle = getPoshakuluTitleByLang(platesNum, lang);
+  const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
+  const poshakuluTitle = isMahaMouna
+    ? getMahaMounaTitleByLang(donationAmountNum, lang)
+    : getPoshakuluTitleByLang(platesNum, lang);
   const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ ');
   const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
 

@@ -15,6 +15,15 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
 ];
 
 export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage = 'te'): string {
+  if (plates >= 502) {
+    switch (lang) {
+      case 'en': return 'Chakravarthulu';
+      case 'ta': return 'சக்ரவர்த்திகள்';
+      case 'hi': return 'चक्रवर्ती';
+      case 'kn': return 'ಚಕ್ರವರ್ತಿಗಳು';
+      default: return 'చక్రవర్తులు';
+    }
+  }
   if (plates >= 222) {
     switch (lang) {
       case 'en': return 'Maharaja Poshakulu';
@@ -24,22 +33,22 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
       default: return 'మహారాజ పోషకులు';
     }
   }
-  if (plates >= 112) {
+  if (plates >= 111) {
     switch (lang) {
       case 'en': return 'Raja Poshakulu';
       case 'ta': return 'ராஜ போஷகர்கள்';
       case 'hi': return 'राज पोषक';
       case 'kn': return 'ರಾಜ ಪೋಷಕರು';
-      default: return 'రాజ పోషకులు';
+      default: return 'రాజపోషకులు';
     }
   }
   if (plates >= 52) {
     switch (lang) {
-      case 'en': return 'Sahasraja Poshakulu';
-      case 'ta': return 'சஹஸ்ராஜ போஷகர்கள்';
-      case 'hi': return 'सहस्राज पोषक';
-      case 'kn': return 'ಸಹಸ್ರರಾಜ ಪೋಷಕರು';
-      default: return 'సహస్రాజ పోషకులు';
+      case 'en': return 'Saharaja Poshakulu';
+      case 'ta': return 'சஹராஜ போஷகர்கள்';
+      case 'hi': return 'सहराज पोषक';
+      case 'kn': return 'ಸಹರಾಜ ಪೋಷಕರು';
+      default: return 'సహరాజ పోషకులు';
     }
   }
   switch (lang) {
@@ -51,13 +60,80 @@ export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage 
   }
 }
 
+export function getMahaMounaTitleByLang(amount: number, lang: SupportedLanguage = 'te'): string {
+  if (amount >= 100000) {
+    switch (lang) {
+      case 'en': return 'Mahonnatha Chakravarthulu';
+      case 'ta': return 'மகோன்னத சக்ரவர்த்திகள்';
+      case 'hi': return 'महोन्नत चक्रवर्ती';
+      case 'kn': return 'ಮಹೋನ್ನತ ಚಕ್ರವರ್ತಿಗಳು';
+      default: return 'మహోన్నత చక్రవర్తులు';
+    }
+  }
+  if (amount >= 75000) {
+    switch (lang) {
+      case 'en': return 'Mahonnatha Rajulu';
+      case 'ta': return 'மகோன்னத அரசர்கள்';
+      case 'hi': return 'महोन्नत राजा';
+      case 'kn': return 'ಮಹೋನ್ನತ ರಾಜರು';
+      default: return 'మహోన్నత రాజులు';
+    }
+  }
+  if (amount >= 50000) {
+    switch (lang) {
+      case 'en': return 'Mahonnatha Pradathalu';
+      case 'ta': return 'மகோன்னத பிரதான கொடையாளர்கள்';
+      case 'hi': return 'महोन्नत प्रदाता';
+      case 'kn': return 'ಮಹೋನ್ನತ ಪ್ರದಾತರು';
+      default: return 'మహోన్నత ప్రదాతలు';
+    }
+  }
+  if (amount >= 25000) {
+    switch (lang) {
+      case 'en': return 'Mahonnatha Dathalu';
+      case 'ta': return 'மகோன்னத கொடையாளர்கள்';
+      case 'hi': return 'महोन्नत दाता';
+      case 'kn': return 'ಮಹೋನ್ನತ ದಾತರು';
+      default: return 'మహోన్నత దాతలు';
+    }
+  }
+  switch (lang) {
+    case 'en': return 'Maha Dathalu (Donor)';
+    case 'ta': return 'மகா கொடையாளர்கள்';
+    case 'hi': return 'महा दाता';
+    case 'kn': return 'ಮಹಾ ದಾತರು';
+    default: return 'మహా దాతలు';
+  }
+}
+
+export function getSevaHonorificTitle(
+  category: 'guruprasadam' | 'mahamouna' | undefined,
+  userData: { plates?: string; donationAmount?: string },
+  lang: SupportedLanguage = 'te'
+): string {
+  if (category === 'mahamouna') {
+    const amt = parseInt(userData.donationAmount || '1', 10) || 1;
+    return getMahaMounaTitleByLang(amt, lang);
+  }
+  const plates = parseInt(userData.plates || '1', 10) || 1;
+  return getPoshakuluTitleByLang(plates, lang);
+}
+
 export const TRANSLATIONS = {
   te: {
     bannerPill: 'మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం',
-    bannerTitle: 'అరుణాచలం అన్నప్రసాద పోస్టర్',
+    bannerTitle: 'మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం',
     bannerSubtitle: 'అరుణాచలంలో జరిగే అన్న ప్రసాద వితరణ సేవలో మీ లేదా మీకు ఇష్టమైన వాళ్ల పేరు మీదుగా అన్న ప్రసాదాన్ని అందించవచ్చును',
     formTitle: 'అన్నప్రసాద వితరణ వివరాలు',
-    formSubtitle: 'Fill in the details to sponsor Annaprasadam Seva at Arunachalam',
+    formSubtitle: 'అరుణాచలంలో అన్నప్రసాద సేవను సమర్పించడానికి మీ వివరాలను నమోదు చేయండి',
+    formTitleMahaMouna: 'మహా మౌన ధ్యాన కుంభ్ విరాళ వివరాలు',
+    formSubtitleMahaMouna: 'అరుణాచలంలో మహా మౌన ధ్యాన కుంభ్ సేవలో పాల్గొనడానికి మీ వివరాలను నమోదు చేయండి',
+    selectSevaLabel: 'సేవ వర్గాన్ని ఎంచుకోండి (Select Seva):',
+    guruPrasadamTab: 'గురు ప్రసాదం (అన్నప్రసాదం)',
+    mahaMounaTab: 'మహా మౌన ధ్యాన కుంభ్',
+    donationAmountLabel: '3. విరాళం మొత్తం (Donation Amount in ₹)',
+    donationPlaceholder: 'విరాళం మొత్తం నమోదు చేయండి (కనీసం ₹1)',
+    paidAmountLocked: '🔒 చెల్లింపు పూర్తయింది - విరాళం మొత్తం లాక్ చేయబడింది',
     nameLabel: '1. గౌరవ సంబోధన & దాత పేరు (Title & Full Name)',
     namePlaceholder: 'పేరు రాయండి (e.g. రమేష్ బాబు)',
     titles: [
@@ -92,6 +168,7 @@ export const TRANSLATIONS = {
     photoCaptureBtn: '📸 ఫోటో తీయండి',
     photoCancelBtn: 'రద్దు చేయండి',
     paymentHeading: 'అన్నప్రసాద విరాళం చెల్లింపు (Online Payment)',
+    paymentHeadingMahaMouna: 'మహా మౌన ధ్యాన కుంభ్ విరాళం చెల్లింపు (Online Payment)',
     paymentInNameOf: 'గారి పేరున',
     platesSummaryLabel: 'అన్నప్రసాదం ప్లేట్లు:',
     assignedPlateSummaryLabel: 'కేటాయించిన ప్లేట్ నంబర్:',
@@ -103,6 +180,7 @@ export const TRANSLATIONS = {
     viewReceiptBtn: '🧾 అధికారిక విరాళ రశీదు చూడండి (View Receipt)',
     securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
     fillRequiredPrompt: 'ℹ️ దాత పేరు మరియు ప్లేట్స్ సంఖ్య నమోదు చేసిన తర్వాత పేమెంట్ ఆప్షన్ కనిపిస్తుంది.',
+    fillRequiredPromptMahaMouna: 'ℹ️ దాత పేరు మరియు విరాళం మొత్తం నమోదు చేసిన తర్వాత పేమెంట్ ఆప్షన్ కనిపిస్తుంది.',
     posterTab: '🖼️ అన్నప్రసాద పోస్టర్ (Poster)',
     receiptTab: '🧾 విరాళ రశీదు (Receipt)',
     line1Text: 'ప్లేట్స్ అన్నప్రసాదం',
@@ -112,10 +190,18 @@ export const TRANSLATIONS = {
   },
   en: {
     bannerPill: 'Maha Annaprasadam Seva - Arunachalam',
-    bannerTitle: 'Arunachalam Annaprasadam Poster',
+    bannerTitle: 'Maha Annaprasadam Seva - Arunachalam',
     bannerSubtitle: 'Sponsor holy Annaprasadam at Arunachalam in your name or in honor of your beloved family & friends',
     formTitle: 'Annaprasadam Seva Details',
     formSubtitle: 'Fill in the details to sponsor Annaprasadam Seva at Arunachalam',
+    formTitleMahaMouna: 'Maha Mouna Dhyana Kumbh Donation Details',
+    formSubtitleMahaMouna: 'Fill in the details to contribute to Maha Mouna Dhyana Kumbh at Arunachalam',
+    selectSevaLabel: 'Select Seva Category:',
+    guruPrasadamTab: 'Guru Prasadam (Annaprasadam)',
+    mahaMounaTab: 'Maha Mouna Dhyana Kumbh',
+    donationAmountLabel: '3. Donation Amount (₹) *',
+    donationPlaceholder: 'Enter donation amount (Min ₹1)',
+    paidAmountLocked: '🔒 Paid & Amount Permanently Locked',
     nameLabel: '1. Title & Full Name *',
     namePlaceholder: 'Enter full name (e.g. Ramesh Babu)',
     titles: [
@@ -150,6 +236,7 @@ export const TRANSLATIONS = {
     photoCaptureBtn: '📸 Capture Photo',
     photoCancelBtn: 'Cancel',
     paymentHeading: 'Online Payment (Annaprasadam Donation)',
+    paymentHeadingMahaMouna: 'Online Payment (Maha Mouna Dhyana Kumbh Donation)',
     paymentInNameOf: 'In the name of',
     platesSummaryLabel: 'Plates Sponsoring:',
     assignedPlateSummaryLabel: 'Assigned Plate Number:',
@@ -161,6 +248,7 @@ export const TRANSLATIONS = {
     viewReceiptBtn: '🧾 View Official Donation Receipt',
     securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
     fillRequiredPrompt: 'ℹ️ Please enter donor name and plate count to proceed to payment.',
+    fillRequiredPromptMahaMouna: 'ℹ️ Please enter donor name and donation amount to proceed to payment.',
     posterTab: '🖼️ Annaprasadam Poster',
     receiptTab: '🧾 Donation Receipt',
     line1Text: 'Plates Annaprasadam',
@@ -170,10 +258,18 @@ export const TRANSLATIONS = {
   },
   ta: {
     bannerPill: 'மகா அன்னபிரசாத விநியோக சேவை - அருணாச்சலம்',
-    bannerTitle: 'அருணாச்சலம் அன்னபிரசாத போஸ்டர்',
+    bannerTitle: 'மகா அன்னபிரசாத விநியோக சேவை - அருணாச்சலம்',
     bannerSubtitle: 'அருணாச்சலத்தில் நடைபெறும் அன்னபிரசாத சேவையில் உங்கள் அல்லது உங்கள் அன்புக்குரியவர்களின் பெயரில் பிரசாதம் வழங்கி அருள்பெறுங்கள்',
     formTitle: 'அன்னபிரசாத விநியோக விவரங்கள்',
     formSubtitle: 'அருணாச்சலம் அன்னபிரசாத சேவையில் பங்கேற்க விவரங்களை நிரப்பவும்',
+    formTitleMahaMouna: 'மகா மௌன தியான கும்ப் நன்கொடை விவரங்கள்',
+    formSubtitleMahaMouna: 'அருணாச்சலம் மகா மௌன தியான கும்ப் சேவையில் பங்கேற்க விவரங்களை நிரப்பவும்',
+    selectSevaLabel: 'சேவை வகையைத் தேர்ந்தெடுக்கவும் (Select Seva):',
+    guruPrasadamTab: 'குரு பிரசாதம் (அன்னபிரசாதம்)',
+    mahaMounaTab: 'மகா மௌன தியான கும்ப்',
+    donationAmountLabel: '3. நன்கொடை தொகை (₹) *',
+    donationPlaceholder: 'நன்கொடை தொகையை உள்ளிடவும் (குறைந்தபட்சம் ₹1)',
+    paidAmountLocked: '🔒 கட்டணம் செலுத்தப்பட்டது - தொகை பூட்டப்பட்டது',
     nameLabel: '1. அடைமொழி & கொடையாளர் பெயர் *',
     namePlaceholder: 'முழு பெயரை எழுதவும் (எ.கா: ரமேஷ் பாபு)',
     titles: [
@@ -208,6 +304,7 @@ export const TRANSLATIONS = {
     photoCaptureBtn: '📸 புகைப்படம் எடுக்கவும்',
     photoCancelBtn: 'ரத்து செய்',
     paymentHeading: 'அன்னபிரசாத நன்கொடை செலுத்துதல் (Online Payment)',
+    paymentHeadingMahaMouna: 'மகா மௌன தியான கும்ப் நன்கொடை செலுத்துதல் (Online Payment)',
     paymentInNameOf: 'அவர்களின் பெயரில்',
     platesSummaryLabel: 'அன்னபிரசாத தட்டுகள்:',
     assignedPlateSummaryLabel: 'ஒதுக்கப்பட்ட தட்டு எண்:',
@@ -219,6 +316,7 @@ export const TRANSLATIONS = {
     viewReceiptBtn: '🧾 அதிகாரப்பூர்வ நன்கொடை ரசீதை பார்க்கவும்',
     securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
     fillRequiredPrompt: 'ℹ️ கட்டணம் செலுத்த பெயர் மற்றும் தட்டுகளின் எண்ணிக்கையை உள்ளிடவும்.',
+    fillRequiredPromptMahaMouna: 'ℹ️ கட்டணம் செலுத்த கொடையாளர் பெயர் மற்றும் நன்கொடை தொகையை உள்ளிடவும்.',
     posterTab: '🖼️ அன்னபிரசாத போஸ்டர்',
     receiptTab: '🧾 நன்கொடை ரசீது',
     line1Text: 'தட்டுகள் அன்னபிரசாதம்',
@@ -228,10 +326,18 @@ export const TRANSLATIONS = {
   },
   hi: {
     bannerPill: 'महा अन्नप्रसाद वितरण सेवा - अरुणाचलम',
-    bannerTitle: 'अरुणाचलम अन्नप्रसाद पोस्टर',
+    bannerTitle: 'महा अन्नप्रसाद वितरण सेवा - अरुणाचलम',
     bannerSubtitle: 'अरुणाचलम में आयोजित महा अन्नप्रसाद वितरण सेवा में अपने या अपने प्रियजनों के नाम पर अन्नप्रसाद अर्पित करें',
     formTitle: 'अन्नप्रसाद वितरण विवरण',
     formSubtitle: 'अरुणाचलम में अन्नप्रसाद सेवा प्रायोजित करने हेतु विवरण भरें',
+    formTitleMahaMouna: 'महा मौन ध्यान कुंभ दान विवरण',
+    formSubtitleMahaMouna: 'अरुणाचलम में महा मौन ध्यान कुंभ सेवा में योगदान हेतु विवरण भरें',
+    selectSevaLabel: 'सेवा श्रेणी चुनें (Select Seva):',
+    guruPrasadamTab: 'गुरु प्रसाद (अन्नप्रसाद)',
+    mahaMounaTab: 'महा मौन ध्यान कुंभ',
+    donationAmountLabel: '3. दान राशि (₹) *',
+    donationPlaceholder: 'दान राशि दर्ज करें (न्यूनतम ₹1)',
+    paidAmountLocked: '🔒 भुगतान सफल - राशि लॉक कर दी गई है',
     nameLabel: '1. आदर सूचक व दानदाता का पूरा नाम *',
     namePlaceholder: 'पूरा नाम लिखें (उदा: रमेश बाबू)',
     titles: [
@@ -266,6 +372,7 @@ export const TRANSLATIONS = {
     photoCaptureBtn: '📸 फोटो खींचें',
     photoCancelBtn: 'रद्द करें',
     paymentHeading: 'अन्नप्रसाद दान ऑनलाइन भुगतान (Online Payment)',
+    paymentHeadingMahaMouna: 'महा मौन ध्यान कुंभ दान ऑनलाइन भुगतान (Online Payment)',
     paymentInNameOf: 'के नाम पर',
     platesSummaryLabel: 'अन्नप्रसाद प्लेटें:',
     assignedPlateSummaryLabel: 'आवंटित प्लेट नंबर:',
@@ -277,6 +384,7 @@ export const TRANSLATIONS = {
     viewReceiptBtn: '🧾 आधिकारिक दान रसीद देखें (View Receipt)',
     securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
     fillRequiredPrompt: 'ℹ️ भुगतान के लिए कृपया नाम और प्लेटों की संख्या दर्ज करें।',
+    fillRequiredPromptMahaMouna: 'ℹ️ भुगतान के लिए कृपया दानदाता का नाम और दान राशि दर्ज करें।',
     posterTab: '🖼️ अन्नप्रसाद पोस्टर',
     receiptTab: '🧾 दान रसीद',
     line1Text: 'प्लेट अन्नप्रसाद',
@@ -286,10 +394,18 @@ export const TRANSLATIONS = {
   },
   kn: {
     bannerPill: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
-    bannerTitle: 'ಅರುಣಾಚಲ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್',
+    bannerTitle: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
     bannerSubtitle: 'ಅರುಣಾಚಲದಲ್ಲಿ ನಡೆಯುವ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ನಿಮ್ಮ ಅಥವಾ ನಿಮ್ಮ ಪ್ರೀತಿಪಾತ್ರರ ಹೆಸರಿನಲ್ಲಿ ಅನ್ನಪ್ರಸಾದವನ್ನು ಅರ್ಪಿಸಿ ಪುನೀತರಾಗಿ',
     formTitle: 'ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ವಿವರಗಳು',
     formSubtitle: 'ಅರುಣಾಚಲ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ',
+    formTitleMahaMouna: 'ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ ದೇಣಿಗೆ ವಿವರಗಳು',
+    formSubtitleMahaMouna: 'ಅರುಣಾಚಲ ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಲು ವಿವರಗಳನ್ನು ಭರ್ತಿ ಮಾಡಿ',
+    selectSevaLabel: 'ಸೇವಾ ವರ್ಗವನ್ನು ಆಯ್ಕೆಮಾಡಿ (Select Seva):',
+    guruPrasadamTab: 'ಗುರು ಪ್ರಸಾದ (ಅನ್ನಪ್ರಸಾದ)',
+    mahaMounaTab: 'ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ',
+    donationAmountLabel: '3. ದೇಣಿಗೆ ಮೊತ್ತ (₹) *',
+    donationPlaceholder: 'ದೇಣಿಗೆ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ (ಕನಿಷ್ಠ ₹1)',
+    paidAmountLocked: '🔒 ಪಾವತಿ ಪೂರ್ಣಗೊಂಡಿದೆ - ಮೊತ್ತವನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ',
     nameLabel: '1. ಗೌರವ ಸಂಬೋಧನೆ ಮತ್ತು ದಾನಿಗಳ ಹೆಸರು (Title & Full Name) *',
     namePlaceholder: 'ಪೂರ್ಣ ಹೆಸರು ಬರೆಯಿರಿ (ಉದಾ: ರಮೇಶ್ ಬಾಬು)',
     titles: [
@@ -324,6 +440,7 @@ export const TRANSLATIONS = {
     photoCaptureBtn: '📸 ಫೋಟೋ ತೆಗೆಯಿರಿ',
     photoCancelBtn: 'ರದ್ದುಮಾಡಿ',
     paymentHeading: 'ಅನ್ನಪ್ರಸಾದ ದೇಣಿಗೆ ಆನ್‌ಲೈನ್ ಪಾವತಿ (Online Payment)',
+    paymentHeadingMahaMouna: 'ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ ದೇಣಿಗೆ ಆನ್‌ಲೈನ್ ಪಾವತಿ (Online Payment)',
     paymentInNameOf: 'ರವರ ಹೆಸರಿನಲ್ಲಿ',
     platesSummaryLabel: 'ಅನ್ನಪ್ರಸಾದ ಪ್ಲೇಟ್‌ಗಳು:',
     assignedPlateSummaryLabel: 'ನಿಯೋಜಿಸಲಾದ ಪ್ಲೇಟ್ ಸಂಖ್ಯೆ:',
@@ -335,6 +452,7 @@ export const TRANSLATIONS = {
     viewReceiptBtn: '🧾 ಅಧಿಕೃತ ದೇಣಿಗೆ ರಸೀದಿ ವೀಕ್ಷಿಸಿ (View Receipt)',
     securityNotice: '🔒 Secured by Razorpay · UPI, Google Pay, PhonePe, Cards, NetBanking',
     fillRequiredPrompt: 'ℹ️ ಪಾವತಿಸಲು ದಯವಿಟ್ಟು ಹೆಸರು ಮತ್ತು ಪ್ಲೇಟ್‌ಗಳ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.',
+    fillRequiredPromptMahaMouna: 'ℹ️ ಪಾವತಿಸಲು ದಯವಿಟ್ಟು ಹೆಸರು ಮತ್ತು ದೇಣಿಗೆ ಮೊತ್ತವನ್ನು ನಮೂದಿಸಿ.',
     posterTab: '🖼️ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ (Poster)',
     receiptTab: '🧾 ದೇಣಿಗೆ ರಸೀದಿ (Receipt)',
     line1Text: 'ಪ್ಲೇಟ್ ಅನ್ನಪ್ರಸಾದ',

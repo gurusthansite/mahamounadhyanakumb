@@ -25,14 +25,24 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
   const initDay = String(now.getDate()).padStart(2, '0');
   const initMonth = String(now.getMonth() + 1).padStart(2, '0');
   const initYear = String(now.getFullYear());
+  const isMahaMouna = userData.sevaCategory === 'mahamouna';
   const initPlates = parseInt(userData.plates || '1', 10) || 1;
-  const initAmount = initPlates * 1;
+  const donationAmountNum = parseInt(userData.donationAmount || '0', 10) || 0;
+  const initAmount = isMahaMouna ? (donationAmountNum > 0 ? donationAmountNum : 1) : initPlates * 1;
   const initReceiptNo =
     userData.receiptNo ||
     `MK-${initDay}${initMonth}-${(userData.paymentId || '108').slice(-4).toUpperCase()}`;
   const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : '';
   const initDonorName = `${prefix}${userData.fullName || 'Devotee'}`.trim();
   const initPhone = userData.phoneNumber ? `+91 ${userData.phoneNumber.replace(/\D/g, '')}` : '';
+
+  const initAmountWords = isMahaMouna
+    ? `${numToWords(initAmount)} Rupees Only`
+    : `${numToWords(initAmount)} (${initPlates} ${initPlates === 1 ? 'Plate' : 'Plates'})`;
+
+  const initSevaDescription = isMahaMouna
+    ? `Maha Mouna Dhyana Kumbh - Arunachalam`
+    : `Arunachalam Seva (${initPlates} Plates${userData.plateNumber ? ` • Plate #${userData.plateNumber}` : ''})`;
 
   // Local state for full manual control
   const [customData, setCustomData] = useState<ReceiptCustomData>({
@@ -45,11 +55,11 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
     plateNumber: userData.plateNumber || '',
     location: userData.location || '',
     phoneNumber: initPhone,
-    plates: initPlates,
+    plates: isMahaMouna ? 0 : initPlates,
     amount: initAmount,
-    amountWords: `${numToWords(initAmount)} (${initPlates} ${initPlates === 1 ? 'Plate' : 'Plates'})`,
+    amountWords: initAmountWords,
     paymentRef: userData.paymentId ? `Online / ${userData.paymentId}` : 'Online Payment',
-    sevaDescription: `Arunachalam Seva (${initPlates} Plates${userData.plateNumber ? ` • Plate #${userData.plateNumber}` : ''})`,
+    sevaDescription: initSevaDescription,
     offsets: {}
   });
 

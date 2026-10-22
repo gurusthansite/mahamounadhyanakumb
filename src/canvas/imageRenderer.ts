@@ -3,6 +3,7 @@ import { ANNAPRASADAM_TEXT_POSITIONS } from './coordinates';
 import { 
   TRANSLATIONS, 
   getPoshakuluTitleByLang, 
+  getMahaMounaTitleByLang,
   type SupportedLanguage 
 } from '../i18n/annaprasadamTranslations';
 
@@ -57,8 +58,12 @@ export const generateImage = async (
         ctx.drawImage(templateImg, 0, 0, width, height);
 
         if (isAnnaprasadam) {
+          const isMahaMouna = userData.sevaCategory === 'mahamouna';
           const platesNum = parseInt(userData.plates || '1', 10) || 1;
-          const titleText = getPoshakuluTitleByLang(platesNum, lang);
+          const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
+          const titleText = isMahaMouna
+            ? getMahaMounaTitleByLang(donationAmountNum, lang)
+            : getPoshakuluTitleByLang(platesNum, lang);
           const t = TRANSLATIONS[lang] || TRANSLATIONS.te;
           const fontFam = lang === 'ta'
             ? '"Noto Sans Tamil", sans-serif'
