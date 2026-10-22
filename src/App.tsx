@@ -290,11 +290,14 @@ function App() {
       submitToGoogleSheets();
 
       if (currentPage === 'annaprasadam') {
-        const blob = await generateImage(userData, '/assets/Arunachalam.png', true, currentLang);
+        const isMahaMouna = userData.sevaCategory === 'mahamouna';
+        const templatePath = isMahaMouna ? '/assets/maharaj.png' : '/assets/Arunachalam.png';
+        const blob = await generateImage(userData, templatePath, true, currentLang);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `annaprasadam-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
+        a.download = `${prefix}-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -359,8 +362,11 @@ function App() {
       };
 
       if (isAnnaprasadam) {
-        blob = await generateImage(userData, '/assets/Arunachalam.png', true, currentLang);
-        filename = `annaprasadam-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        const isMahaMouna = userData.sevaCategory === 'mahamouna';
+        const templatePath = isMahaMouna ? '/assets/maharaj.png' : '/assets/Arunachalam.png';
+        blob = await generateImage(userData, templatePath, true, currentLang);
+        const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
+        filename = `${prefix}-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
         shareText = annaprasadamBodies[currentLang] || annaprasadamBodies.te;
       } else if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');

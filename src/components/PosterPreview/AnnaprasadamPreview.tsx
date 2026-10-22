@@ -88,8 +88,8 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {/* Template Overlay */}
         <img 
-          src="/assets/Arunachalam.png" 
-          alt="Annaprasadam Template"
+          src={isMahaMouna ? "/assets/maharaj.png" : "/assets/Arunachalam.png"} 
+          alt={isMahaMouna ? "Maha Mouna Template" : "Annaprasadam Template"}
           className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
         />
 
