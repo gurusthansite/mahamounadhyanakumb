@@ -58,16 +58,18 @@ import {
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
 
-      // Check for Poster Generator (Video/Photo status)
+      // Check for Annaprasadam Seva
       if (
-        page === 'poster' ||
-        page === 'video' ||
-        page === 'status' ||
-        path.includes('/poster') ||
-        path.includes('/video') ||
-        path.includes('/status')
+        page === 'annaprasadam' ||
+        page === 'annadanam' ||
+        page === 'prasadam' ||
+        page === 'seva' ||
+        path.includes('/annaprasadam') ||
+        path.includes('/annadanam') ||
+        path.includes('/prasadam') ||
+        path.includes('/seva')
       ) {
-        return 'poster';
+        return 'annaprasadam';
       }
 
       // Check for Arunachalam
@@ -105,9 +107,21 @@ import {
       ) {
         return 'srnagar';
       }
+
+      // Check for Poster Generator (Video/Photo status)
+      if (
+        page === 'poster' ||
+        page === 'video' ||
+        page === 'status' ||
+        path.includes('/poster') ||
+        path.includes('/video') ||
+        path.includes('/status')
+      ) {
+        return 'poster';
+      }
     }
-    // Default main landing page is Annaprasadam Seva
-    return 'annaprasadam';
+    // Default main landing page is the Poster & Video Generator
+    return 'poster';
   };
 
 function App() {
@@ -150,8 +164,8 @@ function App() {
         url.searchParams.set('page', 'srinagar-colony');
       } else if (page === 'arunachalam') {
         url.searchParams.set('page', 'arunachalam');
-      } else if (page === 'poster') {
-        url.searchParams.set('page', 'poster');
+      } else if (page === 'annaprasadam') {
+        url.searchParams.set('page', 'annaprasadam');
       } else {
         url.searchParams.delete('page');
       }
@@ -449,6 +463,32 @@ function App() {
                 అరుణాచలం
               </span>
             </div>
+
+            {/* Main Navigation Switcher */}
+            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-6">
+              <button
+                type="button"
+                onClick={() => navigateTo('poster')}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
+                  currentPage === 'poster'
+                    ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                    : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                }`}
+              >
+                <span>🎥 🖼️ పోస్టర్ / వీడియో (Poster & Video)</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => navigateTo('annaprasadam')}
+                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
+                  currentPage === 'annaprasadam'
+                    ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                    : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                }`}
+              >
+                <span>🍚 అన్నప్రసాద సేవ (Annaprasadam Seva)</span>
+              </button>
+            </div>
           </div>
 
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
@@ -658,6 +698,7 @@ function App() {
               ? IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height
               : PHOTO_AREA.width / PHOTO_AREA.height
           }
+          lang={currentLang}
           onComplete={handleCropComplete}
           onCancel={() => setIsCropperOpen(false)}
         />

@@ -362,8 +362,12 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             })}
           </div>
 
-          <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#ffca08] font-bold text-base select-none pointer-events-none">
+          <div className={`flex rounded-xl overflow-hidden border ${
+            userData.isPaid 
+              ? 'border-emerald-500/70 bg-[#180601]' 
+              : 'border-[#8b3d0b] bg-[#240b03] focus-within:border-[#ffca08] focus-within:ring-2 focus-within:ring-[#ffca08]'
+          } transition-all`}>
+            <span className="px-3 py-2.5 text-[#ffca08] font-bold text-xs sm:text-sm select-none bg-[#1c0802] border-r border-[#8b3d0b]/80 shrink-0 flex items-center">
               {userData.titlePrefix || t.defaultTitle}
             </span>
             <input
@@ -372,12 +376,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({
               disabled={Boolean(userData.isPaid)}
               value={userData.fullName}
               onChange={handleChange}
-              style={{ paddingLeft: `${(userData.titlePrefix || t.defaultTitle).length * 15 + 24}px` }}
-              className={`w-full pr-4 py-3 bg-[#240b03] border ${
-                userData.isPaid 
-                  ? 'border-emerald-500/70 text-emerald-300 bg-[#180601] cursor-not-allowed' 
-                  : 'border-[#8b3d0b] text-white focus:border-[#ffca08]'
-              } rounded-xl focus:ring-2 focus:ring-[#ffca08] outline-none transition-all placeholder-orange-700/50`}
+              className={`flex-1 min-w-0 px-3 py-2.5 bg-transparent outline-none transition-all text-xs sm:text-sm placeholder-orange-700/50 text-white placeholder:text-xs sm:placeholder:text-sm ${
+                userData.isPaid ? 'text-emerald-300 cursor-not-allowed' : ''
+              }`}
               placeholder={t.namePlaceholder}
               required
             />
@@ -534,28 +535,28 @@ export const AnnaprasadamForm: React.FC<Props> = ({
           />
 
           {userData.photoUrl ? (
-            /* Photo Selected State */
-            <div className="p-3 bg-[#240b03] border border-[#ffca08]/40 rounded-2xl flex items-center justify-between gap-3 shadow-md">
-              <div className="flex items-center gap-3">
-                <div className="w-14 h-14 rounded-xl overflow-hidden border-2 border-[#ffca08] shadow-md bg-black">
+            /* Photo Selected State - Fully responsive on all mobile screens */
+            <div className="p-3 bg-[#240b03] border border-[#ffca08]/40 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-md">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl overflow-hidden border-2 border-[#ffca08] shadow-md bg-black">
                   <img
                     src={userData.photoUrl}
                     alt="Donor Crop"
                     className="w-full h-full object-cover"
                   />
                 </div>
-                <div>
-                  <span className="text-xs font-bold text-white block">{t.photoSelectedTitle}</span>
-                  <span className="text-[11px] text-emerald-400 font-medium">{t.photoSelectedSub}</span>
+                <div className="min-w-0 flex-1">
+                  <span className="text-xs sm:text-sm font-bold text-white block truncate">{t.photoSelectedTitle}</span>
+                  <span className="text-[11px] text-emerald-400 font-medium block truncate">{t.photoSelectedSub}</span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
                 {onOpenCropper && (
                   <button
                     type="button"
                     onClick={onOpenCropper}
-                    className="py-1.5 px-3 rounded-lg bg-[#381609] hover:bg-[#8b3d0b] text-orange-200 hover:text-white text-xs font-bold border border-[#8b3d0b] transition-all flex items-center gap-1"
+                    className="flex-1 sm:flex-none py-2 sm:py-1.5 px-3 rounded-lg bg-[#381609] hover:bg-[#8b3d0b] text-orange-200 hover:text-white text-xs font-bold border border-[#8b3d0b] transition-all flex items-center justify-center gap-1.5 active:scale-95 whitespace-nowrap shadow-sm"
                   >
                     <span>{t.photoCropBtn}</span>
                   </button>
@@ -563,9 +564,9 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="py-1.5 px-3 rounded-lg bg-[#ffca08] hover:bg-[#ffd943] text-[#381609] text-xs font-bold transition-all shadow-sm"
+                  className="flex-1 sm:flex-none py-2 sm:py-1.5 px-3 rounded-lg bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1 whitespace-nowrap"
                 >
-                  {t.photoChangeBtn}
+                  <span>🔄 {t.photoChangeBtn}</span>
                 </button>
               </div>
             </div>

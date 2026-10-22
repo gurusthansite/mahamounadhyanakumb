@@ -59,7 +59,7 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
       <div 
         ref={containerRef}
-        className="relative w-full max-w-[420px] aspect-[1024/1536] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#ffca08]/40 bg-[#1c0802]"
+        className="relative w-full max-w-[420px] aspect-[900/1600] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#ffca08]/40 bg-[#1c0802]"
         style={{ containerType: 'inline-size' }}
       >
         {/* User Cropped Photo */}
@@ -88,68 +88,39 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
           className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
         />
 
-        {/* 1. Dynamic Title inside Dark Green Pill Box */}
+        {/* 1. Top Banner: Poshakulu Title inside Dark Ornate Banner (Enlarged, no plates count) */}
         <div 
-          className="absolute z-20 text-white font-black drop-shadow-md flex items-center justify-center whitespace-nowrap"
+          className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center whitespace-nowrap"
           style={{ 
             top: `${ANNAPRASADAM_TEXT_POSITIONS.title.topPercent}%`, 
             left: `${ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(14px, 4.4cqi, 36px)', 
+            fontSize: 'clamp(14px, 4.6cqi, 36px)', 
             fontFamily,
-            textShadow: '0 2px 4px rgba(0,0,0,0.6)'
+            textShadow: '0 2px 6px rgba(0,0,0,0.85)'
           }}
         >
-          {poshakuluTitle}
+          <span>{poshakuluTitle}</span>
         </div>
 
-        {/* 2. Line 1: Plates Count + localized line1Text */}
+        {/* 2. Bottom Banner: Donor Full Name inside Cream Parchment Banner */}
         <div 
-          className="absolute z-20 text-[#6b1406] font-bold drop-shadow-sm flex items-center justify-center whitespace-nowrap"
+          className="absolute z-20 text-[#591104] font-extrabold flex items-center justify-center text-center px-1.5 max-w-[50%] w-[50%]"
           style={{ 
-            top: `${ANNAPRASADAM_TEXT_POSITIONS.line1.topPercent}%`, 
-            left: `${ANNAPRASADAM_TEXT_POSITIONS.line1.centerPercent}%`,
+            top: `${ANNAPRASADAM_TEXT_POSITIONS.name.topPercent}%`, 
+            left: `${ANNAPRASADAM_TEXT_POSITIONS.name.centerPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(12px, 3.8cqi, 32px)', 
-            fontFamily
+            fontSize: 'clamp(11px, 3.4cqi, 26px)', 
+            fontFamily,
+            lineHeight: 1.15
           }}
         >
-          {`${platesNum} ${t.line1Text}`}
+          <span className="truncate max-w-full drop-shadow-sm">
+            {userData.fullName 
+              ? `${prefix}${userData.fullName}${suffix}`
+              : `${prefix}${lang === 'ta' ? 'பெயர்' : lang === 'hi' ? 'नाम' : lang === 'kn' ? 'ಹೆಸರು' : lang === 'en' ? 'Name' : 'పేరు'}${suffix}`}
+          </span>
         </div>
-
-        {/* 3. Line 2: localized line2Text */}
-        <div 
-          className="absolute z-20 text-[#6b1406] font-bold drop-shadow-sm flex items-center justify-center whitespace-nowrap"
-          style={{ 
-            top: `${ANNAPRASADAM_TEXT_POSITIONS.line2.topPercent}%`, 
-            left: `${ANNAPRASADAM_TEXT_POSITIONS.line2.centerPercent}%`,
-            transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(10px, 3.2cqi, 26px)', 
-            fontFamily
-          }}
-        >
-          {t.line2Text}
-        </div>
-
-        {/* 4. Line 3: Dynamic Donor Name with prefix and suffix */}
-        {userData.fullName && (
-          <div 
-            className="absolute z-20 text-[#6b1406] font-bold drop-shadow-sm flex items-center justify-center max-w-[55%]"
-            style={{ 
-              top: `${ANNAPRASADAM_TEXT_POSITIONS.line3.topPercent}%`, 
-              left: `${ANNAPRASADAM_TEXT_POSITIONS.line3.centerPercent}%`,
-              transform: 'translate(-50%, -50%)', 
-              fontSize: 'clamp(11px, 3.8cqi, 32px)', 
-              fontFamily,
-              whiteSpace: 'nowrap',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              textAlign: 'center'
-            }}
-          >
-            {`${prefix}${userData.fullName}${suffix}`}
-          </div>
-        )}
 
         {/* Edit Crop Button */}
         {userData.photoUrl && onEditCrop && (

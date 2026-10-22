@@ -65,7 +65,7 @@ export const TRANSLATIONS = {
       { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' }
     ],
     defaultTitle: 'శ్రీ',
-    nameSuffix: 'గారికి',
+    nameSuffix: '',
     dobLabel: '2. జన్మదినం (Date of Birth / D.O.B)',
     dobHelp: '* ఈ జన్మదిన వివరాలు మీ అధికారిక విరాళ రశీదుపై నమోదు చేయబడతాయి.',
     dobRequired: 'దయచేసి పుట్టిన తేదీ నమోదు చేయండి (Date of Birth is required)',
@@ -181,7 +181,7 @@ export const TRANSLATIONS = {
       { id: 'ஸ்ரீமதி', label: 'ஸ்ரீமதி (Smt)' }
     ],
     defaultTitle: 'ஸ்ரீ',
-    nameSuffix: 'அவர்களுக்கு',
+    nameSuffix: '',
     dobLabel: '2. பிறந்த தேதி (Date of Birth / D.O.B) *',
     dobHelp: '* இந்த பிறந்த தேதி உங்கள் அதிகாரப்பூர்வ நன்கொடை ரசீதில் பதிவு செய்யப்படும்.',
     dobRequired: 'தயவுசெய்து பிறந்த தேதியை உள்ளிடவும்',
@@ -199,8 +199,8 @@ export const TRANSLATIONS = {
     locationPlaceholder: 'எ.கா: சென்னை / திருவண்ணாமலை',
     photoLabel: '6. புகைப்பட தேர்வு / பதிவேற்றம்',
     photoSelectedTitle: 'புகைப்படம் தேர்ந்தெடுக்கப்பட்டது',
-    photoSelectedSub: '✓ போஸ்டரில் உடனடியாகக் காட்டப்படுகிறது',
-    photoCropBtn: '✂️ பயிர் (Crop)',
+    photoSelectedSub: '✓ போஸ்டரில் காட்டப்படுகிறது',
+    photoCropBtn: '✂️ செதுக்கு (Crop)',
     photoChangeBtn: 'மாற்றவும்',
     photoPrompt: 'போஸ்டரில் காண்பிக்க கொடையாளரின் புகைப்படத்தை தேர்வு செய்யவும்:',
     photoGalleryBtn: '📁 கேலரியிலிருந்து தேர்வு செய்க',
@@ -239,7 +239,7 @@ export const TRANSLATIONS = {
       { id: 'श्रीमती', label: 'श्रीमती (Smt)' }
     ],
     defaultTitle: 'श्री',
-    nameSuffix: 'जी को',
+    nameSuffix: '',
     dobLabel: '2. जन्म तिथि (Date of Birth / D.O.B) *',
     dobHelp: '* यह जन्म तिथि आपकी आधिकारिक दान रसीद पर दर्ज की जाएगी।',
     dobRequired: 'कृपया जन्म तिथि दर्ज करें',
@@ -297,7 +297,7 @@ export const TRANSLATIONS = {
       { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' }
     ],
     defaultTitle: 'ಶ್ರೀ',
-    nameSuffix: 'ರವರಿಗೆ',
+    nameSuffix: '',
     dobLabel: '2. ಹುಟ್ಟಿದ ದಿನಾಂಕ (Date of Birth / D.O.B) *',
     dobHelp: '* ಈ ಜನ್ಮ ದಿನಾಂಕವನ್ನು ನಿಮ್ಮ ಅಧಿಕೃತ ದೇಣಿಗೆ ರಸೀದಿಯಲ್ಲಿ ಮುದ್ರಿಸಲಾಗುತ್ತದೆ.',
     dobRequired: 'ದಯವಿಟ್ಟು ಹುಟ್ಟಿದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ',

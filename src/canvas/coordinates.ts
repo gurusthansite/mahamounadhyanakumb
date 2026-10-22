@@ -23,44 +23,43 @@ export function getPoshakuluTitle(plates: number): string {
   return 'పోషకులు';
 }
 
-// Text coordinates in percentages for Annaprasadam on Arunachalam.png (1024 x 1536)
+// Text coordinates in percentages for Annaprasadam on Arunachalam.png (900 x 1600)
 export const ANNAPRASADAM_TEXT_POSITIONS = {
-  // 1. Dark Green Pill Box: Poshakulu Title
+  // 1. Top Banner: Poshakulu Title & Plates inside dark ornate banner
   title: {
-    topPercent: 42.35,   // Center inside the green box (y: 650/1536)
-    centerPercent: 70.0, // Center horizontally in green box (x: 716/1024)
-    y: 650,
-    x: 716,
+    topPercent: 43.0,     // Center inside dark banner (y: 688/1600)
+    centerPercent: 50.0,  // Center horizontally (x: 450/900)
+    y: 688,
+    x: 450,
   },
-  // 2. Line 1: Plates Count + 'ప్లేట్స్ అన్నప్రసాదం'
-  line1: {
-    topPercent: 49.15,   // Center of line 1 (y: 755/1536)
-    centerPercent: 70.0, // (x: 716/1024)
-    y: 755,
-    x: 716,
-  },
-  // 3. Line 2: 'అందిస్తున్నందుకు'
-  line2: {
-    topPercent: 54.06,   // Center of line 2 (y: 815/1536)
-    centerPercent: 70.0, // (x: 716/1024)
-    y: 815,
-    x: 716,
-  },
-  // 4. Line 3: Donor Name + 'గారికి'
-  line3: {
-    topPercent: 58.29,   // Center of line 3 (y: 880/1536)
-    centerPercent: 70.0, // (x: 716/1024)
-    y: 880,
-    x: 716,
-  },
-  // Legacy aliases
-  plates: {
-    topPercent: 49.15,
-    centerPercent: 70.0,
-  },
+  // 2. Bottom Banner: Donor Name inside parchment banner
   name: {
-    topPercent: 57.29,
-    centerPercent: 70.0,
-    rightPercent: 12.0,
+    topPercent: 79.0,    // Center inside cream parchment banner (y: 1276/1600)
+    centerPercent: 50.0,  // (x: 450/900)
+    y: 1276,
+    x: 450,
+  },
+  // Aliases for compatibility
+  line1: {
+    topPercent: 43.0,
+    centerPercent: 50.0,
+    y: 688,
+    x: 450,
+  },
+  line2: {
+    topPercent: 43.0,
+    centerPercent: 50.0,
+    y: 688,
+    x: 450,
+  },
+  line3: {
+    topPercent: 79.75,
+    centerPercent: 50.0,
+    y: 1276,
+    x: 450,
+  },
+  plates: {
+    topPercent: 43.0,
+    centerPercent: 50.0,
   }
 };

@@ -10,11 +10,11 @@ export const IMAGE_TEMPLATE_WIDTH = 715;
 export const IMAGE_TEMPLATE_HEIGHT = 1280;
 export const IMAGE_PHOTO_AREA = { x: 190, y: 323, width: 339, height: 349 };
 
-// Annaprasadam (Arunachalam.png) Dimensions: 1024 x 1536
-export const ARUNACHALAM_TEMPLATE_WIDTH = 1024;
-export const ARUNACHALAM_TEMPLATE_HEIGHT = 1536;
-// Photo Frame coordinates for Arunachalam.png
-export const ARUNACHALAM_PHOTO_AREA = { x: 48, y: 604, width: 362, height: 384 };
+// Annaprasadam (Arunachalam.png) Dimensions: 900 x 1600
+export const ARUNACHALAM_TEMPLATE_WIDTH = 900;
+export const ARUNACHALAM_TEMPLATE_HEIGHT = 1600;
+// Photo Frame coordinates for Arunachalam.png (exact transparent frame bounds)
+export const ARUNACHALAM_PHOTO_AREA = { x: 240, y: 765, width: 420, height: 445 };
 
 export const generateImage = async (
   userData: UserData,
@@ -70,54 +70,40 @@ export const generateImage = async (
             ? '"Noto Sans", sans-serif'
             : '"Noto Sans Telugu", sans-serif';
 
-          // 1. Poshakulu Title inside dark green pill box
+          // 1. Top Banner: Poshakulu Title inside dark ornate banner (no plates displayed, enlarged text)
+          const topText = titleText;
           const titleX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent / 100));
           const titleY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.title.topPercent / 100));
-          ctx.font = `bold 44px ${fontFam}`;
-          ctx.fillStyle = '#ffffff';
+          ctx.font = `bold 38px ${fontFam}`;
+          ctx.fillStyle = '#ffea79';
+          ctx.shadowColor = 'rgba(0,0,0,0.85)';
+          ctx.shadowBlur = 6;
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText(titleText, titleX, titleY);
+          ctx.fillText(topText, titleX, titleY);
+          ctx.shadowBlur = 0;
 
-          // 2. Line 1: Plates count + localized line1Text
-          const line1X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line1.centerPercent / 100));
-          const line1Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line1.topPercent / 100));
-          ctx.font = `bold 40px ${fontFam}`;
-          ctx.fillStyle = '#6b1406';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(`${platesNum} ${t.line1Text}`, line1X, line1Y);
-
-          // 3. Line 2: localized line2Text
-          const line2X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line2.centerPercent / 100));
-          const line2Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line2.topPercent / 100));
-          ctx.font = `bold 34px ${fontFam}`;
-          ctx.fillStyle = '#6b1406';
-          ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
-          ctx.fillText(t.line2Text, line2X, line2Y);
-
-          // 4. Line 3: Donor Name with prefix & suffix
+          // 2. Bottom Banner: Donor Name with prefix & suffix inside cream parchment banner (enlarged text)
           if (userData.fullName) {
-            const line3X = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.line3.centerPercent / 100));
-            const line3Y = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.line3.topPercent / 100));
+            const nameX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.name.centerPercent / 100));
+            const nameY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.name.topPercent / 100));
             const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ ');
             const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
             const displayName = `${prefix}${userData.fullName}${suffix}`;
 
-            // Auto-scale font size if name is long
-            let fontSize = 42;
+            // Auto-scale font size if name is long (Inner parchment width is ~420px)
+            let fontSize = 32;
             ctx.font = `bold ${fontSize}px ${fontFam}`;
-            const maxNameWidth = 480;
-            while (ctx.measureText(displayName).width > maxNameWidth && fontSize > 24) {
+            const maxNameWidth = 420;
+            while (ctx.measureText(displayName).width > maxNameWidth && fontSize > 18) {
               fontSize -= 2;
               ctx.font = `bold ${fontSize}px ${fontFam}`;
             }
 
-            ctx.fillStyle = '#6b1406';
+            ctx.fillStyle = '#591104';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText(displayName, line3X, line3Y);
+            ctx.fillText(displayName, nameX, nameY);
           }
         } else {
           // Standard Image Template Text
