@@ -500,8 +500,8 @@ function App() {
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
             <div className="absolute inset-0 bg-[#ffca08] rounded-3xl blur-2xl opacity-15 group-hover:opacity-25 transition-opacity duration-500"></div>
             <img 
-              src="/assets/mouna_banner.jpg" 
-              alt="Maha Mouna Dhyana Kumbh" 
+              src={currentPage === 'annaprasadam' ? '/assets/hero_sect_an.png' : '/assets/mouna_banner.jpg'} 
+              alt={currentPage === 'annaprasadam' ? "Annaprasadam Seva & Maha Mouna Tiers" : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
           </div>
