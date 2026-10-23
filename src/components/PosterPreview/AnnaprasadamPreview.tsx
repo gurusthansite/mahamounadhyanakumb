@@ -95,17 +95,17 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {/* 1. Top Banner: Poshakulu Title inside Dark Ornate Banner (Enlarged, no plates count) */}
         <div 
-          className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center whitespace-nowrap"
+          className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center text-center px-1.5 max-w-[55%] whitespace-nowrap"
           style={{ 
             top: `${ANNAPRASADAM_TEXT_POSITIONS.title.topPercent}%`, 
             left: `${ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(14px, 4.6cqi, 36px)', 
+            fontSize: 'clamp(12px, 4.2cqi, 36px)', 
             fontFamily,
             textShadow: '0 2px 6px rgba(0,0,0,0.85)'
           }}
         >
-          <span>{poshakuluTitle}</span>
+          <span className="truncate max-w-full">{poshakuluTitle}</span>
         </div>
 
         {/* 2. Bottom Banner: Donor Full Name inside Cream Parchment Banner */}

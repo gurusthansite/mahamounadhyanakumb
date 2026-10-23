@@ -17,9 +17,11 @@ export const TEXT_AREA = {
 
 // Donor tier titles based on plate count for Annaprasadam Seva
 export function getPoshakuluTitle(plates: number): string {
+  if (plates > 1000) return 'మహా పోషక చక్రవర్తులు';
+  if (plates >= 502) return 'పోషక చక్రవర్తులు';
   if (plates >= 222) return 'మహారాజ పోషకులు';
-  if (plates >= 112) return 'రాజ పోషకులు';
-  if (plates >= 52) return 'సహస్రాజ పోషకులు';
+  if (plates >= 111) return 'రాజపోషకులు';
+  if (plates >= 52) return 'సహరాజ పోషకులు';
   return 'పోషకులు';
 }
 

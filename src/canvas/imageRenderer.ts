@@ -75,11 +75,17 @@ export const generateImage = async (
             ? '"Noto Sans", sans-serif'
             : '"Noto Sans Telugu", sans-serif';
 
-          // 1. Top Banner: Poshakulu Title inside dark ornate banner (no plates displayed, enlarged text)
+          // 1. Top Banner: Poshakulu Title inside dark ornate banner (no plates displayed, enlarged text with auto-fit)
           const topText = titleText;
           const titleX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent / 100));
           const titleY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.title.topPercent / 100));
-          ctx.font = `bold 38px ${fontFam}`;
+          let titleFontSize = 38;
+          ctx.font = `bold ${titleFontSize}px ${fontFam}`;
+          const maxTitleWidth = 460;
+          while (ctx.measureText(topText).width > maxTitleWidth && titleFontSize > 22) {
+            titleFontSize -= 2;
+            ctx.font = `bold ${titleFontSize}px ${fontFam}`;
+          }
           ctx.fillStyle = '#ffea79';
           ctx.shadowColor = 'rgba(0,0,0,0.85)';
           ctx.shadowBlur = 6;

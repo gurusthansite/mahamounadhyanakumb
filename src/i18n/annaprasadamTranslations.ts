@@ -15,13 +15,22 @@ export const SUPPORTED_LANGUAGES: LanguageOption[] = [
 ];
 
 export function getPoshakuluTitleByLang(plates: number, lang: SupportedLanguage = 'te'): string {
+  if (plates > 1000) {
+    switch (lang) {
+      case 'en': return 'Maha Poshaka Chakravarthulu';
+      case 'ta': return 'மகா போஷக சக்ரவர்த்திகள்';
+      case 'hi': return 'महा पोषक चक्रवर्ती';
+      case 'kn': return 'ಮಹಾ ಪೋಷಕ ಚಕ್ರವರ್ತಿಗಳು';
+      default: return 'మహా పోషక చక్రవర్తులు';
+    }
+  }
   if (plates >= 502) {
     switch (lang) {
-      case 'en': return 'Chakravarthulu';
-      case 'ta': return 'சக்ரவர்த்திகள்';
-      case 'hi': return 'चक्रवर्ती';
-      case 'kn': return 'ಚಕ್ರವರ್ತಿಗಳು';
-      default: return 'చక్రవర్తులు';
+      case 'en': return 'Poshaka Chakravarthulu';
+      case 'ta': return 'போஷக சக்ரவர்த்திகள்';
+      case 'hi': return 'पोषक चक्रवर्ती';
+      case 'kn': return 'ಪೋಷಕ ಚಕ್ರವರ್ತಿಗಳು';
+      default: return 'పోషక చక్రవర్తులు';
     }
   }
   if (plates >= 222) {
@@ -97,12 +106,21 @@ export function getMahaMounaTitleByLang(amount: number, lang: SupportedLanguage 
       default: return 'మహోన్నత దాతలు';
     }
   }
+  if (amount >= 5000) {
+    switch (lang) {
+      case 'en': return 'Pradathalu';
+      case 'ta': return 'பிரதான கொடையாளர்கள்';
+      case 'hi': return 'प्रदाता';
+      case 'kn': return 'ಪ್ರದಾತರು';
+      default: return 'ప్రదాతలు';
+    }
+  }
   switch (lang) {
-    case 'en': return 'Maha Dathalu (Donor)';
-    case 'ta': return 'மகா கொடையாளர்கள்';
-    case 'hi': return 'महा दाता';
-    case 'kn': return 'ಮಹಾ ದಾತರು';
-    default: return 'మహా దాతలు';
+    case 'en': return 'Dathalu (Donor)';
+    case 'ta': return 'கொடையாளர்கள்';
+    case 'hi': return 'दाता';
+    case 'kn': return 'ದಾತರು';
+    default: return 'దాతలు';
   }
 }
 
