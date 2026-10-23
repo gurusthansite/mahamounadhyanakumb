@@ -203,21 +203,28 @@ function App() {
   const submitToGoogleSheets = async () => {
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
 
+    const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const platesNum = parseInt(userData.plates || '0', 10);
+    const donationAmount = parseInt(userData.donationAmount || '0', 10);
+    const amountVal = isMahaMouna ? (donationAmount > 0 ? donationAmount : undefined) : (platesNum > 0 ? platesNum * 1 : undefined);
+
     const currentDataStr = JSON.stringify({
       fullName: userData.fullName,
       dob: userData.dob || '',
       phoneNumber: userData.phoneNumber,
       location: userData.location,
       hours: userData.hours || '',
-      plates: platesNum > 0 ? platesNum : undefined,
+      plates: !isMahaMouna && platesNum > 0 ? platesNum : undefined,
+      donationAmount: isMahaMouna && donationAmount > 0 ? donationAmount : undefined,
       plateNumber: userData.plateNumber || '',
-      amount: platesNum > 0 ? platesNum * 1 : undefined,
+      amount: amountVal,
       isPaid: userData.isPaid || false,
       isPlateLocked: userData.isPlateLocked || false,
       paymentId: userData.paymentId || '',
       receiptNo: userData.receiptNo || '',
-      category: currentPage === 'annaprasadam' ? 'Annaprasadam Seva' : 'Poster Generator',
+      category: currentPage === 'annaprasadam' 
+        ? (isMahaMouna ? 'Maha Mouna Dhyana Kumbh' : 'Annaprasadam Seva')
+        : 'Poster Generator',
       timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
     });
 
@@ -252,9 +259,17 @@ function App() {
         alert("దయచేసి మీ పుట్టిన తేదీని నమోదు చేయండి (Please enter Date of Birth)");
         return false;
       }
-      if (!userData.plates || parseInt(userData.plates, 10) <= 0) {
-        alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి (Please enter number of plates)");
-        return false;
+      const isMahaMouna = userData.sevaCategory === 'mahamouna';
+      if (isMahaMouna) {
+        if (!userData.donationAmount || parseInt(userData.donationAmount, 10) <= 0) {
+          alert("దయచేసి విరాళం మొత్తం నమోదు చేయండి (Please enter donation amount)");
+          return false;
+        }
+      } else {
+        if (!userData.plates || parseInt(userData.plates, 10) <= 0) {
+          alert("దయచేసి ఎన్ని ప్లేట్లో నమోదు చేయండి (Please enter number of plates)");
+          return false;
+        }
       }
       if (!userData.isPaid) {
         alert(
