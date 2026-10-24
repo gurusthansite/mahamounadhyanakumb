@@ -7,11 +7,12 @@ import {
 interface Props {
   currentLang: SupportedLanguage;
   onLanguageChange: (lang: SupportedLanguage) => void;
+  className?: string;
 }
 
-export const LanguageSwitcher: React.FC<Props> = ({ currentLang, onLanguageChange }) => {
+export const LanguageSwitcher: React.FC<Props> = ({ currentLang, onLanguageChange, className }) => {
   return (
-    <div className="flex items-center justify-center gap-1.5 p-1.5 bg-[#240b03]/80 backdrop-blur-md border border-[#ffca08]/40 rounded-2xl shadow-lg max-w-lg mx-auto mb-6">
+    <div className={`flex items-center justify-center gap-1.5 p-1.5 bg-[#240b03]/90 backdrop-blur-md border border-[#ffca08]/40 rounded-2xl shadow-lg max-w-lg ${className !== undefined ? className : 'mx-auto mb-6'}`}>
       <span className="text-base pl-2 pr-0.5 select-none hidden min-[360px]:inline">🌐</span>
       <div className="grid grid-cols-5 gap-1 w-full">
         {SUPPORTED_LANGUAGES.map((lang) => {

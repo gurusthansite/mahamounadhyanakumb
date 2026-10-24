@@ -12,7 +12,7 @@ import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import { DeveloperSignature } from './components/Footer/DeveloperSignature';
 import { LanguageSwitcher } from './components/Language/LanguageSwitcher';
-import { TRANSLATIONS, type SupportedLanguage } from './i18n/annaprasadamTranslations';
+import { TRANSLATIONS, LANG_FONT_CLASS, type SupportedLanguage } from './i18n/annaprasadamTranslations';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
 import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
@@ -206,7 +206,7 @@ function App() {
     const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const platesNum = parseInt(userData.plates || '0', 10);
     const donationAmount = parseInt(userData.donationAmount || '0', 10);
-    const amountVal = isMahaMouna ? (donationAmount > 0 ? donationAmount : undefined) : (platesNum > 0 ? platesNum * 1 : undefined);
+    const amountVal = isMahaMouna ? (donationAmount > 0 ? donationAmount : undefined) : (platesNum > 0 ? platesNum * 51 : undefined);
 
     const currentDataStr = JSON.stringify({
       fullName: userData.fullName,
@@ -368,12 +368,14 @@ function App() {
 
       const campaignBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీ ఫోటోతో పోస్టర్ తయారు చేయడానికి:\n${imageGenUrl}\n\nమీ ఫోటోతో వీడియో తయారు చేయడానికి:\n${videoGenUrl}`;
 
+      const annaprasadamCustomShare = `అందరికీ ఆత్మీయ ఆహ్వానం\n *తరలిరండి అరుణాచలం* \n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15)          \n\n*మహా మౌన ధ్యాన కుంభ్* లో జరిగే \n*మహా అన్నప్రసాద వితరణ సేవలో*  \nమనందరం భాగస్వాములం అవుదాం.\n\nమీ భాగస్వామ్యాన్ని అందించడానికి క్రింది లింకును క్లిక్ చేయండి.\n\n${annaprasadamGenUrl}\n\nపేమెంట్ చేసిన తర్వాత రసీదును డౌన్లోడ్ చేసుకోగలరు మరియు అన్న ప్రసాద సేవ ప్లేయర్ ను షేర్ చేసుకోగలరు.\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీరు మౌనం పాటిస్తున్నట్లయితే ఈ ప్లేయర్ ద్వారా అందరికీ ఒక ప్రేరణ కల్పిద్దాం: \n${imageGenUrl}\n\nమనం చేసుకోబోయే ఈ కార్యక్రమానికి మీ వీడియో ద్వారా ఆహ్వానం అందించండి:\n${videoGenUrl}`;
+
       const annaprasadamBodies: Record<SupportedLanguage, string> = {
-        te: `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*మహా మౌన ధ్యాన కుంభ్ - అరుణాచలం*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*మహా అన్నప్రసాద వితరణ సేవ*\n\nమీరు కూడా అన్నప్రసాద సేవలో భాగస్వామ్యం అవ్వండి!\n\nమీ పేరు, ఫోటోతో అన్నప్రసాద పోస్టర్ తయారు చేయడానికి:\n${annaprasadamGenUrl}\n\nమరిన్ని వివరాలకు:\n9133016016`,
-        en: `Warm Welcome to All \n\n*Maha Mouna Dhyana Kumbh - Arunachalam*\n(November 11 to 15)\n\n*Maha Annaprasadam Seva*\n\nBe a blessed sponsor in holy Annaprasadam Seva!\n\nCreate your personalized Annaprasadam poster with your photo & name:\n${annaprasadamGenUrl}?lang=en\n\nFor more details:\n9133016016`,
-        ta: `அனைவருக்கும் அன்பான வரவேற்பு \n\n*மகா மௌன தியான கும்ப் - அருணாச்சலம்*\n(நவம்பர் 11 முதல் 15 வரை)\n\n*மகா அன்னபிரசாத விநியோக சேவை*\n\nநீங்களும் இந்த புனித அன்னபிரசாத சேவையில் பங்கெடுங்கள்!\n\nஉங்கள் புகைப்படம் மற்றும் பெயருடன் அன்னபிரசாத போஸ்டர் உருவாக்க:\n${annaprasadamGenUrl}?lang=ta\n\nமேலும் விவரங்களுக்கு:\n9133016016`,
-        hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016`,
-        kn: `ಎಲ್ಲರಿಗೂ ಆತ್ಮೀಯ ಆಹ್ವಾನ \n\n*ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ - ಅರುಣಾಚಲ*\n(ನವೆಂಬರ್ 11 ರಿಂದ 15 ರವರೆಗೆ)\n\n*ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ*\n\nನೀವು ಕೂಡ ಈ ಪವಿತ್ರ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಿ!\n\nನಿಮ್ಮ ಹೆಸರು, ಫೋಟೋದೊಂದಿಗೆ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ ತಯಾರಿಸಲು:\n${annaprasadamGenUrl}?lang=kn\n\nಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ:\n9133016016`
+        te: annaprasadamCustomShare,
+        ta: annaprasadamCustomShare,
+        en: `Warm Welcome to All \n\n*Maha Mouna Dhyana Kumbh - Arunachalam*\n(November 11 to 15)\n\n*Maha Annaprasadam Seva*\n\nBe a blessed sponsor in holy Annaprasadam Seva!\n\nCreate your personalized Annaprasadam poster with your photo & name:\n${annaprasadamGenUrl}?lang=en\n\nFor more details:\n9133016016\n9133015015\n9133014014`,
+        hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016\n9133015015\n9133014014`,
+        kn: `ಎಲ್ಲರಿಗೂ ಆತ್ಮೀಯ ಆಹ್ವಾನ \n\n*ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ - ಅರುಣಾಚಲ*\n(ನವೆಂಬರ್ 11 ರಿಂದ 15 ರವರೆಗೆ)\n\n*ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ*\n\nನೀವು ಕೂಡ ಈ ಪವಿತ್ರ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಿ!\n\nನಿಮ್ಮ ಹೆಸರು, ಫೋಟೋದೊಂದಿಗೆ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ ತಯಾರಿಸಲು:\n${annaprasadamGenUrl}?lang=kn\n\nಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ:\n9133016016\n9133015015\n9133014014`
       };
 
       if (isAnnaprasadam) {
@@ -454,8 +456,13 @@ function App() {
       <header className="w-full bg-gradient-to-b from-[#240b03] to-[#4a1c0b] shadow-2xl border-b border-[#8b3d0b] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-[#ffca08] opacity-10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
         <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#d97706] opacity-10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 pointer-events-none"></div>
+
+        {/* Top Hero Section: Language Switcher */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-0 relative z-20 flex justify-center sm:justify-end">
+          <LanguageSwitcher currentLang={currentLang} onLanguageChange={handleLanguageChange} className="m-0" />
+        </div>
         
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16 relative z-10 flex flex-col lg:flex-row items-center justify-between gap-12">
           
           <div className="flex-1 text-center lg:text-left">
             <div className="flex items-center justify-center lg:justify-start gap-3 mb-6">
@@ -468,55 +475,63 @@ function App() {
                 A Movement of Mouna
               </div>
             </div>
-            <h1 className="font-['Noto_Sans_Telugu'] text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg tracking-wide">
-              మహా మౌన <br />
-              <span className="text-[#ffca08]">ధ్యాన కుంభ్</span>
-            </h1>
-            <p className="font-['Noto_Sans_Telugu'] text-xl md:text-2xl text-orange-100 font-light mb-8 max-w-2xl mx-auto lg:mx-0">
-              తరలిరండి అరుణాచలం.
-            </p>
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-              <span className="font-['Noto_Sans_Telugu'] px-5 py-2.5 rounded-lg bg-[#8b3d0b] border border-[#d97706] text-white font-medium flex items-center gap-2 shadow-md">
-                <svg className="w-5 h-5 text-[#ffca08]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                నవంబర్ 11 - 15
-              </span>
-              <span className="font-['Noto_Sans_Telugu'] px-5 py-2.5 rounded-lg bg-[#8b3d0b] border border-[#d97706] text-[#ffca08] font-bold shadow-md">
-                అరుణాచలం
-              </span>
-            </div>
+            {(() => {
+              const fontClass = LANG_FONT_CLASS[currentLang] || LANG_FONT_CLASS.te;
+              const t = TRANSLATIONS[currentLang] || TRANSLATIONS.te;
+              return (
+                <>
+                  <h1 className={`${fontClass} text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 drop-shadow-lg tracking-wide`}>
+                    {t.heroTitle1} <br />
+                    <span className="text-[#ffca08]">{t.heroTitle2}</span>
+                  </h1>
+                  <p className={`${fontClass} text-xl md:text-2xl text-orange-100 font-light mb-8 max-w-2xl mx-auto lg:mx-0`}>
+                    {t.heroTagline}
+                  </p>
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                    <span className={`${fontClass} px-5 py-2.5 rounded-lg bg-[#8b3d0b] border border-[#d97706] text-white font-medium flex items-center gap-2 shadow-md`}>
+                      <svg className="w-5 h-5 text-[#ffca08]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      {t.heroDates}
+                    </span>
+                    <span className={`${fontClass} px-5 py-2.5 rounded-lg bg-[#8b3d0b] border border-[#d97706] text-[#ffca08] font-bold shadow-md`}>
+                      {t.heroLocation}
+                    </span>
+                  </div>
 
-            {/* Main Navigation Switcher */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-6">
-              <button
-                type="button"
-                onClick={() => navigateTo('poster')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
-                  currentPage === 'poster'
-                    ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
-                    : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
-                }`}
-              >
-                <span>🎥 🖼️ పోస్టర్ / వీడియో (Poster & Video)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => navigateTo('annaprasadam')}
-                className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
-                  currentPage === 'annaprasadam'
-                    ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
-                    : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
-                }`}
-              >
-                <span>🍚 అన్నప్రసాద సేవ (Annaprasadam Seva)</span>
-              </button>
-            </div>
+                  {/* Main Navigation Switcher */}
+                  <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2.5 mt-6">
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('poster')}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
+                        currentPage === 'poster'
+                          ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                          : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                      } ${fontClass}`}
+                    >
+                      <span>{t.navPoster}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('annaprasadam')}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
+                        currentPage === 'annaprasadam'
+                          ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                          : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                      } ${fontClass}`}
+                    >
+                      <span>{t.navAnnaprasadam}</span>
+                    </button>
+                  </div>
+                </>
+              );
+            })()}
           </div>
 
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
             <div className="absolute inset-0 bg-[#ffca08] rounded-3xl blur-2xl opacity-15 group-hover:opacity-25 transition-opacity duration-500"></div>
             <img 
               src={currentPage === 'annaprasadam' ? '/assets/annapradam_hero.png' : '/assets/mouna_banner.jpg'} 
-              alt={currentPage === 'annaprasadam' ? "Annaprasadam Seva Tiers" : "Maha Mouna Dhyana Kumbh"} 
+              alt={currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
           </div>
@@ -548,9 +563,6 @@ function App() {
         />
       ) : currentPage === 'annaprasadam' ? (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-10">
-          {/* Responsive Language Switcher */}
-          <LanguageSwitcher currentLang={currentLang} onLanguageChange={handleLanguageChange} />
-
           {/* Header Banner for Annaprasadam */}
           <div className="text-center mb-8 sm:mb-10 w-full px-2 sm:px-4">
             <h2 

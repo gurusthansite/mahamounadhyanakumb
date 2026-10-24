@@ -137,8 +137,23 @@ export function getSevaHonorificTitle(
   return getPoshakuluTitleByLang(plates, lang);
 }
 
+export const LANG_FONT_CLASS: Record<SupportedLanguage, string> = {
+  te: "font-['Noto_Sans_Telugu',sans-serif]",
+  ta: "font-['Noto_Sans_Tamil',sans-serif]",
+  hi: "font-['Noto_Sans_Devanagari',sans-serif]",
+  kn: "font-['Noto_Sans_Kannada',sans-serif]",
+  en: "font-['Noto_Sans',sans-serif]",
+};
+
 export const TRANSLATIONS = {
   te: {
+    heroTitle1: 'మహా మౌన',
+    heroTitle2: 'ధ్యాన కుంభ్',
+    heroTagline: 'తరలిరండి అరుణాచలం.',
+    heroDates: 'నవంబర్ 11 - 15',
+    heroLocation: 'అరుణాచలం',
+    navPoster: '🎥 🖼️ పోస్టర్ / వీడియో (Poster & Video)',
+    navAnnaprasadam: '🍚 అన్నప్రసాద సేవ (Annaprasadam Seva)',
     bannerPill: 'మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం',
     bannerTitle: 'మహా అన్న ప్రసాద వితరణ సేవ - అరుణాచలం',
     bannerSubtitle: 'అరుణాచలంలో జరిగే అన్న ప్రసాద వితరణ సేవలో మీ లేదా మీకు ఇష్టమైన వాళ్ల పేరు మీదుగా అన్న ప్రసాదాన్ని అందించవచ్చును',
@@ -166,7 +181,7 @@ export const TRANSLATIONS = {
     dobFuture: 'భవిష్యత్తు తేదీని నమోదు చేయకూడదు (Date cannot be in the future)',
     dobInvalid: 'దయచేసి సరైన తేదీ నమోదు చేయండి (Invalid date format)',
     platesLabel: '3. ఎన్ని ప్లేట్స్ అన్నప్రసాదం? (Number of Plates)',
-    platesPlaceholder: '1 ప్లేట్ = ₹1 (ఉదా: 10, 20, 50, 100)',
+    platesPlaceholder: '1 ప్లేట్ = ₹51 (ఉదా: 10, 20, 50, 100)',
     plateUnit: 'ప్లేట్లు',
     plateSingular: 'ప్లేట్',
     tierLabel: 'శ్రేణి:',
@@ -207,6 +222,13 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 వాట్సాప్‌లో షేర్ చేయడానికి ముందుగా పేమెంట్ పూర్తి చేయండి'
   },
   en: {
+    heroTitle1: 'Maha Mouna',
+    heroTitle2: 'Dhyana Kumbh',
+    heroTagline: 'Join Us at Arunachalam.',
+    heroDates: 'November 11 - 15',
+    heroLocation: 'Arunachalam',
+    navPoster: '🎥 🖼️ Poster & Video',
+    navAnnaprasadam: '🍚 Annaprasadam Seva',
     bannerPill: 'Maha Annaprasadam Seva - Arunachalam',
     bannerTitle: 'Maha Annaprasadam Seva - Arunachalam',
     bannerSubtitle: 'Sponsor holy Annaprasadam at Arunachalam in your name or in honor of your beloved family & friends',
@@ -234,7 +256,7 @@ export const TRANSLATIONS = {
     dobFuture: 'Date of Birth cannot be in the future',
     dobInvalid: 'Please enter a valid Date of Birth',
     platesLabel: '3. Number of Plates *',
-    platesPlaceholder: '1 Plate = ₹1 (e.g. 10, 20, 50, 100)',
+    platesPlaceholder: '1 Plate = ₹51 (e.g. 10, 20, 50, 100)',
     plateUnit: 'Plates',
     plateSingular: 'Plate',
     tierLabel: 'Tier:',
@@ -275,6 +297,13 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 Complete payment to unlock WhatsApp share'
   },
   ta: {
+    heroTitle1: 'மகா மௌன',
+    heroTitle2: 'தியான கும்ப்',
+    heroTagline: 'அனைவரும் வருக அருணாச்சலம்.',
+    heroDates: 'நவம்பர் 11 - 15',
+    heroLocation: 'அருணாச்சலம்',
+    navPoster: '🎥 🖼️ போஸ்டர் / வீடியோ (Poster & Video)',
+    navAnnaprasadam: '🍚 அன்னபிரசாத சேவை (Annaprasadam Seva)',
     bannerPill: 'மகா அன்னபிரசாத விநியோக சேவை - அருணாச்சலம்',
     bannerTitle: 'மகா அன்னபிரசாத விநியோக சேவை - அருணாச்சலம்',
     bannerSubtitle: 'அருணாச்சலத்தில் நடைபெறும் அன்னபிரசாத சேவையில் உங்கள் அல்லது உங்கள் அன்புக்குரியவர்களின் பெயரில் பிரசாதம் வழங்கி அருள்பெறுங்கள்',
@@ -302,7 +331,7 @@ export const TRANSLATIONS = {
     dobFuture: 'எதிர்கால தேதியை உள்ளிட முடியாது',
     dobInvalid: 'சரியான பிறந்த தேதியை உள்ளிடவும்',
     platesLabel: '3. எத்தனை தட்டுகள் அன்னபிரசாதம்? *',
-    platesPlaceholder: '1 தட்டு = ₹1 (எ.கா: 10, 20, 50, 100)',
+    platesPlaceholder: '1 தட்டு = ₹51 (எ.கா: 10, 20, 50, 100)',
     plateUnit: 'தட்டுகள்',
     plateSingular: 'தட்டு',
     tierLabel: 'பிரிவு:',
@@ -343,6 +372,13 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 வாட்ஸ்அப்பில் பகிர மேலே உள்ள கட்டணத்தை முடிக்கவும்'
   },
   hi: {
+    heroTitle1: 'महा मौन',
+    heroTitle2: 'ध्यान कुंभ',
+    heroTagline: 'पधारें अरुणाचलम.',
+    heroDates: '11 - 15 नवंबर',
+    heroLocation: 'अरुणाचलम',
+    navPoster: '🎥 🖼️ पोस्टर / वीडियो (Poster & Video)',
+    navAnnaprasadam: '🍚 अन्नप्रसाद सेवा (Annaprasadam Seva)',
     bannerPill: 'महा अन्नप्रसाद वितरण सेवा - अरुणाचलम',
     bannerTitle: 'महा अन्नप्रसाद वितरण सेवा - अरुणाचलम',
     bannerSubtitle: 'अरुणाचलम में आयोजित महा अन्नप्रसाद वितरण सेवा में अपने या अपने प्रियजनों के नाम पर अन्नप्रसाद अर्पित करें',
@@ -370,7 +406,7 @@ export const TRANSLATIONS = {
     dobFuture: 'जन्म तिथि भविष्य की नहीं हो सकती',
     dobInvalid: 'कृपया सही जन्म तिथि दर्ज करें',
     platesLabel: '3. कितने प्लेट अन्नप्रसाद? *',
-    platesPlaceholder: '1 प्लेट = ₹1 (उदा: 10, 20, 50, 100)',
+    platesPlaceholder: '1 प्लेट = ₹51 (उदा: 10, 20, 50, 100)',
     plateUnit: 'प्लेट',
     plateSingular: 'प्लेट',
     tierLabel: 'श्रेणी:',
@@ -411,6 +447,13 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 व्हाट्सएप पर शेयर करने के लिए ऊपर भुगतान पूरा करें'
   },
   kn: {
+    heroTitle1: 'ಮಹಾ ಮೌನ',
+    heroTitle2: 'ಧ್ಯಾನ ಕುಂಭ',
+    heroTagline: 'ಬನ್ನಿ ಅರುಣಾಚಲಕ್ಕೆ.',
+    heroDates: 'ನವೆಂಬರ್ 11 - 15',
+    heroLocation: 'ಅರುಣಾಚಲ',
+    navPoster: '🎥 🖼️ ಪೋಸ್ಟರ್ / ವಿಡಿಯೋ (Poster & Video)',
+    navAnnaprasadam: '🍚 ಅನ್ನಪ್ರಸಾದ ಸೇವೆ (Annaprasadam Seva)',
     bannerPill: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
     bannerTitle: 'ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ - ಅರುಣಾಚಲ',
     bannerSubtitle: 'ಅರುಣಾಚಲದಲ್ಲಿ ನಡೆಯುವ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ನಿಮ್ಮ ಅಥವಾ ನಿಮ್ಮ ಪ್ರೀತಿಪಾತ್ರರ ಹೆಸರಿನಲ್ಲಿ ಅನ್ನಪ್ರಸಾದವನ್ನು ಅರ್ಪಿಸಿ ಪುನೀತರಾಗಿ',
@@ -438,7 +481,7 @@ export const TRANSLATIONS = {
     dobFuture: 'ಭವಿಷ್ಯದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಲಾಗುವುದಿಲ್ಲ',
     dobInvalid: 'ದಯವಿಟ್ಟು ಸರಿಯಾದ ದಿನಾಂಕವನ್ನು ನಮೂದಿಸಿ',
     platesLabel: '3. ಎಷ್ಟು ಪ್ಲೇಟ್ ಅನ್ನಪ್ರಸಾದ? (Number of Plates) *',
-    platesPlaceholder: '1 ಪ್ಲೇಟ್ = ₹1 (ಉದಾ: 10, 20, 50, 100)',
+    platesPlaceholder: '1 ಪ್ಲೇಟ್ = ₹51 (ಉದಾ: 10, 20, 50, 100)',
     plateUnit: 'ಪ್ಲೇಟ್‌ಗಳು',
     plateSingular: 'ಪ್ಲೇಟ್',
     tierLabel: 'ಶ್ರೇಣಿ:',

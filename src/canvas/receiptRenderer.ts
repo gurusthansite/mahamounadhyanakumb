@@ -117,7 +117,7 @@ export async function renderReceiptToCanvas(
 
   const amount = customData?.amount !== undefined 
     ? customData.amount 
-    : (plates * 1);
+    : (plates * 51);
 
   const amountWords = customData?.amountWords || `${numToWords(amount)} (${plates} ${plates === 1 ? 'Plate' : 'Plates'})`;
 

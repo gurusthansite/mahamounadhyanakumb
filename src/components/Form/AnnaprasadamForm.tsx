@@ -193,7 +193,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       }
     }
 
-    const amountInRupees = isMahaMouna ? donationAmount : platesNum * 1;
+    const amountInRupees = isMahaMouna ? donationAmount : platesNum * 51;
     const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
     if (!(window as any).Razorpay) {
@@ -573,13 +573,13 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             {parseInt(userData.plates || '0', 10) > 0 && (
               <div className="mt-2 text-xs text-[#ffca08] font-semibold flex items-center justify-between px-3 py-2 bg-[#240b03] rounded-lg border border-[#8b3d0b]">
                 <div className="flex flex-col gap-0.5">
-                  <span>1 {t.plateSingular} = ₹1 • {parseInt(userData.plates || '0', 10)} {t.plateUnit}</span>
+                  <span>1 {t.plateSingular} = ₹51 • {parseInt(userData.plates || '0', 10)} {t.plateUnit}</span>
                   <span className="text-emerald-400 font-bold">
                     {t.tierLabel} {getPoshakuluTitleByLang(parseInt(userData.plates || '0', 10), lang)}
                   </span>
                 </div>
                 <span className="font-bold font-mono text-base text-[#ffca08]">
-                  ₹{(parseInt(userData.plates || '0', 10) * 1).toLocaleString('en-IN')}/-
+                  ₹{(parseInt(userData.plates || '0', 10) * 51).toLocaleString('en-IN')}/-
                 </span>
               </div>
             )}
@@ -735,7 +735,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
           const isMahaMouna = userData.sevaCategory === 'mahamouna';
           const platesNum = parseInt(userData.plates || '0', 10);
           const donationAmount = parseInt(userData.donationAmount || '0', 10);
-          const totalAmount = isMahaMouna ? donationAmount : platesNum * 1;
+          const totalAmount = isMahaMouna ? donationAmount : platesNum * 51;
           const isDetailsEntered = Boolean(userData.fullName && userData.fullName.trim().length > 0 && totalAmount > 0);
 
           if (!isDetailsEntered) {

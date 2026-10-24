@@ -28,7 +28,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
   const isMahaMouna = userData.sevaCategory === 'mahamouna';
   const initPlates = parseInt(userData.plates || '1', 10) || 1;
   const donationAmountNum = parseInt(userData.donationAmount || '0', 10) || 0;
-  const initAmount = isMahaMouna ? (donationAmountNum > 0 ? donationAmountNum : 1) : initPlates * 1;
+  const initAmount = isMahaMouna ? (donationAmountNum > 0 ? donationAmountNum : 1) : initPlates * 51;
   const initReceiptNo =
     userData.receiptNo ||
     `MK-${initDay}${initMonth}-${(userData.paymentId || '108').slice(-4).toUpperCase()}`;
@@ -91,7 +91,7 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
       // If plates changed, automatically sync amount and words if desired
       if (field === 'plates') {
         const p = parseInt(value, 10) || 1;
-        const amt = p * 1;
+        const amt = p * 51;
         updated.amount = amt;
         updated.amountWords = `${numToWords(amt)} (${p} ${p === 1 ? 'Plate' : 'Plates'})`;
         updated.sevaDescription = `Arunachalam Seva (${p} Plates)`;

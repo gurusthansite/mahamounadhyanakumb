@@ -200,7 +200,7 @@ export const ComplianceFooter: React.FC = () => {
                 <div className="space-y-3 text-sm text-orange-200/90 leading-relaxed">
                   <h4 className="font-bold text-white pt-1">1. Voluntary Charitable Contributions</h4>
                   <p>
-                    All contributions made towards <strong>Annaprasadam Seva</strong> (₹1 per plate) are voluntary charitable donations to <strong>Vasudhaika Foundation</strong> to feed devotees and pilgrims at Arunachalam Mahamouna Dhyanakumbham.
+                    All contributions made towards <strong>Annaprasadam Seva</strong> (₹51 per plate) are voluntary charitable donations to <strong>Vasudhaika Foundation</strong> to feed devotees and pilgrims at Arunachalam Mahamouna Dhyanakumbham.
                   </p>
                   <h4 className="font-bold text-white pt-2">2. Non-Refundable Policy</h4>
                   <p>
