@@ -1,3 +1,5 @@
+import type { SupportedLanguage } from '../i18n/annaprasadamTranslations';
+
 export const POSTER_WIDTH = 720;
 export const POSTER_HEIGHT = 1280;
 
@@ -23,6 +25,69 @@ export function getPoshakuluTitle(plates: number): string {
   if (plates >= 111) return 'రాజపోషకులు';
   if (plates >= 52) return 'సహరాజ పోషకులు';
   return 'పోషకులు';
+}
+
+export interface AnnaprasadamPosterConfig {
+  photoArea: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  title: {
+    topPercent: number;
+    centerPercent: number;
+    y: number;
+    x: number;
+  };
+  name: {
+    topPercent: number;
+    centerPercent: number;
+    y: number;
+    x: number;
+  };
+}
+
+export const ANNAPRASADAM_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
+  te: {
+    photoArea: { x: 238, y: 776, width: 420, height: 429 },
+    title: { topPercent: 43.1, centerPercent: 50.0, y: 690, x: 450 },
+    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
+  },
+  en: {
+    photoArea: { x: 240, y: 801, width: 422, height: 372 },
+    title: { topPercent: 45.3, centerPercent: 50.0, y: 725, x: 450 },
+    name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
+  },
+  ta: {
+    photoArea: { x: 240, y: 806, width: 415, height: 364 },
+    title: { topPercent: 45.6, centerPercent: 50.0, y: 730, x: 450 },
+    name: { topPercent: 76.8, centerPercent: 50.0, y: 1230, x: 450 },
+  },
+  hi: {
+    photoArea: { x: 239, y: 814, width: 423, height: 349 },
+    title: { topPercent: 46.1, centerPercent: 50.0, y: 738, x: 450 },
+    name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
+  },
+  kn: {
+    photoArea: { x: 240, y: 787, width: 416, height: 388 },
+    title: { topPercent: 44.4, centerPercent: 50.0, y: 710, x: 450 },
+    name: { topPercent: 77.1, centerPercent: 50.0, y: 1234, x: 450 },
+  },
+};
+
+export function getAnnaprasadamPosterConfig(
+  lang: SupportedLanguage = 'te', 
+  isMahaMouna: boolean = false
+): AnnaprasadamPosterConfig {
+  if (isMahaMouna) {
+    return {
+      photoArea: { x: 240, y: 765, width: 420, height: 445 },
+      title: { topPercent: 43.0, centerPercent: 50.0, y: 688, x: 450 },
+      name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
+    };
+  }
+  return ANNAPRASADAM_CONFIG_BY_LANG[lang] || ANNAPRASADAM_CONFIG_BY_LANG.te;
 }
 
 // Text coordinates in percentages for Annaprasadam on Arunachalam.png (900 x 1600)

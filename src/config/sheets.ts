@@ -10,7 +10,7 @@
 
 // Annaprasadam Seva Payments Sheet
 export const ANNAPRASADAM_PAYMENTS_SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbxxnU_8k67ut2TmAUBRogS6NZ2RmYnM8ti5FK0pUOVgcgCiYSK-lm5IJO7RgusD-5besQ/exec";
+  "https://script.google.com/macros/s/AKfycbyi7_XNSXFMh0oD_lPbAWSgfybYVpu75DPm_mLPgPsPwVx02VL-Mf1w8kCNVkCdxkmzBg/exec";
 
 // General Data Collection Scripts
 export const GOOGLE_SCRIPT_URL =

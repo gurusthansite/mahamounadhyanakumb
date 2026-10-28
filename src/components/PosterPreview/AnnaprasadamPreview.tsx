@@ -1,11 +1,12 @@
 import React, { useRef } from 'react';
 import type { UserData } from '../../types/poster';
-import { ARUNACHALAM_TEMPLATE_WIDTH, ARUNACHALAM_TEMPLATE_HEIGHT, ARUNACHALAM_PHOTO_AREA } from '../../canvas/imageRenderer';
-import { ANNAPRASADAM_TEXT_POSITIONS } from '../../canvas/coordinates';
+import { ARUNACHALAM_TEMPLATE_WIDTH, ARUNACHALAM_TEMPLATE_HEIGHT } from '../../canvas/imageRenderer';
+import { getAnnaprasadamPosterConfig } from '../../canvas/coordinates';
 import { 
   TRANSLATIONS, 
   getPoshakuluTitleByLang, 
   getMahaMounaTitleByLang,
+  getAnnaprasadamTemplate,
   type SupportedLanguage 
 } from '../../i18n/annaprasadamTranslations';
 
@@ -34,14 +35,14 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
     ? '"Noto Sans", sans-serif'
     : '"Noto Sans Telugu", sans-serif';
 
-  // Position offsets for the photo frame in percentage:
-  // photoArea: { x: 48, y: 604, width: 362, height: 384 } on 1024 x 1536
-  const photoLeft = `${(ARUNACHALAM_PHOTO_AREA.x / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
-  const photoTop = `${(ARUNACHALAM_PHOTO_AREA.y / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
-  const photoWidth = `${(ARUNACHALAM_PHOTO_AREA.width / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
-  const photoHeight = `${(ARUNACHALAM_PHOTO_AREA.height / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
-
   const isMahaMouna = userData.sevaCategory === 'mahamouna';
+  const config = getAnnaprasadamPosterConfig(lang, isMahaMouna);
+
+  const photoLeft = `${(config.photoArea.x / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
+  const photoTop = `${(config.photoArea.y / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
+  const photoWidth = `${(config.photoArea.width / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
+  const photoHeight = `${(config.photoArea.height / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
+
   const platesNum = parseInt(userData.plates || '1', 10) || 1;
   const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
   const poshakuluTitle = isMahaMouna
@@ -49,6 +50,12 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
     : getPoshakuluTitleByLang(platesNum, lang);
   const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ ');
   const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
+
+  const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
+  const activePrefix = isOther
+    ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
+    : prefix;
+  const activeName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
 
   return (
     <div className="flex flex-col items-center">
@@ -88,7 +95,7 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {/* Template Overlay */}
         <img 
-          src={isMahaMouna ? "/assets/maharaj.png" : "/assets/Arunachalam.png"} 
+          src={getAnnaprasadamTemplate(lang, isMahaMouna)} 
           alt={isMahaMouna ? "Maha Mouna Template" : "Annaprasadam Template"}
           className="absolute inset-0 w-full h-full object-contain pointer-events-none z-10"
         />
@@ -97,10 +104,10 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
         <div 
           className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center text-center px-1.5 max-w-[55%] whitespace-nowrap"
           style={{ 
-            top: `${ANNAPRASADAM_TEXT_POSITIONS.title.topPercent}%`, 
-            left: `${ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent}%`,
+            top: `${config.title.topPercent}%`, 
+            left: `${config.title.centerPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(12px, 4.2cqi, 36px)', 
+            fontSize: lang === 'en' ? 'clamp(11px, 3.6cqi, 30px)' : 'clamp(12px, 4.2cqi, 36px)', 
             fontFamily,
             textShadow: '0 2px 6px rgba(0,0,0,0.85)'
           }}
@@ -112,8 +119,8 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
         <div 
           className="absolute z-20 text-[#591104] font-extrabold flex items-center justify-center text-center px-1.5 max-w-[50%] w-[50%]"
           style={{ 
-            top: `${ANNAPRASADAM_TEXT_POSITIONS.name.topPercent}%`, 
-            left: `${ANNAPRASADAM_TEXT_POSITIONS.name.centerPercent}%`,
+            top: `${config.name.topPercent}%`, 
+            left: `${config.name.centerPercent}%`,
             transform: 'translate(-50%, -50%)', 
             fontSize: 'clamp(11px, 3.4cqi, 26px)', 
             fontFamily,
@@ -121,9 +128,9 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
           }}
         >
           <span className="truncate max-w-full drop-shadow-sm">
-            {userData.fullName 
-              ? `${prefix}${userData.fullName}${suffix}`
-              : `${prefix}${lang === 'ta' ? 'பெயர்' : lang === 'hi' ? 'नाम' : lang === 'kn' ? 'ಹೆಸರು' : lang === 'en' ? 'Name' : 'పేరు'}${suffix}`}
+            {activeName 
+              ? `${activePrefix}${activeName}${suffix}`
+              : `${activePrefix}${lang === 'ta' ? 'பெயர்' : lang === 'hi' ? 'नाम' : lang === 'kn' ? 'ಹೆಸರು' : lang === 'en' ? 'Name' : 'పేరు'}${suffix}`}
           </span>
         </div>
 

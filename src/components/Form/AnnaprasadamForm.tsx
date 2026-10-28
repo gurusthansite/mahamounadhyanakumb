@@ -210,6 +210,10 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       body: JSON.stringify({
         action: "form_fill",
         donorName: `${userData.titlePrefix ? userData.titlePrefix + ' ' : ''}${userData.fullName}`.trim(),
+        contributionFor: userData.contributionFor === 'other' ? 'Someone Else' : 'Self',
+        beneficiaryName: userData.contributionFor === 'other' && userData.beneficiaryName
+          ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
+          : '',
         dob: userData.dob || '',
         phoneNumber: cleanPhone || '',
         location: userData.location || '',
@@ -284,6 +288,10 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             action: "annaprasadam_payment",
             receiptNo: receiptNo,
             donorName: `${userData.titlePrefix ? userData.titlePrefix + ' ' : ''}${userData.fullName}`.trim(),
+            contributionFor: userData.contributionFor === 'other' ? 'Someone Else' : 'Self',
+            beneficiaryName: userData.contributionFor === 'other' && userData.beneficiaryName
+              ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
+              : '',
             dob: userData.dob || '',
             phoneNumber: cleanPhone || '',
             location: userData.location || '',
@@ -398,6 +406,96 @@ export const AnnaprasadamForm: React.FC<Props> = ({
               placeholder={t.namePlaceholder}
               required
             />
+          </div>
+
+          {/* Contribution For: Myself vs Someone Else */}
+          <div className="mt-3 p-3 rounded-xl bg-[#1c0802]/80 border border-[#8b3d0b]/70">
+            <label className="block text-xs font-semibold text-orange-200 mb-2">
+              {t.contributionForLabel || 'ఈ విరాళం ఎవరి పేరున? (This Contribution is for):'}
+            </label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                disabled={Boolean(userData.isPaid)}
+                onClick={() => !userData.isPaid && setUserData(prev => ({ ...prev, contributionFor: 'self' }))}
+                className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold border transition-all ${
+                  (userData.contributionFor || 'self') === 'self'
+                    ? 'bg-[#ffca08] text-[#381609] border-[#ffca08] shadow-sm'
+                    : 'bg-[#240b03] text-orange-200/80 border-[#8b3d0b] hover:border-[#ffca08]/40'
+                } ${userData.isPaid ? 'opacity-80 cursor-not-allowed' : ''}`}
+              >
+                {t.forMyself || '🙋 నా కోసం (For Myself)'}
+              </button>
+              <button
+                type="button"
+                disabled={Boolean(userData.isPaid)}
+                onClick={() => !userData.isPaid && setUserData(prev => ({ 
+                  ...prev, 
+                  contributionFor: 'other',
+                  beneficiaryTitle: prev.beneficiaryTitle || (lang === 'en' ? 'Smt' : 'శ్రీమతి')
+                }))}
+                className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-bold border transition-all ${
+                  userData.contributionFor === 'other'
+                    ? 'bg-[#ffca08] text-[#381609] border-[#ffca08] shadow-sm'
+                    : 'bg-[#240b03] text-orange-200/80 border-[#8b3d0b] hover:border-[#ffca08]/40'
+                } ${userData.isPaid ? 'opacity-80 cursor-not-allowed' : ''}`}
+              >
+                {t.forSomeoneElse || '❤️ ఇతరుల పేరున (Someone Else)'}
+              </button>
+            </div>
+
+            {userData.contributionFor === 'other' && (
+              <div className="mt-3 pt-3 border-t border-[#8b3d0b]/50 animate-fadeIn">
+                <label className="block text-xs font-semibold text-amber-300 mb-1.5">
+                  {t.beneficiaryNameLabel || 'ఎవరి పేరు మీద అన్నప్రసాదం సమర్పిస్తున్నారు? (In the Name of): *'}
+                </label>
+
+                {/* Beneficiary Title Selector */}
+                <div className="flex gap-2 mb-2">
+                  {t.titles.map(opt => {
+                    const isSelected = (userData.beneficiaryTitle || (lang === 'en' ? 'Smt' : 'శ్రీమతి')) === opt.id;
+                    return (
+                      <button
+                        key={'ben-' + opt.id}
+                        type="button"
+                        disabled={Boolean(userData.isPaid)}
+                        onClick={() => !userData.isPaid && setUserData(prev => ({ ...prev, beneficiaryTitle: opt.id }))}
+                        className={`flex-1 py-1 px-2 rounded-lg text-xs font-bold border transition-all ${
+                          isSelected
+                            ? 'bg-amber-400 text-[#381609] border-amber-400 shadow-sm'
+                            : 'bg-[#240b03] text-orange-200/70 border-[#8b3d0b]'
+                        } ${userData.isPaid ? 'opacity-80 cursor-not-allowed' : ''}`}
+                      >
+                        {opt.label}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className={`flex rounded-xl overflow-hidden border ${
+                  userData.isPaid ? 'border-emerald-500/70 bg-[#180601]' : 'border-[#ffca08]/50 bg-[#240b03]'
+                }`}>
+                  <span className="px-3 py-2 text-[#ffca08] font-bold text-xs select-none bg-[#1c0802] border-r border-[#8b3d0b]/80 shrink-0 flex items-center">
+                    {userData.beneficiaryTitle || (lang === 'en' ? 'Smt' : 'శ్రీమతి')}
+                  </span>
+                  <input
+                    type="text"
+                    name="beneficiaryName"
+                    disabled={Boolean(userData.isPaid)}
+                    value={userData.beneficiaryName || ''}
+                    onChange={(e) => setUserData(prev => ({ ...prev, beneficiaryName: e.target.value }))}
+                    className={`flex-1 min-w-0 px-3 py-2 bg-transparent outline-none text-xs sm:text-sm text-white placeholder-orange-700/50 ${
+                      userData.isPaid ? 'text-emerald-300 cursor-not-allowed' : ''
+                    }`}
+                    placeholder={t.beneficiaryPlaceholder || 'ఉదా: సరస్వతి దేవి (Mother / Father / Loved One)'}
+                    required={userData.contributionFor === 'other'}
+                  />
+                </div>
+                <p className="text-[11px] text-amber-200/70 mt-1.5">
+                  {t.beneficiaryHelp || 'ℹ️ పోస్టర్‌పై ఈ పేరు మరియు ఫోటో ముద్రించబడుతుంది.'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

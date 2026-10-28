@@ -1,5 +1,5 @@
 import type { UserData } from '../types/poster';
-import { ANNAPRASADAM_TEXT_POSITIONS } from './coordinates';
+import { getAnnaprasadamPosterConfig } from './coordinates';
 import { 
   TRANSLATIONS, 
   getPoshakuluTitleByLang, 
@@ -28,7 +28,9 @@ export const generateImage = async (
 
     const width = isAnnaprasadam ? ARUNACHALAM_TEMPLATE_WIDTH : IMAGE_TEMPLATE_WIDTH;
     const height = isAnnaprasadam ? ARUNACHALAM_TEMPLATE_HEIGHT : IMAGE_TEMPLATE_HEIGHT;
-    const photoArea = isAnnaprasadam ? ARUNACHALAM_PHOTO_AREA : IMAGE_PHOTO_AREA;
+    const isMahaMouna = userData.sevaCategory === 'mahamouna';
+    const annaprasadamConfig = getAnnaprasadamPosterConfig(lang, isMahaMouna);
+    const photoArea = isAnnaprasadam ? annaprasadamConfig.photoArea : IMAGE_PHOTO_AREA;
 
     const canvas = document.createElement('canvas');
     canvas.width = width;
@@ -77,9 +79,9 @@ export const generateImage = async (
 
           // 1. Top Banner: Poshakulu Title inside dark ornate banner (no plates displayed, enlarged text with auto-fit)
           const topText = titleText;
-          const titleX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.title.centerPercent / 100));
-          const titleY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.title.topPercent / 100));
-          let titleFontSize = 38;
+          const titleX = Math.round(width * (annaprasadamConfig.title.centerPercent / 100));
+          const titleY = Math.round(height * (annaprasadamConfig.title.topPercent / 100));
+          let titleFontSize = lang === 'en' ? 34 : 38;
           ctx.font = `bold ${titleFontSize}px ${fontFam}`;
           const maxTitleWidth = 460;
           while (ctx.measureText(topText).width > maxTitleWidth && titleFontSize > 22) {
@@ -95,12 +97,16 @@ export const generateImage = async (
           ctx.shadowBlur = 0;
 
           // 2. Bottom Banner: Donor Name with prefix & suffix inside cream parchment banner (enlarged text)
-          if (userData.fullName) {
-            const nameX = Math.round(width * (ANNAPRASADAM_TEXT_POSITIONS.name.centerPercent / 100));
-            const nameY = Math.round(height * (ANNAPRASADAM_TEXT_POSITIONS.name.topPercent / 100));
-            const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ ');
+          const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
+          const targetName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
+          if (targetName) {
+            const nameX = Math.round(width * (annaprasadamConfig.name.centerPercent / 100));
+            const nameY = Math.round(height * (annaprasadamConfig.name.topPercent / 100));
+            const activePrefix = isOther
+              ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
+              : (userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ '));
             const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
-            const displayName = `${prefix}${userData.fullName}${suffix}`;
+            const displayName = `${activePrefix}${targetName}${suffix}`;
 
             // Auto-scale font size if name is long (Inner parchment width is ~420px)
             let fontSize = 32;

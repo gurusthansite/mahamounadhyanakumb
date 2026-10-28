@@ -145,6 +145,33 @@ export const LANG_FONT_CLASS: Record<SupportedLanguage, string> = {
   en: "font-['Noto_Sans',sans-serif]",
 };
 
+export const HERO_LANGUAGE_IMAGES: Record<SupportedLanguage, string> = {
+  te: '/assets/Hero_language/Hero_Telugu.jpeg',
+  en: '/assets/Hero_language/Hero_English.jpeg',
+  ta: '/assets/Hero_language/Hero_Tamil.jpeg',
+  hi: '/assets/Hero_language/Hero_Hindi.jpeg',
+  kn: '/assets/Hero_language/Hero_Kannada.jpeg',
+};
+
+export const POSTER_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
+  te: '/assets/Poster_language/telugu%20png.png',
+  en: '/assets/Poster_language/english%20png.png',
+  ta: '/assets/Poster_language/tamil%20png.png',
+  hi: '/assets/Poster_language/hindi%20png.png',
+  kn: '/assets/Poster_language/kannada%20png.png',
+};
+
+export function getAnnaprasadamHeroImage(lang: SupportedLanguage = 'te'): string {
+  return HERO_LANGUAGE_IMAGES[lang] || HERO_LANGUAGE_IMAGES.te;
+}
+
+export function getAnnaprasadamTemplate(lang: SupportedLanguage = 'te', isMahaMouna: boolean = false): string {
+  if (isMahaMouna) {
+    return '/assets/maharaj.png';
+  }
+  return POSTER_LANGUAGE_TEMPLATES[lang] || POSTER_LANGUAGE_TEMPLATES.te;
+}
+
 export const TRANSLATIONS = {
   te: {
     heroTitle1: 'మహా మౌన',
@@ -169,6 +196,12 @@ export const TRANSLATIONS = {
     paidAmountLocked: '🔒 చెల్లింపు పూర్తయింది - విరాళం మొత్తం లాక్ చేయబడింది',
     nameLabel: '1. గౌరవ సంబోధన & దాత పేరు (Title & Full Name)',
     namePlaceholder: 'పేరు రాయండి (e.g. రమేష్ బాబు)',
+    contributionForLabel: 'ఈ విరాళం ఎవరి పేరున? (This Contribution is for):',
+    forMyself: '🙋 నా కోసం (For Myself)',
+    forSomeoneElse: '❤️ ఇతరుల పేరున (Someone Else)',
+    beneficiaryNameLabel: 'ఎవరి పేరు మీద అన్నప్రసాదం సమర్పిస్తున్నారు? (In the Name of):',
+    beneficiaryPlaceholder: 'ఉదా: సరస్వతి దేవి (Mother / Father / Loved One)',
+    beneficiaryHelp: 'ℹ️ పోస్టర్‌పై ఈ పేరు మరియు ఫోటో ముద్రించబడుతుంది.',
     titles: [
       { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
       { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' }
@@ -244,6 +277,12 @@ export const TRANSLATIONS = {
     paidAmountLocked: '🔒 Paid & Amount Permanently Locked',
     nameLabel: '1. Title & Full Name *',
     namePlaceholder: 'Enter full name (e.g. Ramesh Babu)',
+    contributionForLabel: 'This Contribution is for:',
+    forMyself: '🙋 For Myself',
+    forSomeoneElse: '❤️ In Honor of Someone Else',
+    beneficiaryNameLabel: 'In the Name of (Beneficiary Name):',
+    beneficiaryPlaceholder: 'e.g., Saraswathi Devi (Mother / Father)',
+    beneficiaryHelp: 'ℹ️ This name & photo will be featured on the holy poster.',
     titles: [
       { id: 'Sri', label: 'Sri (Mr)' },
       { id: 'Smt', label: 'Smt (Mrs)' }
@@ -319,6 +358,12 @@ export const TRANSLATIONS = {
     paidAmountLocked: '🔒 கட்டணம் செலுத்தப்பட்டது - தொகை பூட்டப்பட்டது',
     nameLabel: '1. அடைமொழி & கொடையாளர் பெயர் *',
     namePlaceholder: 'முழு பெயரை எழுதவும் (எ.கா: ரமேஷ் பாபு)',
+    contributionForLabel: 'இந்த நன்கொடை யாருக்காக? (This Contribution is for):',
+    forMyself: '🙋 எனக்காக (For Myself)',
+    forSomeoneElse: '❤️ மற்றவர்கள் பெயரில் (Someone Else)',
+    beneficiaryNameLabel: 'யார் பெயரில் அன்னபிரசாதம் வழங்கப்படுகிறது?:',
+    beneficiaryPlaceholder: 'எ.கா: சரஸ்வதி தேவி (அம்மா / அப்பா)',
+    beneficiaryHelp: 'ℹ️ போஸ்டரில் இந்த பெயரும் புகைப்படமும் அச்சிடப்படும்.',
     titles: [
       { id: 'ஸ்ரீ', label: 'ஸ்ரீ (Sri)' },
       { id: 'ஸ்ரீமதி', label: 'ஸ்ரீமதி (Smt)' }
@@ -394,6 +439,12 @@ export const TRANSLATIONS = {
     paidAmountLocked: '🔒 भुगतान सफल - राशि लॉक कर दी गई है',
     nameLabel: '1. आदर सूचक व दानदाता का पूरा नाम *',
     namePlaceholder: 'पूरा नाम लिखें (उदा: रमेश बाबू)',
+    contributionForLabel: 'यह दान किसके नाम पर है? (This Contribution is for):',
+    forMyself: '🙋 स्वयं के लिए (For Myself)',
+    forSomeoneElse: '❤️ परिजनों के नाम पर (Someone Else)',
+    beneficiaryNameLabel: 'किसके नाम पर अन्नप्रसाद अर्पित कर रहे हैं?:',
+    beneficiaryPlaceholder: 'उदा: सरस्वती देवी (माताजी / पिताजी)',
+    beneficiaryHelp: 'ℹ️ पोस्टर पर यह नाम और फोटो प्रदर्शित होगा.',
     titles: [
       { id: 'श्री', label: 'श्री (Sri)' },
       { id: 'श्रीमती', label: 'श्रीमती (Smt)' }
@@ -469,6 +520,12 @@ export const TRANSLATIONS = {
     paidAmountLocked: '🔒 ಪಾವತಿ ಪೂರ್ಣಗೊಂಡಿದೆ - ಮೊತ್ತವನ್ನು ಲಾಕ್ ಮಾಡಲಾಗಿದೆ',
     nameLabel: '1. ಗೌರವ ಸಂಬೋಧನೆ ಮತ್ತು ದಾನಿಗಳ ಹೆಸರು (Title & Full Name) *',
     namePlaceholder: 'ಪೂರ್ಣ ಹೆಸರು ಬರೆಯಿರಿ (ಉದಾ: ರಮೇಶ್ ಬಾಬು)',
+    contributionForLabel: 'ಈ ದೇಣಿಗೆ ಯಾರ ಹೆಸರಿನಲ್ಲಿ? (This Contribution is for):',
+    forMyself: '🙋 ನನ್ನ ಹೆಸರಿನಲ್ಲಿ (For Myself)',
+    forSomeoneElse: '❤️ ಇತರರ ಹೆಸರಿನಲ್ಲಿ (Someone Else)',
+    beneficiaryNameLabel: 'ಯಾರ ಹೆಸರಿನಲ್ಲಿ ಅನ್ನಪ್ರಸಾದ ಸಮರ್ಪಿಸುತ್ತಿದ್ದೀರಿ?:',
+    beneficiaryPlaceholder: 'ಉದಾ: ಸರಸ್ವತಿ ದೇವಿ (ಅಮ್ಮ / ಅಪ್ಪ)',
+    beneficiaryHelp: 'ℹ️ ಪೋಸ್ಟರ್‌ನಲ್ಲಿ ಈ ಹೆಸರು ಮತ್ತು ಫೋಟೋ ಮುದ್ರಿಸಲಾಗುತ್ತದೆ.',
     titles: [
       { id: 'ಶ್ರೀ', label: 'ಶ್ರೀ (Sri)' },
       { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' }

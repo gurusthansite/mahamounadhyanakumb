@@ -18,6 +18,9 @@ export interface UserData {
   donationAmount?: string;
   sevaCategory?: 'guruprasadam' | 'mahamouna';
   titlePrefix?: string;
+  contributionFor?: 'self' | 'other';
+  beneficiaryTitle?: string;
+  beneficiaryName?: string;
   isPaid?: boolean;
   paymentId?: string;
   receiptNo?: string;

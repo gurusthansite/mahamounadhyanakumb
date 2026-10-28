@@ -12,11 +12,17 @@ import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import { DeveloperSignature } from './components/Footer/DeveloperSignature';
 import { LanguageSwitcher } from './components/Language/LanguageSwitcher';
-import { TRANSLATIONS, LANG_FONT_CLASS, type SupportedLanguage } from './i18n/annaprasadamTranslations';
+import { 
+  TRANSLATIONS, 
+  LANG_FONT_CLASS, 
+  getAnnaprasadamHeroImage, 
+  getAnnaprasadamTemplate, 
+  type SupportedLanguage 
+} from './i18n/annaprasadamTranslations';
 import type { UserData, CropArea } from './types/poster';
 import { generateVideo } from './canvas/videoRenderer';
-import { generateImage, IMAGE_PHOTO_AREA, ARUNACHALAM_PHOTO_AREA } from './canvas/imageRenderer';
-import { PHOTO_AREA } from './canvas/coordinates';
+import { generateImage, IMAGE_PHOTO_AREA } from './canvas/imageRenderer';
+import { PHOTO_AREA, getAnnaprasadamPosterConfig } from './canvas/coordinates';
 import {
   GOOGLE_SCRIPT_URL,
   FORM_RESPONSES_SCRIPT_URL,
@@ -222,6 +228,10 @@ function App() {
       isPlateLocked: userData.isPlateLocked || false,
       paymentId: userData.paymentId || '',
       receiptNo: userData.receiptNo || '',
+      contributionFor: userData.contributionFor === 'other' ? 'Someone Else' : 'Self',
+      beneficiaryName: userData.contributionFor === 'other' && userData.beneficiaryName
+        ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
+        : '',
       category: currentPage === 'annaprasadam' 
         ? (isMahaMouna ? 'Maha Mouna Dhyana Kumbh' : 'Annaprasadam Seva')
         : 'Poster Generator',
@@ -306,7 +316,7 @@ function App() {
 
       if (currentPage === 'annaprasadam') {
         const isMahaMouna = userData.sevaCategory === 'mahamouna';
-        const templatePath = isMahaMouna ? '/assets/maharaj.png' : '/assets/Arunachalam.png';
+        const templatePath = getAnnaprasadamTemplate(currentLang, isMahaMouna);
         const blob = await generateImage(userData, templatePath, true, currentLang);
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -380,7 +390,7 @@ function App() {
 
       if (isAnnaprasadam) {
         const isMahaMouna = userData.sevaCategory === 'mahamouna';
-        const templatePath = isMahaMouna ? '/assets/maharaj.png' : '/assets/Arunachalam.png';
+        const templatePath = getAnnaprasadamTemplate(currentLang, isMahaMouna);
         blob = await generateImage(userData, templatePath, true, currentLang);
         const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
         filename = `${prefix}-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
@@ -530,7 +540,7 @@ function App() {
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
             <div className="absolute inset-0 bg-[#ffca08] rounded-3xl blur-2xl opacity-15 group-hover:opacity-25 transition-opacity duration-500"></div>
             <img 
-              src={currentPage === 'annaprasadam' ? '/assets/annapradam_hero.png' : '/assets/mouna_banner.jpg'} 
+              src={currentPage === 'annaprasadam' ? getAnnaprasadamHeroImage(currentLang) : '/assets/mouna_banner.jpg'} 
               alt={currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
@@ -726,7 +736,10 @@ function App() {
           isVideo={currentPage !== 'annaprasadam' && userData.templateType === 'video'}
           aspectRatio={
             currentPage === 'annaprasadam'
-              ? ARUNACHALAM_PHOTO_AREA.width / ARUNACHALAM_PHOTO_AREA.height
+              ? (() => {
+                  const area = getAnnaprasadamPosterConfig(currentLang, userData.sevaCategory === 'mahamouna').photoArea;
+                  return area.width / area.height;
+                })()
               : userData.templateType === 'image'
               ? IMAGE_PHOTO_AREA.width / IMAGE_PHOTO_AREA.height
               : PHOTO_AREA.width / PHOTO_AREA.height
