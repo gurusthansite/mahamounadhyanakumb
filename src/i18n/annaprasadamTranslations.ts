@@ -161,13 +161,21 @@ export const POSTER_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
   kn: '/assets/Poster_language/kannada%20png.png',
 };
 
+export const MAHAMOUNA_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
+  te: '/assets/mmts/Telugu_mmts.png',
+  en: '/assets/mmts/English%20mmts.png',
+  ta: '/assets/mmts/Tamil_mmts.png',
+  hi: '/assets/mmts/Hindi_mmts.png',
+  kn: '/assets/mmts/kannada_mmts.png',
+};
+
 export function getAnnaprasadamHeroImage(lang: SupportedLanguage = 'te'): string {
   return HERO_LANGUAGE_IMAGES[lang] || HERO_LANGUAGE_IMAGES.te;
 }
 
 export function getAnnaprasadamTemplate(lang: SupportedLanguage = 'te', isMahaMouna: boolean = false): string {
   if (isMahaMouna) {
-    return '/assets/maharaj.png';
+    return MAHAMOUNA_LANGUAGE_TEMPLATES[lang] || MAHAMOUNA_LANGUAGE_TEMPLATES.te;
   }
   return POSTER_LANGUAGE_TEMPLATES[lang] || POSTER_LANGUAGE_TEMPLATES.te;
 }

@@ -26,10 +26,10 @@ export const generateImage = async (
   return new Promise((resolve, reject) => {
     if (!userData.photoUrl) return reject(new Error("No image provided"));
 
-    const width = isAnnaprasadam ? ARUNACHALAM_TEMPLATE_WIDTH : IMAGE_TEMPLATE_WIDTH;
-    const height = isAnnaprasadam ? ARUNACHALAM_TEMPLATE_HEIGHT : IMAGE_TEMPLATE_HEIGHT;
     const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const annaprasadamConfig = getAnnaprasadamPosterConfig(lang, isMahaMouna);
+    const width = isAnnaprasadam ? annaprasadamConfig.templateWidth : IMAGE_TEMPLATE_WIDTH;
+    const height = isAnnaprasadam ? annaprasadamConfig.templateHeight : IMAGE_TEMPLATE_HEIGHT;
     const photoArea = isAnnaprasadam ? annaprasadamConfig.photoArea : IMAGE_PHOTO_AREA;
 
     const canvas = document.createElement('canvas');

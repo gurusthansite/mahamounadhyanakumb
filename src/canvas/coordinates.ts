@@ -28,6 +28,8 @@ export function getPoshakuluTitle(plates: number): string {
 }
 
 export interface AnnaprasadamPosterConfig {
+  templateWidth: number;
+  templateHeight: number;
   photoArea: {
     x: number;
     y: number;
@@ -50,29 +52,77 @@ export interface AnnaprasadamPosterConfig {
 
 export const ANNAPRASADAM_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
   te: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 238, y: 776, width: 420, height: 429 },
     title: { topPercent: 43.1, centerPercent: 50.0, y: 690, x: 450 },
     name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
   },
   en: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 240, y: 801, width: 422, height: 372 },
     title: { topPercent: 45.3, centerPercent: 50.0, y: 725, x: 450 },
     name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
   },
   ta: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 240, y: 806, width: 415, height: 364 },
     title: { topPercent: 45.6, centerPercent: 50.0, y: 730, x: 450 },
     name: { topPercent: 76.8, centerPercent: 50.0, y: 1230, x: 450 },
   },
   hi: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 239, y: 814, width: 423, height: 349 },
     title: { topPercent: 46.1, centerPercent: 50.0, y: 738, x: 450 },
     name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
   },
   kn: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 240, y: 787, width: 416, height: 388 },
     title: { topPercent: 44.4, centerPercent: 50.0, y: 710, x: 450 },
     name: { topPercent: 77.1, centerPercent: 50.0, y: 1234, x: 450 },
+  },
+};
+
+export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
+  te: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 242, y: 774, width: 418, height: 430 },
+    title: { topPercent: 43.5, centerPercent: 50.0, y: 697, x: 450 },
+    name: { topPercent: 80.2, centerPercent: 50.0, y: 1284, x: 450 },
+  },
+  en: {
+    templateWidth: 941,
+    templateHeight: 1672,
+    photoArea: { x: 247, y: 839, width: 447, height: 414 },
+    title: { topPercent: 45.0, centerPercent: 50.0, y: 753, x: 470 },
+    name: { topPercent: 79.5, centerPercent: 50.0, y: 1330, x: 470 },
+  },
+  ta: {
+    templateWidth: 941,
+    templateHeight: 1672,
+    photoArea: { x: 261, y: 798, width: 418, height: 429 },
+    title: { topPercent: 42.7, centerPercent: 50.0, y: 714, x: 470 },
+    name: { topPercent: 78.2, centerPercent: 50.0, y: 1308, x: 470 },
+  },
+  hi: {
+    templateWidth: 941,
+    templateHeight: 1672,
+    photoArea: { x: 247, y: 838, width: 446, height: 415 },
+    title: { topPercent: 45.0, centerPercent: 50.0, y: 753, x: 470 },
+    name: { topPercent: 79.7, centerPercent: 50.0, y: 1333, x: 470 },
+  },
+  kn: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 241, y: 765, width: 419, height: 436 },
+    title: { topPercent: 42.7, centerPercent: 50.0, y: 684, x: 450 },
+    name: { topPercent: 79.8, centerPercent: 50.0, y: 1276, x: 450 },
   },
 };
 
@@ -81,11 +131,7 @@ export function getAnnaprasadamPosterConfig(
   isMahaMouna: boolean = false
 ): AnnaprasadamPosterConfig {
   if (isMahaMouna) {
-    return {
-      photoArea: { x: 240, y: 765, width: 420, height: 445 },
-      title: { topPercent: 43.0, centerPercent: 50.0, y: 688, x: 450 },
-      name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-    };
+    return MAHAMOUNA_CONFIG_BY_LANG[lang] || MAHAMOUNA_CONFIG_BY_LANG.te;
   }
   return ANNAPRASADAM_CONFIG_BY_LANG[lang] || ANNAPRASADAM_CONFIG_BY_LANG.te;
 }

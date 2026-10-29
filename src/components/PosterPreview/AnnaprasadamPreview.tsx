@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import type { UserData } from '../../types/poster';
-import { ARUNACHALAM_TEMPLATE_WIDTH, ARUNACHALAM_TEMPLATE_HEIGHT } from '../../canvas/imageRenderer';
 import { getAnnaprasadamPosterConfig } from '../../canvas/coordinates';
 import { 
   TRANSLATIONS, 
@@ -38,10 +37,10 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
   const isMahaMouna = userData.sevaCategory === 'mahamouna';
   const config = getAnnaprasadamPosterConfig(lang, isMahaMouna);
 
-  const photoLeft = `${(config.photoArea.x / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
-  const photoTop = `${(config.photoArea.y / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
-  const photoWidth = `${(config.photoArea.width / ARUNACHALAM_TEMPLATE_WIDTH) * 100}%`;
-  const photoHeight = `${(config.photoArea.height / ARUNACHALAM_TEMPLATE_HEIGHT) * 100}%`;
+  const photoLeft = `${(config.photoArea.x / config.templateWidth) * 100}%`;
+  const photoTop = `${(config.photoArea.y / config.templateHeight) * 100}%`;
+  const photoWidth = `${(config.photoArea.width / config.templateWidth) * 100}%`;
+  const photoHeight = `${(config.photoArea.height / config.templateHeight) * 100}%`;
 
   const platesNum = parseInt(userData.plates || '1', 10) || 1;
   const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
@@ -71,8 +70,11 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
       <div 
         ref={containerRef}
-        className="relative w-full max-w-[420px] aspect-[900/1600] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#ffca08]/40 bg-[#1c0802]"
-        style={{ containerType: 'inline-size' }}
+        className="relative w-full max-w-[420px] rounded-3xl overflow-hidden shadow-2xl border-4 border-[#ffca08]/40 bg-[#1c0802]"
+        style={{ 
+          containerType: 'inline-size',
+          aspectRatio: `${config.templateWidth} / ${config.templateHeight}`
+        }}
       >
         {/* User Cropped Photo */}
         {userData.photoUrl && (
