@@ -108,10 +108,10 @@ export const generateImage = async (
             const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
             const displayName = `${activePrefix}${targetName}${suffix}`;
 
-            // Auto-scale font size if name is long (Inner parchment width is ~420px)
-            let fontSize = 32;
+            // Auto-scale font size if name is long (Inner parchment width is ~500px)
+            let fontSize = 34;
             ctx.font = `bold ${fontSize}px ${fontFam}`;
-            const maxNameWidth = 420;
+            const maxNameWidth = Math.round(width * 0.58);
             while (ctx.measureText(displayName).width > maxNameWidth && fontSize > 18) {
               fontSize -= 2;
               ctx.font = `bold ${fontSize}px ${fontFam}`;

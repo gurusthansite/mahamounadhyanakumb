@@ -119,7 +119,7 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {/* 2. Bottom Banner: Donor Full Name inside Cream Parchment Banner */}
         <div 
-          className="absolute z-20 text-[#591104] font-extrabold flex items-center justify-center text-center px-1.5 max-w-[50%] w-[50%]"
+          className="absolute z-20 text-[#591104] font-extrabold flex items-center justify-center text-center px-1.5 max-w-[62%] w-[62%]"
           style={{ 
             top: `${config.name.topPercent}%`, 
             left: `${config.name.centerPercent}%`,
