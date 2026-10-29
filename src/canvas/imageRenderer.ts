@@ -100,8 +100,10 @@ export const generateImage = async (
           const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
           const targetName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
           if (targetName) {
-            const nameX = Math.round(width * (annaprasadamConfig.name.centerPercent / 100));
-            const nameY = Math.round(height * (annaprasadamConfig.name.topPercent / 100));
+            const effectiveTopPercent = userData.customNamePosition?.topPercent ?? annaprasadamConfig.name.topPercent;
+            const effectiveCenterPercent = userData.customNamePosition?.centerPercent ?? annaprasadamConfig.name.centerPercent;
+            const nameX = Math.round(width * (effectiveCenterPercent / 100));
+            const nameY = Math.round(height * (effectiveTopPercent / 100));
             const activePrefix = isOther
               ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
               : (userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ '));
@@ -109,7 +111,7 @@ export const generateImage = async (
             const displayName = `${activePrefix}${targetName}${suffix}`;
 
             // Auto-scale font size if name is long (Inner parchment width is ~500px)
-            let fontSize = 34;
+            let fontSize = userData.customNamePosition?.fontSize || 34;
             ctx.font = `bold ${fontSize}px ${fontFam}`;
             const maxNameWidth = Math.round(width * 0.58);
             while (ctx.measureText(displayName).width > maxNameWidth && fontSize > 18) {

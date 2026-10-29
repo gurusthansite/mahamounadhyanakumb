@@ -29,6 +29,11 @@ export interface UserData {
   rawMediaUrl?: string | null;
   cropArea?: CropArea;
   cropPixels?: CropArea;
+  customNamePosition?: {
+    topPercent?: number;
+    centerPercent?: number;
+    fontSize?: number;
+  };
   templateType: 'video' | 'image';
   videoOffset?: { x: number; y: number };
   videoScale?: number;

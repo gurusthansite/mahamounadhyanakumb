@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import type { UserData } from '../../types/poster';
 import { getAnnaprasadamPosterConfig } from '../../canvas/coordinates';
 import { 
@@ -18,10 +18,12 @@ interface Props {
 
 export const AnnaprasadamPreview: React.FC<Props> = ({ 
   userData, 
+  setUserData,
   onEditCrop,
   lang = 'te'
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const [showAdjustPanel, setShowAdjustPanel] = useState(false);
   const t = TRANSLATIONS[lang] || TRANSLATIONS.te;
 
   const fontFamily = lang === 'ta'
@@ -56,8 +58,61 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
     : prefix;
   const activeName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
 
+  // Effective coordinates (Python defaults + user manual overrides)
+  const effectiveTopPercent = userData.customNamePosition?.topPercent ?? config.name.topPercent;
+  const effectiveCenterPercent = userData.customNamePosition?.centerPercent ?? config.name.centerPercent;
+  const effectiveFontSize = userData.customNamePosition?.fontSize ?? 34;
+
+  const handleAdjust = (field: 'topPercent' | 'centerPercent' | 'fontSize', delta: number) => {
+    setUserData(prev => {
+      const currentTop = prev.customNamePosition?.topPercent ?? config.name.topPercent;
+      const currentCenter = prev.customNamePosition?.centerPercent ?? config.name.centerPercent;
+      const currentFont = prev.customNamePosition?.fontSize ?? 34;
+
+      let newTop = currentTop;
+      let newCenter = currentCenter;
+      let newFont = currentFont;
+
+      if (field === 'topPercent') {
+        newTop = parseFloat((currentTop + delta).toFixed(2));
+      } else if (field === 'centerPercent') {
+        newCenter = parseFloat((currentCenter + delta).toFixed(2));
+      } else if (field === 'fontSize') {
+        newFont = Math.max(16, Math.min(50, currentFont + delta));
+      }
+
+      return {
+        ...prev,
+        customNamePosition: {
+          topPercent: newTop,
+          centerPercent: newCenter,
+          fontSize: newFont,
+        }
+      };
+    });
+  };
+
+  const handleSetDirect = (field: 'topPercent' | 'centerPercent' | 'fontSize', value: number) => {
+    setUserData(prev => ({
+      ...prev,
+      customNamePosition: {
+        topPercent: field === 'topPercent' ? value : (prev.customNamePosition?.topPercent ?? config.name.topPercent),
+        centerPercent: field === 'centerPercent' ? value : (prev.customNamePosition?.centerPercent ?? config.name.centerPercent),
+        fontSize: field === 'fontSize' ? value : (prev.customNamePosition?.fontSize ?? 34),
+      }
+    }));
+  };
+
+  const handleReset = () => {
+    setUserData(prev => {
+      const next = { ...prev };
+      delete next.customNamePosition;
+      return next;
+    });
+  };
+
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center w-full">
       {/* Status Notice on top of Preview */}
       {userData.isPaid && (
         <div className="mb-3 w-full max-w-[420px] flex items-center justify-center">
@@ -121,10 +176,10 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
         <div 
           className="absolute z-20 text-[#591104] font-extrabold flex items-center justify-center text-center px-1.5 max-w-[62%] w-[62%]"
           style={{ 
-            top: `${config.name.topPercent}%`, 
-            left: `${config.name.centerPercent}%`,
+            top: `${effectiveTopPercent}%`, 
+            left: `${effectiveCenterPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: 'clamp(11px, 3.4cqi, 26px)', 
+            fontSize: `clamp(${Math.round(effectiveFontSize * 0.35)}px, ${(effectiveFontSize / 10).toFixed(1)}cqi, ${effectiveFontSize}px)`, 
             fontFamily,
             lineHeight: 1.15
           }}
@@ -147,6 +202,149 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
             </svg>
             {t.photoCropBtn || 'Crop Photo'}
           </button>
+        )}
+      </div>
+
+      {/* Manual Name Coordinates Adjuster Toggle & Card */}
+      <div className="w-full max-w-[420px] mt-3">
+        <button
+          type="button"
+          onClick={() => setShowAdjustPanel(prev => !prev)}
+          className="w-full py-2 px-3.5 rounded-xl bg-[#4a1c0b]/80 hover:bg-[#4a1c0b] text-[#ffca08] border border-[#8b3d0b] text-xs font-semibold flex items-center justify-between transition-all shadow-md"
+        >
+          <span className="flex items-center gap-1.5">
+            <span>⚙️</span>
+            <span>Manual Name Position & Coordinates</span>
+          </span>
+          <span className="text-[11px] bg-[#240b03] px-2 py-0.5 rounded text-orange-200">
+            {showAdjustPanel ? 'Hide ▲' : 'Adjust ▼'}
+          </span>
+        </button>
+
+        {showAdjustPanel && (
+          <div className="mt-2 p-3.5 bg-[#2d0e04] rounded-2xl border border-[#ffca08]/30 shadow-xl flex flex-col gap-3 text-xs text-orange-100 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#8b3d0b]/40 pb-2">
+              <span className="font-bold text-[#ffca08]">Name Placement (Real-time Preview & Download)</span>
+              <button
+                type="button"
+                onClick={handleReset}
+                className="text-[11px] px-2 py-0.5 rounded bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
+              >
+                ↺ Reset Default
+              </button>
+            </div>
+
+            {/* Vertical (Y) Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Vertical Position (Y):</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveTopPercent.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('topPercent', -0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Up"
+                >
+                  ▲ Up (-0.2%)
+                </button>
+                <input
+                  type="range"
+                  min="70.0"
+                  max="85.0"
+                  step="0.1"
+                  value={effectiveTopPercent}
+                  onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('topPercent', 0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Down"
+                >
+                  ▼ Down (+0.2%)
+                </button>
+              </div>
+            </div>
+
+            {/* Horizontal (X) Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveCenterPercent.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('centerPercent', -0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Left"
+                >
+                  ◄ Left (-0.2%)
+                </button>
+                <input
+                  type="range"
+                  min="40.0"
+                  max="60.0"
+                  step="0.1"
+                  value={effectiveCenterPercent}
+                  onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('centerPercent', 0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Right"
+                >
+                  ► Right (+0.2%)
+                </button>
+              </div>
+            </div>
+
+            {/* Font Size Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Font Size:</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveFontSize}px
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('fontSize', -1)}
+                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Smaller"
+                >
+                  A-
+                </button>
+                <input
+                  type="range"
+                  min="20"
+                  max="48"
+                  step="1"
+                  value={effectiveFontSize}
+                  onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('fontSize', 1)}
+                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Larger"
+                >
+                  A+
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </div>
