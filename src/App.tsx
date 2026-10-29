@@ -382,7 +382,7 @@ function App() {
 
       const annaprasadamBodies: Record<SupportedLanguage, string> = {
         te: annaprasadamCustomShare,
-        ta: `அனைவருக்கும் அன்பான அழைப்பு \n\n*மகா மௌன தியான கும்ப் - அருணாச்சலம்*\n(நவம்பர் 11 முதல் 15 வரை)\n\n*மகா அன்னபிரசாத விநியோக சேவை*\n\nநீங்களும் இந்த புனித அன்னபிரசாத சேவையில் பங்குபெறுங்கள்!\n\nஉங்கள் பெயர் மற்றும் புகைப்படத்துடன் போஸ்டர் உருவாக்க:\n${annaprasadamGenUrl}?lang=ta\n\nகூடுதல் விவரங்களுக்கு:\n9133016016\n9133015015\n9133014014`,
+        ta: annaprasadamCustomShare,
         en: `Warm Welcome to All \n\n*Maha Mouna Dhyana Kumbh - Arunachalam*\n(November 11 to 15)\n\n*Maha Annaprasadam Seva*\n\nBe a blessed sponsor in holy Annaprasadam Seva!\n\nCreate your personalized Annaprasadam poster with your photo & name:\n${annaprasadamGenUrl}?lang=en\n\nFor more details:\n9133016016\n9133015015\n9133014014`,
         hi: `आप सभी का सादर निमंत्रण \n\n*महा मौन ध्यान कुंभ - अरुणाचलम*\n(11 से 15 नवंबर)\n\n*महा अन्नप्रसाद वितरण सेवा*\n\nआप भी पवित्र अन्नप्रसाद सेवा में भागीदार बनें!\n\nअपने नाम और फोटो के साथ अन्नप्रसाद पोस्टर बनाएं:\n${annaprasadamGenUrl}?lang=hi\n\nअधिक जानकारी हेतु:\n9133016016\n9133015015\n9133014014`,
         kn: `ಎಲ್ಲರಿಗೂ ಆತ್ಮೀಯ ಆಹ್ವಾನ \n\n*ಮಹಾ ಮೌನ ಧ್ಯಾನ ಕುಂಭ - ಅರುಣಾಚಲ*\n(ನವೆಂಬರ್ 11 ರಿಂದ 15 ರವರೆಗೆ)\n\n*ಮಹಾ ಅನ್ನಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ*\n\nನೀವು ಕೂಡ ಈ ಪವಿತ್ರ ಅನ್ನಪ್ರಸಾದ ಸೇವೆಯಲ್ಲಿ ಪಾಲ್ಗೊಳ್ಳಿ!\n\nನಿಮ್ಮ ಹೆಸರು, ಫೋಟೋದೊಂದಿಗೆ ಅನ್ನಪ್ರಸಾದ ಪೋಸ್ಟರ್ ತಯಾರಿಸಲು:\n${annaprasadamGenUrl}?lang=kn\n\nಹೆಚ್ಚಿನ ವಿವರಗಳಿಗಾಗಿ:\n9133016016\n9133015015\n9133014014`

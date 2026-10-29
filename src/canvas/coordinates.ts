@@ -54,6 +54,44 @@ export const ANNAPRASADAM_CONFIG_BY_LANG: Record<SupportedLanguage, Annaprasadam
   te: {
     templateWidth: 900,
     templateHeight: 1600,
+    photoArea: { x: 238, y: 776, width: 420, height: 429 },
+    title: { topPercent: 43.1, centerPercent: 50.0, y: 690, x: 450 },
+    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
+  },
+  en: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 801, width: 422, height: 372 },
+    title: { topPercent: 45.3, centerPercent: 50.0, y: 725, x: 450 },
+    name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
+  },
+  ta: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 806, width: 415, height: 364 },
+    title: { topPercent: 45.6, centerPercent: 50.0, y: 730, x: 450 },
+    name: { topPercent: 76.8, centerPercent: 50.0, y: 1230, x: 450 },
+  },
+  hi: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 239, y: 814, width: 423, height: 349 },
+    title: { topPercent: 46.1, centerPercent: 50.0, y: 738, x: 450 },
+    name: { topPercent: 76.3, centerPercent: 50.0, y: 1221, x: 450 },
+  },
+  kn: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 787, width: 416, height: 388 },
+    title: { topPercent: 44.4, centerPercent: 50.0, y: 710, x: 450 },
+    name: { topPercent: 77.1, centerPercent: 50.0, y: 1234, x: 450 },
+  },
+};
+
+export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
+  te: {
+    templateWidth: 900,
+    templateHeight: 1600,
     photoArea: { x: 242, y: 774, width: 418, height: 430 },
     title: { topPercent: 43.5, centerPercent: 50.0, y: 697, x: 450 },
     name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
@@ -84,44 +122,6 @@ export const ANNAPRASADAM_CONFIG_BY_LANG: Record<SupportedLanguage, Annaprasadam
     templateHeight: 1600,
     photoArea: { x: 241, y: 765, width: 419, height: 436 },
     title: { topPercent: 42.7, centerPercent: 50.0, y: 684, x: 450 },
-    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-  },
-};
-
-export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
-  te: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 238, y: 776, width: 420, height: 429 },
-    title: { topPercent: 43.1, centerPercent: 50.0, y: 690, x: 450 },
-    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-  },
-  en: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 801, width: 422, height: 372 },
-    title: { topPercent: 45.3, centerPercent: 50.0, y: 725, x: 450 },
-    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-  },
-  ta: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 806, width: 415, height: 364 },
-    title: { topPercent: 45.6, centerPercent: 50.0, y: 730, x: 450 },
-    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-  },
-  hi: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 239, y: 814, width: 423, height: 349 },
-    title: { topPercent: 46.1, centerPercent: 50.0, y: 738, x: 450 },
-    name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
-  },
-  kn: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 787, width: 416, height: 388 },
-    title: { topPercent: 44.4, centerPercent: 50.0, y: 710, x: 450 },
     name: { topPercent: 79.0, centerPercent: 50.0, y: 1264, x: 450 },
   },
 };

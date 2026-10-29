@@ -102,24 +102,9 @@ export const generateImage = async (
           if (targetName) {
             const nameX = Math.round(width * (annaprasadamConfig.name.centerPercent / 100));
             const nameY = Math.round(height * (annaprasadamConfig.name.topPercent / 100));
-            const defaultPrefixByLang: Record<SupportedLanguage, string> = {
-              ta: 'ஸ்ரீ ',
-              hi: 'श्री ',
-              kn: 'ಶ್ರೀ ',
-              en: 'Sri ',
-              te: 'శ్రీ ',
-            };
-            const defaultSmtByLang: Record<SupportedLanguage, string> = {
-              ta: 'ஸ்ரீமதி ',
-              hi: 'श्रीमती ',
-              kn: 'ಶ್ರೀಮತಿ ',
-              en: 'Smt ',
-              te: 'శ్రీమతి ',
-            };
-
             const activePrefix = isOther
-              ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : defaultSmtByLang[lang])
-              : (userData.titlePrefix ? `${userData.titlePrefix} ` : defaultPrefixByLang[lang]);
+              ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
+              : (userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ '));
             const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
             const displayName = `${activePrefix}${targetName}${suffix}`;
 

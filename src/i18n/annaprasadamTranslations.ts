@@ -153,8 +153,7 @@ export const HERO_LANGUAGE_IMAGES: Record<SupportedLanguage, string> = {
   kn: '/assets/Hero_language/Hero_Kannada.jpeg',
 };
 
-// Maha Mouna Dhyana Kumbh templates ("For Being a Part of Maha Mouna Dhyana Kumbh")
-export const MAHAMOUNA_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
+export const POSTER_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
   te: '/assets/Poster_language/telugu%20png.png',
   en: '/assets/Poster_language/english%20png.png',
   ta: '/assets/Poster_language/tamil%20png.png',
@@ -162,17 +161,13 @@ export const MAHAMOUNA_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
   kn: '/assets/Poster_language/kannada%20png.png',
 };
 
-// Guru Prasadam (Annaprasadam Seva) templates ("For Being a Part of Divine Offering of Annaprasadam")
-export const GURUPRASADAM_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
+export const MAHAMOUNA_LANGUAGE_TEMPLATES: Record<SupportedLanguage, string> = {
   te: '/assets/mmts/Telugu_mmts.png',
   en: '/assets/mmts/English%20mmts.png',
   ta: '/assets/mmts/Tamil_mmts.png',
   hi: '/assets/mmts/Hindi_mmts.png',
   kn: '/assets/mmts/kannada_mmts.png',
 };
-
-// Backward compatibility alias
-export const POSTER_LANGUAGE_TEMPLATES = GURUPRASADAM_LANGUAGE_TEMPLATES;
 
 export function getAnnaprasadamHeroImage(lang: SupportedLanguage = 'te'): string {
   return HERO_LANGUAGE_IMAGES[lang] || HERO_LANGUAGE_IMAGES.te;
@@ -182,7 +177,7 @@ export function getAnnaprasadamTemplate(lang: SupportedLanguage = 'te', isMahaMo
   if (isMahaMouna) {
     return MAHAMOUNA_LANGUAGE_TEMPLATES[lang] || MAHAMOUNA_LANGUAGE_TEMPLATES.te;
   }
-  return GURUPRASADAM_LANGUAGE_TEMPLATES[lang] || GURUPRASADAM_LANGUAGE_TEMPLATES.te;
+  return POSTER_LANGUAGE_TEMPLATES[lang] || POSTER_LANGUAGE_TEMPLATES.te;
 }
 
 export const TRANSLATIONS = {
