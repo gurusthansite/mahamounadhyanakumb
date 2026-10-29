@@ -50,45 +50,8 @@ export interface AnnaprasadamPosterConfig {
   };
 }
 
+// Guru Prasadam (Annaprasadam Seva) config for mmts templates ('Divine Offering of Annaprasadam')
 export const ANNAPRASADAM_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
-  te: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 238, y: 776, width: 420, height: 429 },
-    title: { topPercent: 42.8, centerPercent: 50.0, y: 684, x: 450 },
-    name: { topPercent: 78.9, centerPercent: 50.0, y: 1263, x: 450 },
-  },
-  en: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 801, width: 422, height: 372 },
-    title: { topPercent: 45.0, centerPercent: 50.0, y: 720, x: 450 },
-    name: { topPercent: 76.3, centerPercent: 50.0, y: 1220, x: 450 },
-  },
-  ta: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 806, width: 415, height: 364 },
-    title: { topPercent: 45.5, centerPercent: 50.0, y: 728, x: 450 },
-    name: { topPercent: 76.2, centerPercent: 50.0, y: 1220, x: 450 },
-  },
-  hi: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 239, y: 814, width: 423, height: 349 },
-    title: { topPercent: 46.2, centerPercent: 50.0, y: 739, x: 450 },
-    name: { topPercent: 75.6, centerPercent: 50.0, y: 1210, x: 450 },
-  },
-  kn: {
-    templateWidth: 900,
-    templateHeight: 1600,
-    photoArea: { x: 240, y: 787, width: 416, height: 388 },
-    title: { topPercent: 44.3, centerPercent: 50.0, y: 708, x: 450 },
-    name: { topPercent: 76.4, centerPercent: 50.0, y: 1223, x: 450 },
-  },
-};
-
-export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
   te: {
     templateWidth: 900,
     templateHeight: 1600,
@@ -123,6 +86,45 @@ export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPos
     photoArea: { x: 241, y: 765, width: 419, height: 436 },
     title: { topPercent: 42.9, centerPercent: 50.0, y: 686, x: 450 },
     name: { topPercent: 77.9, centerPercent: 50.0, y: 1246, x: 450 },
+  },
+};
+
+// Maha Mouna Dhyana Kumbh config for Poster_language templates ('Maha Mouna Dhyan Kumbh')
+export const MAHAMOUNA_CONFIG_BY_LANG: Record<SupportedLanguage, AnnaprasadamPosterConfig> = {
+  te: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 238, y: 776, width: 420, height: 429 },
+    title: { topPercent: 42.8, centerPercent: 50.0, y: 684, x: 450 },
+    name: { topPercent: 78.9, centerPercent: 50.0, y: 1263, x: 450 },
+  },
+  en: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 801, width: 422, height: 372 },
+    title: { topPercent: 45.0, centerPercent: 50.0, y: 720, x: 450 },
+    name: { topPercent: 76.3, centerPercent: 50.0, y: 1220, x: 450 },
+  },
+  ta: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 806, width: 415, height: 364 },
+    title: { topPercent: 45.5, centerPercent: 50.0, y: 728, x: 450 },
+    name: { topPercent: 76.2, centerPercent: 50.0, y: 1220, x: 450 },
+  },
+  hi: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 239, y: 814, width: 423, height: 349 },
+    title: { topPercent: 46.2, centerPercent: 50.0, y: 739, x: 450 },
+    name: { topPercent: 75.6, centerPercent: 50.0, y: 1210, x: 450 },
+  },
+  kn: {
+    templateWidth: 900,
+    templateHeight: 1600,
+    photoArea: { x: 240, y: 787, width: 416, height: 388 },
+    title: { topPercent: 44.3, centerPercent: 50.0, y: 708, x: 450 },
+    name: { topPercent: 76.4, centerPercent: 50.0, y: 1223, x: 450 },
   },
 };
 
