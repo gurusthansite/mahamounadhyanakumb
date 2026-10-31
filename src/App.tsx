@@ -416,6 +416,8 @@ function App() {
 
       const campaignBody = `అందరికీ ఆత్మీయ ఆహ్వానం \n\n*తరలిరండి అరుణాచలం*\n\nA Movement of Mouna \n\nపత్రీజీ మహా అవతరణ దినోత్సవానికి మనం అందించే \n*బహుమానం - బహుమౌనం*\n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15 వరకు)\n\n*రిజిస్ట్రేషన్ కొరకు:*\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీ ఫోటోతో పోస్టర్ తయారు చేయడానికి:\n${imageGenUrl}\n\nమీ ఫోటోతో వీడియో తయారు చేయడానికి:\n${videoGenUrl}`;
 
+      const manualCustomShare = `అందరికీ ఆత్మీయ ఆహ్వానం\n \n *తరలిరండి అరుణాచలం* \n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15)          \n\nమనం జరుపుకోబోయే ఈ యజ్ఞంలో జరిగే *మహా అన్నప్రసాద వితరణ సేవలో*  నా వంతు భాగస్వామ్యాన్ని అందించానని తెలియజేయడానికి  ఆనందిస్తూ.... \n\nఈ మహా యజ్ఞంలో మీ వంతు భాగస్వామ్యాన్ని అందించాలని మనస్ఫూర్తిగా కోరుకొంటున్నాను.\n\nమనందరం భాగస్వాములం అవుదాం.., మరికొందరిని భాగస్వాముల్ని చేద్దాం! \n\nమీ భాగస్వామ్యాన్ని అందించడానికి క్రింది లింకును క్లిక్ చేయండి.\n\nhttps://mahamounadhyanakumbposter.vercel.app/annaprasadam\n\nపేమెంట్ చేసిన తర్వాత రసీదును డౌన్లోడ్ చేసుకోగలరు మరియు అన్న ప్రసాద సేవ ప్లేయర్ ను షేర్ చేసుకోగలరు.\n\nఈ యజ్ఞంలో పాల్గొనే వారికి ఉచిత వసతి కోసం  క్రింది లింకు ద్వారా ముందస్తుగా రిజిస్ట్రేషన్ చేసుకుందాం.\n\nhttps://gurusthanmeditation.org/visitregistration\n\nమరిన్ని వివరాలకు:\n9133016016 \n 9133015015\n9133014014`;
+
       const annaprasadamCustomShare = `అందరికీ ఆత్మీయ ఆహ్వానం\n *తరలిరండి అరుణాచలం* \n\n*మహా మౌన ధ్యాన కుంభ్*\n(నవంబర్ 11 నుండి 15)          \n\n*మహా మౌన ధ్యాన కుంభ్* లో జరిగే \n*మహా అన్నప్రసాద వితరణ సేవలో*  \nమనందరం భాగస్వాములం అవుదాం.\n\nమీ భాగస్వామ్యాన్ని అందించడానికి క్రింది లింకును క్లిక్ చేయండి.\n\n${annaprasadamGenUrl}\n\nపేమెంట్ చేసిన తర్వాత రసీదును డౌన్లోడ్ చేసుకోగలరు మరియు అన్న ప్రసాద సేవ ప్లేయర్ ను షేర్ చేసుకోగలరు.\n\nమరిన్ని వివరాలకు:\n9133016016\n9133015015\n9133014014\n\nమీరు మౌనం పాటిస్తున్నట్లయితే ఈ ప్లేయర్ ద్వారా అందరికీ ఒక ప్రేరణ కల్పిద్దాం: \n${imageGenUrl}\n\nమనం చేసుకోబోయే ఈ కార్యక్రమానికి మీ వీడియో ద్వారా ఆహ్వానం అందించండి:\n${videoGenUrl}`;
 
       const annaprasadamBodies: Record<SupportedLanguage, string> = {
@@ -433,7 +435,11 @@ function App() {
         const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
         const targetName = (userData.contributionFor === 'other' && userData.beneficiaryName ? userData.beneficiaryName : userData.fullName) || 'poster';
         filename = `${prefix}-${targetName.replace(/\s+/g, '-').toLowerCase()}.png`;
-        shareText = annaprasadamBodies[currentLang] || annaprasadamBodies.te;
+        if (currentPage === 'manual') {
+          shareText = manualCustomShare;
+        } else {
+          shareText = annaprasadamBodies[currentLang] || annaprasadamBodies.te;
+        }
       } else if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
         filename = `poster-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'download'}.png`;
