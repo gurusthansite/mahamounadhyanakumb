@@ -16,6 +16,7 @@ export interface UserData {
   hours?: string;
   plates?: string;
   donationAmount?: string;
+  customTitle?: string;
   sevaCategory?: 'guruprasadam' | 'mahamouna';
   titlePrefix?: string;
   contributionFor?: 'self' | 'other';

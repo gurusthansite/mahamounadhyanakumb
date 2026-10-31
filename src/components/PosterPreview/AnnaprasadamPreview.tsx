@@ -46,15 +46,33 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
   const platesNum = parseInt(userData.plates || '1', 10) || 1;
   const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
-  const poshakuluTitle = isMahaMouna
-    ? getMahaMounaTitleByLang(donationAmountNum, lang)
-    : getPoshakuluTitleByLang(platesNum, lang);
-  const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ ');
+  const poshakuluTitle = userData.customTitle?.trim()
+    ? userData.customTitle.trim()
+    : (isMahaMouna
+        ? getMahaMounaTitleByLang(donationAmountNum, lang)
+        : getPoshakuluTitleByLang(platesNum, lang));
+
+  const defaultPrefixByLang: Record<SupportedLanguage, string> = {
+    ta: 'ஸ்ரீ ',
+    hi: 'श्री ',
+    kn: 'ಶ್ರೀ ',
+    en: 'Sri ',
+    te: 'శ్రీ ',
+  };
+  const defaultSmtByLang: Record<SupportedLanguage, string> = {
+    ta: 'ஸ்ரீமதி ',
+    hi: 'श्रीमती ',
+    kn: 'ಶ್ರೀಮತಿ ',
+    en: 'Smt ',
+    te: 'శ్రీమతి ',
+  };
+
+  const prefix = userData.titlePrefix ? `${userData.titlePrefix} ` : defaultPrefixByLang[lang];
   const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
 
   const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
   const activePrefix = isOther
-    ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
+    ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : defaultSmtByLang[lang])
     : prefix;
   const activeName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
 

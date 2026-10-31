@@ -8,6 +8,7 @@ import { ImageCropper } from './components/PhotoUpload/ImageCropper';
 import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
+import { ManualPosterPage } from './components/ManualEntry/ManualPosterPage';
 import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import { DeveloperSignature } from './components/Footer/DeveloperSignature';
@@ -56,13 +57,34 @@ import {
     return 'video';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'annaprasadam';
+  const getInitialCategory = (): 'guruprasadam' | 'mahamouna' => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cat = (params.get('category') || params.get('type') || params.get('poster') || '').toLowerCase();
+      if (cat === 'mahamouna' || cat === 'kumbh' || cat === 'poster_language') return 'mahamouna';
+      if (cat === 'mmts' || cat === 'guruprasadam' || cat === 'annaprasadam') return 'guruprasadam';
+    }
+    return 'guruprasadam';
+  };
+
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'annaprasadam' | 'manual';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
+
+      // Check for Manual Entry Posters (mmts & Poster_language)
+      if (
+        page === 'manual' ||
+        page === 'manualentry' ||
+        page === 'manual-entry' ||
+        page === 'custom' ||
+        path.includes('/manual')
+      ) {
+        return 'manual';
+      }
 
       // Check for Annaprasadam Seva
       if (
@@ -138,6 +160,7 @@ function App() {
     phoneNumber: '',
     location: '',
     plates: '',
+    sevaCategory: getInitialCategory(),
     photoUrl: null,
     templateType: getInitialTemplate()
   });
@@ -260,6 +283,20 @@ function App() {
   };
 
   const validateInput = (): boolean => {
+    if (currentPage === 'manual') {
+      const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
+      const targetName = isOther ? userData.beneficiaryName!.trim() : userData.fullName.trim();
+      if (!targetName) {
+        alert("దయచేసి దాత పేరు నమోదు చేయండి (Please enter donor name)");
+        return false;
+      }
+      if (!userData.photoUrl) {
+        alert("దయచేసి పోస్టర్ కోసం ఫోటో ఎంచుకోండి (Please select and crop a photo)");
+        return false;
+      }
+      return true;
+    }
+
     if (currentPage === 'annaprasadam') {
       if (!userData.fullName.trim()) {
         alert("దయచేసి మీ పూర్తి పేరు నమోదు చేయండి (Please enter your full name)");
@@ -314,7 +351,7 @@ function App() {
     try {
       submitToGoogleSheets();
 
-      if (currentPage === 'annaprasadam') {
+      if (currentPage === 'annaprasadam' || currentPage === 'manual') {
         const isMahaMouna = userData.sevaCategory === 'mahamouna';
         const templatePath = getAnnaprasadamTemplate(currentLang, isMahaMouna);
         const blob = await generateImage(userData, templatePath, true, currentLang);
@@ -322,7 +359,8 @@ function App() {
         const a = document.createElement('a');
         a.href = url;
         const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
-        a.download = `${prefix}-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        const targetName = (userData.contributionFor === 'other' && userData.beneficiaryName ? userData.beneficiaryName : userData.fullName) || 'poster';
+        a.download = `${prefix}-${targetName.replace(/\s+/g, '-').toLowerCase()}.png`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
@@ -366,7 +404,7 @@ function App() {
     try {
       submitToGoogleSheets();
 
-      const isAnnaprasadam = currentPage === 'annaprasadam';
+      const isAnnaprasadam = currentPage === 'annaprasadam' || currentPage === 'manual';
       const isImage = userData.templateType === 'image' || isAnnaprasadam;
       let blob: Blob;
       let filename: string;
@@ -393,7 +431,8 @@ function App() {
         const templatePath = getAnnaprasadamTemplate(currentLang, isMahaMouna);
         blob = await generateImage(userData, templatePath, true, currentLang);
         const prefix = isMahaMouna ? 'mahamouna' : 'annaprasadam';
-        filename = `${prefix}-${userData.fullName.replace(/\s+/g, '-').toLowerCase() || 'poster'}.png`;
+        const targetName = (userData.contributionFor === 'other' && userData.beneficiaryName ? userData.beneficiaryName : userData.fullName) || 'poster';
+        filename = `${prefix}-${targetName.replace(/\s+/g, '-').toLowerCase()}.png`;
         shareText = annaprasadamBodies[currentLang] || annaprasadamBodies.te;
       } else if (isImage) {
         blob = await generateImage(userData, '/assets/image_template.png');
@@ -531,6 +570,7 @@ function App() {
                     >
                       <span>{t.navAnnaprasadam}</span>
                     </button>
+
                   </div>
                 </>
               );
@@ -540,7 +580,7 @@ function App() {
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
             <div className="absolute inset-0 bg-[#ffca08] rounded-3xl blur-2xl opacity-15 group-hover:opacity-25 transition-opacity duration-500"></div>
             <img 
-              src={currentPage === 'annaprasadam' ? getAnnaprasadamHeroImage(currentLang) : '/assets/mouna_banner.jpg'} 
+              src={currentPage === 'annaprasadam' || currentPage === 'manual' ? getAnnaprasadamHeroImage(currentLang) : '/assets/mouna_banner.jpg'} 
               alt={currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
@@ -549,7 +589,19 @@ function App() {
       </header>
 
 
-      {currentPage === 'srnagar' ? (
+      {currentPage === 'manual' ? (
+        <ManualPosterPage 
+          userData={userData}
+          setUserData={setUserData}
+          onOpenCropper={() => setIsCropperOpen(true)}
+          lang={currentLang}
+          onLanguageChange={handleLanguageChange}
+          onDownload={handleDownload}
+          onShare={handleShare}
+          isGenerating={isGenerating}
+          onNavigateHome={() => navigateTo('poster')}
+        />
+      ) : currentPage === 'srnagar' ? (
         <RegistrationFormPage 
           googleScriptUrl={FORM_RESPONSES_SCRIPT_URL}
           title="S.R.Nagar Register Data 03-25 to 10-26"
@@ -735,7 +787,7 @@ function App() {
           mediaSrc={(userData.rawMediaUrl || userData.photoUrl)!}
           isVideo={currentPage !== 'annaprasadam' && userData.templateType === 'video'}
           aspectRatio={
-            currentPage === 'annaprasadam'
+            currentPage === 'annaprasadam' || currentPage === 'manual'
               ? (() => {
                   const area = getAnnaprasadamPosterConfig(currentLang, userData.sevaCategory === 'mahamouna').photoArea;
                   return area.width / area.height;

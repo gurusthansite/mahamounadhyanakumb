@@ -63,9 +63,11 @@ export const generateImage = async (
           const isMahaMouna = userData.sevaCategory === 'mahamouna';
           const platesNum = parseInt(userData.plates || '1', 10) || 1;
           const donationAmountNum = parseInt(userData.donationAmount || '1', 10) || 1;
-          const titleText = isMahaMouna
-            ? getMahaMounaTitleByLang(donationAmountNum, lang)
-            : getPoshakuluTitleByLang(platesNum, lang);
+          const titleText = userData.customTitle?.trim()
+            ? userData.customTitle.trim()
+            : (isMahaMouna
+                ? getMahaMounaTitleByLang(donationAmountNum, lang)
+                : getPoshakuluTitleByLang(platesNum, lang));
           const t = TRANSLATIONS[lang] || TRANSLATIONS.te;
           const fontFam = lang === 'ta'
             ? '"Noto Sans Tamil", sans-serif'
@@ -104,9 +106,23 @@ export const generateImage = async (
             const effectiveCenterPercent = userData.customNamePosition?.centerPercent ?? annaprasadamConfig.name.centerPercent;
             const nameX = Math.round(width * (effectiveCenterPercent / 100));
             const nameY = Math.round(height * (effectiveTopPercent / 100));
+            const defaultPrefixByLang: Record<SupportedLanguage, string> = {
+              ta: 'ஸ்ரீ ',
+              hi: 'श्री ',
+              kn: 'ಶ್ರೀ ',
+              en: 'Sri ',
+              te: 'శ్రీ ',
+            };
+            const defaultSmtByLang: Record<SupportedLanguage, string> = {
+              ta: 'ஸ்ரீமதி ',
+              hi: 'श्रीमती ',
+              kn: 'ಶ್ರೀಮತಿ ',
+              en: 'Smt ',
+              te: 'శ్రీమతి ',
+            };
             const activePrefix = isOther
-              ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : (lang === 'en' ? 'Smt ' : 'శ్రీమతి '))
-              : (userData.titlePrefix ? `${userData.titlePrefix} ` : (lang === 'en' ? 'Sri ' : 'శ్రీ '));
+              ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : defaultSmtByLang[lang])
+              : (userData.titlePrefix ? `${userData.titlePrefix} ` : defaultPrefixByLang[lang]);
             const suffix = t.nameSuffix ? ` ${t.nameSuffix}` : '';
             const displayName = `${activePrefix}${targetName}${suffix}`;
 
