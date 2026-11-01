@@ -183,7 +183,8 @@ export const ManualPosterPage: React.FC<Props> = ({
 
   const titlesList = t.titles || [
     { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
-    { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' }
+    { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
+    { id: 'కుమారి', label: 'కుమారి (Kumari)' }
   ];
 
   return (
@@ -368,7 +369,6 @@ export const ManualPosterPage: React.FC<Props> = ({
                     {titlesList.map(item => (
                       <option key={item.id} value={item.id}>{item.label}</option>
                     ))}
-                    <option value="శ్రీ & శ్రీమతి">శ్రీ & శ్రీమతి (Sri & Smt)</option>
                   </select>
                   <input
                     type="text"
@@ -393,7 +393,6 @@ export const ManualPosterPage: React.FC<Props> = ({
                     {titlesList.map(item => (
                       <option key={item.id} value={item.id}>{item.label}</option>
                     ))}
-                    <option value="శ్రీ & శ్రీమతి">శ్రీ & శ్రీమతి (Sri & Smt)</option>
                   </select>
                   <input
                     type="text"

@@ -217,7 +217,8 @@ export const TRANSLATIONS = {
     beneficiaryHelp: 'ℹ️ పోస్టర్‌పై ఈ పేరు మరియు ఫోటో ముద్రించబడుతుంది.',
     titles: [
       { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
-      { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' }
+      { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
+      { id: 'కుమారి', label: 'కుమారి (Kumari)' }
     ],
     defaultTitle: 'శ్రీ',
     nameSuffix: '',
@@ -298,7 +299,8 @@ export const TRANSLATIONS = {
     beneficiaryHelp: 'ℹ️ This name & photo will be featured on the holy poster.',
     titles: [
       { id: 'Sri', label: 'Sri (Mr)' },
-      { id: 'Smt', label: 'Smt (Mrs)' }
+      { id: 'Smt', label: 'Smt (Mrs)' },
+      { id: 'Kumari', label: 'Kumari (Ms)' }
     ],
     defaultTitle: 'Sri',
     nameSuffix: '',
@@ -379,7 +381,8 @@ export const TRANSLATIONS = {
     beneficiaryHelp: 'ℹ️ போஸ்டரில் இந்த பெயரும் புகைப்படமும் அச்சிடப்படும்.',
     titles: [
       { id: 'ஸ்ரீ', label: 'ஸ்ரீ (Sri)' },
-      { id: 'ஸ்ரீமதி', label: 'ஸ்ரீமதி (Smt)' }
+      { id: 'ஸ்ரீமதி', label: 'ஸ்ரீமதி (Smt)' },
+      { id: 'செல்வி', label: 'செல்வி (Kumari)' }
     ],
     defaultTitle: 'ஸ்ரீ',
     nameSuffix: '',
@@ -460,7 +463,8 @@ export const TRANSLATIONS = {
     beneficiaryHelp: 'ℹ️ पोस्टर पर यह नाम और फोटो प्रदर्शित होगा.',
     titles: [
       { id: 'श्री', label: 'श्री (Sri)' },
-      { id: 'श्रीमती', label: 'श्रीमती (Smt)' }
+      { id: 'श्रीमती', label: 'श्रीमती (Smt)' },
+      { id: 'कुमारी', label: 'कुमारी (Kumari)' }
     ],
     defaultTitle: 'श्री',
     nameSuffix: '',
@@ -541,7 +545,8 @@ export const TRANSLATIONS = {
     beneficiaryHelp: 'ℹ️ ಪೋಸ್ಟರ್‌ನಲ್ಲಿ ಈ ಹೆಸರು ಮತ್ತು ಫೋಟೋ ಮುದ್ರಿಸಲಾಗುತ್ತದೆ.',
     titles: [
       { id: 'ಶ್ರೀ', label: 'ಶ್ರೀ (Sri)' },
-      { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' }
+      { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' },
+      { id: 'ಕುಮಾರಿ', label: 'ಕುಮಾರಿ (Kumari)' }
     ],
     defaultTitle: 'ಶ್ರೀ',
     nameSuffix: '',
