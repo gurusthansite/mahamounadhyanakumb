@@ -218,6 +218,7 @@ export const TRANSLATIONS = {
     titles: [
       { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
       { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
+      { id: 'శ్రీ & శ్రీమతి', label: 'శ్రీ & శ్రీమతి (Sri & Smt)' },
       { id: 'కుమారి', label: 'కుమారి (Kumari)' }
     ],
     defaultTitle: 'శ్రీ',
@@ -300,6 +301,7 @@ export const TRANSLATIONS = {
     titles: [
       { id: 'Sri', label: 'Sri (Mr)' },
       { id: 'Smt', label: 'Smt (Mrs)' },
+      { id: 'Sri & Smt', label: 'Sri & Smt (Mr & Mrs)' },
       { id: 'Kumari', label: 'Kumari (Ms)' }
     ],
     defaultTitle: 'Sri',
@@ -382,6 +384,7 @@ export const TRANSLATIONS = {
     titles: [
       { id: 'ஸ்ரீ', label: 'ஸ்ரீ (Sri)' },
       { id: 'ஸ்ரீமதி', label: 'ஸ்ரீமதி (Smt)' },
+      { id: 'ஸ்ரீ & ஸ்ரீமதி', label: 'ஸ்ரீ & ஸ்ரீமதி (Sri & Smt)' },
       { id: 'செல்வி', label: 'செல்வி (Kumari)' }
     ],
     defaultTitle: 'ஸ்ரீ',
@@ -464,6 +467,7 @@ export const TRANSLATIONS = {
     titles: [
       { id: 'श्री', label: 'श्री (Sri)' },
       { id: 'श्रीमती', label: 'श्रीमती (Smt)' },
+      { id: 'श्री एवं श्रीमती', label: 'श्री एवं श्रीमती (Sri & Smt)' },
       { id: 'कुमारी', label: 'कुमारी (Kumari)' }
     ],
     defaultTitle: 'श्री',
@@ -546,6 +550,7 @@ export const TRANSLATIONS = {
     titles: [
       { id: 'ಶ್ರೀ', label: 'ಶ್ರೀ (Sri)' },
       { id: 'ಶ್ರೀಮತಿ', label: 'ಶ್ರೀಮತಿ (Srimathi)' },
+      { id: 'ಶ್ರೀ ಮತ್ತು ಶ್ರೀಮತಿ', label: 'ಶ್ರೀ ಮತ್ತು ಶ್ರೀಮತಿ (Sri & Smt)' },
       { id: 'ಕುಮಾರಿ', label: 'ಕುಮಾರಿ (Kumari)' }
     ],
     defaultTitle: 'ಶ್ರೀ',

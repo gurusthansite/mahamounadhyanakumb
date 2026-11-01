@@ -184,6 +184,7 @@ export const ManualPosterPage: React.FC<Props> = ({
   const titlesList = t.titles || [
     { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
     { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
+    { id: 'శ్రీ & శ్రీమతి', label: 'శ్రీ & శ్రీమతి (Sri & Smt)' },
     { id: 'కుమారి', label: 'కుమారి (Kumari)' }
   ];
 
