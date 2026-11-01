@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import type { UserData } from '../../types/poster';
 import { AnnaprasadamPreview } from '../PosterPreview/AnnaprasadamPreview';
 import { ActionButtons } from '../GenerateButton/ActionButtons';
@@ -35,7 +35,22 @@ export const ManualPosterPage: React.FC<Props> = ({
   const t = TRANSLATIONS[lang] || TRANSLATIONS.te;
   const isMahaMouna = userData.sevaCategory === 'mahamouna';
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
+
+  useEffect(() => {
+    setUserData(prev => ({
+      ...prev,
+      templateType: 'image'
+    }));
+    return () => {
+      if (cameraStream) {
+        cameraStream.getTracks().forEach(t => t.stop());
+      }
+    };
+  }, [setUserData, cameraStream]);
 
   // Quick preset titles by language and category
   const presetTitlesByLang: Record<SupportedLanguage, { guru: string[]; mahamouna: string[] }> = {
@@ -153,19 +168,79 @@ export const ManualPosterPage: React.FC<Props> = ({
       return;
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      const result = event.target?.result as string;
-      setUserData(prev => ({
-        ...prev,
-        photoUrl: result,
-        rawMediaUrl: result,
-        cropArea: undefined,
-        cropPixels: undefined
-      }));
-      onOpenCropper();
-    };
-    reader.readAsDataURL(file);
+    const url = URL.createObjectURL(file);
+    setUserData(prev => ({
+      ...prev,
+      rawMediaUrl: url,
+      photoUrl: url,
+      cropArea: undefined,
+      cropPixels: undefined,
+      templateType: 'image'
+    }));
+    onOpenCropper();
+    e.target.value = '';
+  };
+
+  const startCamera = async () => {
+    setIsCameraOpen(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      setCameraStream(stream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (err) {
+      console.error('Camera access error:', err);
+      alert('Could not access camera. Please allow camera permissions or upload an image file.');
+      setIsCameraOpen(false);
+    }
+  };
+
+  const stopCamera = () => {
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(t => t.stop());
+      setCameraStream(null);
+    }
+    setIsCameraOpen(false);
+  };
+
+  const capturePhoto = () => {
+    if (videoRef.current) {
+      const canvas = document.createElement('canvas');
+      canvas.width = videoRef.current.videoWidth;
+      canvas.height = videoRef.current.videoHeight;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            setUserData(prev => ({
+              ...prev,
+              rawMediaUrl: url,
+              photoUrl: url,
+              cropArea: undefined,
+              cropPixels: undefined,
+              templateType: 'image'
+            }));
+            stopCamera();
+            onOpenCropper();
+          }
+        }, 'image/jpeg', 0.9);
+      }
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setUserData(prev => ({
+      ...prev,
+      photoUrl: null,
+      rawMediaUrl: null,
+      cropArea: undefined,
+      cropPixels: undefined
+    }));
   };
 
   const handleCopyLink = () => {
@@ -459,8 +534,8 @@ export const ManualPosterPage: React.FC<Props> = ({
 
             {/* Photo Upload Section */}
             <div className="flex flex-col gap-2 mt-2 pt-3 border-t border-[#8b3d0b]/60">
-              <label className="block text-xs font-semibold text-orange-200/90">
-                దాత ఫోటో (Select / Upload Photo):
+              <label className="block text-xs sm:text-sm font-bold text-[#ffca08] uppercase tracking-wider mb-1">
+                4. {t.photoLabel || 'దాత ఫోటో (Select / Upload Photo):'}
               </label>
               <input
                 type="file"
@@ -470,27 +545,83 @@ export const ManualPosterPage: React.FC<Props> = ({
                 className="hidden"
               />
 
-              <div className="flex flex-wrap items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="px-4 py-2.5 rounded-xl bg-[#8b3d0b] hover:bg-[#a0460c] text-white font-bold text-xs sm:text-sm transition-all shadow-md flex items-center gap-1.5"
-                >
-                  <span>📁</span>
-                  <span>{userData.photoUrl ? 'ఫోటో మార్చండి (Change Photo)' : 'ఫోటో ఎంచుకోండి (Choose Photo)'}</span>
-                </button>
+              {userData.photoUrl ? (
+                /* Photo Selected State Card */
+                <div className="p-3 bg-[#240b03] border border-[#ffca08]/40 rounded-2xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 shadow-md">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl overflow-hidden border-2 border-[#ffca08] shadow-md bg-black">
+                      <img
+                        src={userData.photoUrl}
+                        alt="Donor Crop"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <span className="text-xs sm:text-sm font-bold text-white block truncate">
+                        {t.photoSelectedTitle || '✓ ఫోటో ఎంపికైంది'}
+                      </span>
+                      <span className="text-[11px] text-emerald-400 font-medium block truncate">
+                        {t.photoSelectedSub || 'క్రాప్ చేయడానికి సిద్ధంగా ఉంది'}
+                      </span>
+                    </div>
+                  </div>
 
-                {userData.photoUrl && (
-                  <button
-                    type="button"
-                    onClick={onOpenCropper}
-                    className="px-3.5 py-2.5 rounded-xl bg-[#240b03] hover:bg-[#381609] text-[#ffca08] border border-[#ffca08]/50 font-bold text-xs sm:text-sm transition-all shadow-sm flex items-center gap-1.5"
-                  >
-                    <span>✂️</span>
-                    <span>క్రాప్ సరిచేయండి (Recrop)</span>
-                  </button>
-                )}
-              </div>
+                  <div className="flex items-center gap-1.5 shrink-0 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={onOpenCropper}
+                      className="py-1.5 px-2.5 rounded-lg bg-[#381609] hover:bg-[#8b3d0b] text-[#ffca08] text-xs font-bold border border-[#ffca08]/40 transition-all flex items-center gap-1 active:scale-95 shadow-sm"
+                      title="క్రాప్ సరిచేయండి"
+                    >
+                      <span>✂️</span>
+                      <span>{t.photoCropBtn || 'క్రాప్ చేయండి'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="py-1.5 px-2.5 rounded-lg bg-[#8b3d0b] hover:bg-[#a0460c] text-white text-xs font-bold transition-all shadow-sm active:scale-95 flex items-center gap-1"
+                      title="ఫోటో మార్చండి"
+                    >
+                      <span>🔄</span>
+                      <span>{t.photoChangeBtn || 'మార్చండి'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleRemovePhoto}
+                      className="py-1.5 px-2 rounded-lg bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 text-xs font-bold transition-colors active:scale-95"
+                      title="ఫోటో తొలగించండి"
+                    >
+                      <span>🗑️</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* Choose Photo Buttons */
+                <div className="p-3 bg-[#240b03] border border-dashed border-[#8b3d0b] rounded-2xl text-center">
+                  <p className="text-xs text-orange-200/80 mb-2.5">
+                    {t.photoPrompt || 'ఫోటోను గ్యాలరీ నుండి ఎంచుకోండి లేదా కెమెరాతో తీయండి'}
+                  </p>
+                  <div className="grid grid-cols-2 gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="py-2.5 px-3 rounded-xl bg-gradient-to-r from-[#ffca08] to-[#ffd943] hover:from-[#ffd943] hover:to-white text-[#381609] font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                      <span>📁</span>
+                      <span>{t.photoGalleryBtn || 'గ్యాలరీ నుండి'}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={startCamera}
+                      className="py-2.5 px-3 rounded-xl bg-[#381609] hover:bg-[#4a1c0b] text-orange-200 hover:text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 border border-[#8b3d0b] hover:border-[#ffca08]/50 shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all"
+                    >
+                      <span>📷</span>
+                      <span>{t.photoCameraBtn || 'కెమెరా'}</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -529,6 +660,45 @@ export const ManualPosterPage: React.FC<Props> = ({
           </div>
         </div>
       </div>
+
+      {/* Camera Streaming Modal if Camera active */}
+      {isCameraOpen && (
+        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4 backdrop-blur-md animate-fadeIn">
+          <div className="relative w-full max-w-md bg-[#240b03] rounded-3xl overflow-hidden border-2 border-[#ffca08] shadow-2xl flex flex-col items-center">
+            <div className="p-3 w-full bg-[#381609] text-center border-b border-[#8b3d0b] flex items-center justify-between px-4">
+              <span className="text-sm font-bold text-[#ffca08] flex items-center gap-2">
+                <span>📷</span> {t.photoCameraBtn || 'ఫోటో తీయండి (Take Photo)'}
+              </span>
+              <button
+                type="button"
+                onClick={stopCamera}
+                className="text-xs bg-red-900/60 hover:bg-red-800 text-white px-2.5 py-1 rounded-lg border border-red-700"
+              >
+                ✕ {t.photoCancelBtn || 'రద్దు'}
+              </button>
+            </div>
+            <div className="relative w-full aspect-square bg-black flex items-center justify-center overflow-hidden">
+              <video
+                ref={videoRef}
+                autoPlay
+                playsInline
+                muted
+                className="w-full h-full object-cover -scale-x-100"
+              />
+            </div>
+            <div className="p-4 w-full flex items-center justify-center gap-4 bg-[#381609]">
+              <button
+                type="button"
+                onClick={capturePhoto}
+                className="py-3 px-6 rounded-2xl bg-[#ffca08] hover:bg-[#ffd943] text-[#381609] font-black text-sm sm:text-base shadow-xl flex items-center gap-2 active:scale-95 transition-all"
+              >
+                <span>📸</span>
+                <span>{t.photoCaptureBtn || 'ఫోటో క్లిక్ చేయండి'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 };

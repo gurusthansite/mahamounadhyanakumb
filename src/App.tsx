@@ -204,7 +204,7 @@ function App() {
   };
 
   const handleCropComplete = (data: { croppedUrl?: string; cropArea: CropArea; cropPixels: CropArea }) => {
-    const isImage = userData.templateType === 'image' || currentPage === 'annaprasadam';
+    const isImage = userData.templateType === 'image' || currentPage === 'annaprasadam' || currentPage === 'manual';
     if (isImage) {
       setUserData(prev => ({
         ...prev,
@@ -255,7 +255,7 @@ function App() {
       beneficiaryName: userData.contributionFor === 'other' && userData.beneficiaryName
         ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
         : '',
-      category: currentPage === 'annaprasadam' 
+      category: (currentPage === 'annaprasadam' || currentPage === 'manual') 
         ? (isMahaMouna ? 'Maha Mouna Dhyana Kumbh' : 'Annaprasadam Seva')
         : 'Poster Generator',
       timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
@@ -797,7 +797,7 @@ function App() {
       {isCropperOpen && (userData.rawMediaUrl || userData.photoUrl) && (
         <ImageCropper
           mediaSrc={(userData.rawMediaUrl || userData.photoUrl)!}
-          isVideo={currentPage !== 'annaprasadam' && userData.templateType === 'video'}
+          isVideo={currentPage !== 'annaprasadam' && currentPage !== 'manual' && userData.templateType === 'video'}
           aspectRatio={
             currentPage === 'annaprasadam' || currentPage === 'manual'
               ? (() => {

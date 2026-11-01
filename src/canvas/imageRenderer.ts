@@ -24,7 +24,7 @@ export const generateImage = async (
   lang: SupportedLanguage = 'te'
 ): Promise<Blob> => {
   return new Promise((resolve, reject) => {
-    if (!userData.photoUrl) return reject(new Error("No image provided"));
+    if (!userData.photoUrl && !isAnnaprasadam) return reject(new Error("No image provided"));
 
     const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const annaprasadamConfig = getAnnaprasadamPosterConfig(lang, isMahaMouna);
@@ -43,18 +43,16 @@ export const generateImage = async (
     templateImg.src = templateUrl;
 
     templateImg.onload = () => {
-      const userImg = new Image();
-      userImg.crossOrigin = "anonymous";
-      userImg.src = userData.photoUrl!;
-
-      userImg.onload = () => {
-        // Draw user photo (already cropped to exact aspect ratio)
-        ctx.save();
-        ctx.beginPath();
-        ctx.rect(photoArea.x, photoArea.y, photoArea.width, photoArea.height);
-        ctx.clip();
-        ctx.drawImage(userImg, photoArea.x, photoArea.y, photoArea.width, photoArea.height);
-        ctx.restore();
+      const renderLayers = (userImg?: HTMLImageElement) => {
+        // Draw user photo if available (already cropped to exact aspect ratio)
+        if (userImg) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(photoArea.x, photoArea.y, photoArea.width, photoArea.height);
+          ctx.clip();
+          ctx.drawImage(userImg, photoArea.x, photoArea.y, photoArea.width, photoArea.height);
+          ctx.restore();
+        }
 
         // Draw template overlay
         ctx.drawImage(templateImg, 0, 0, width, height);
@@ -168,7 +166,19 @@ export const generateImage = async (
           else reject(new Error("Blob generation failed"));
         }, 'image/png');
       };
-      userImg.onerror = () => reject(new Error("Failed to load user image."));
+
+      if (userData.photoUrl) {
+        const userImg = new Image();
+        userImg.crossOrigin = "anonymous";
+        userImg.onload = () => renderLayers(userImg);
+        userImg.onerror = () => {
+          // If image fails to load, still render poster without breaking
+          renderLayers();
+        };
+        userImg.src = userData.photoUrl;
+      } else {
+        renderLayers();
+      }
     };
     templateImg.onerror = () => reject(new Error("Failed to load template image."));
   });
