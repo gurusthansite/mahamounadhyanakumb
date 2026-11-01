@@ -24,6 +24,7 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [showAdjustPanel, setShowAdjustPanel] = useState(false);
+  const [activeAdjustTab, setActiveAdjustTab] = useState<'name' | 'title'>('name');
   const t = TRANSLATIONS[lang] || TRANSLATIONS.te;
 
   const fontFamily = lang === 'ta'
@@ -76,55 +77,113 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
     : prefix;
   const activeName = isOther ? userData.beneficiaryName!.trim() : userData.fullName;
 
-  // Effective coordinates (Python defaults + user manual overrides)
+  // Effective coordinates for Name & Title (Config defaults + user manual overrides)
+  const defaultTitleFontSize = lang === 'en' ? 34 : 38;
+  const effectiveTitleTopPercent = userData.customTitlePosition?.topPercent ?? config.title.topPercent;
+  const effectiveTitleCenterPercent = userData.customTitlePosition?.centerPercent ?? config.title.centerPercent;
+  const effectiveTitleFontSize = userData.customTitlePosition?.fontSize ?? defaultTitleFontSize;
+
   const effectiveTopPercent = userData.customNamePosition?.topPercent ?? config.name.topPercent;
   const effectiveCenterPercent = userData.customNamePosition?.centerPercent ?? config.name.centerPercent;
   const effectiveFontSize = userData.customNamePosition?.fontSize ?? 34;
 
-  const handleAdjust = (field: 'topPercent' | 'centerPercent' | 'fontSize', delta: number) => {
+  const handleAdjust = (
+    target: 'name' | 'title',
+    field: 'topPercent' | 'centerPercent' | 'fontSize',
+    delta: number
+  ) => {
     setUserData(prev => {
-      const currentTop = prev.customNamePosition?.topPercent ?? config.name.topPercent;
-      const currentCenter = prev.customNamePosition?.centerPercent ?? config.name.centerPercent;
-      const currentFont = prev.customNamePosition?.fontSize ?? 34;
+      if (target === 'name') {
+        const currentTop = prev.customNamePosition?.topPercent ?? config.name.topPercent;
+        const currentCenter = prev.customNamePosition?.centerPercent ?? config.name.centerPercent;
+        const currentFont = prev.customNamePosition?.fontSize ?? 34;
 
-      let newTop = currentTop;
-      let newCenter = currentCenter;
-      let newFont = currentFont;
+        let newTop = currentTop;
+        let newCenter = currentCenter;
+        let newFont = currentFont;
 
-      if (field === 'topPercent') {
-        newTop = parseFloat((currentTop + delta).toFixed(2));
-      } else if (field === 'centerPercent') {
-        newCenter = parseFloat((currentCenter + delta).toFixed(2));
-      } else if (field === 'fontSize') {
-        newFont = Math.max(16, Math.min(50, currentFont + delta));
-      }
-
-      return {
-        ...prev,
-        customNamePosition: {
-          topPercent: newTop,
-          centerPercent: newCenter,
-          fontSize: newFont,
+        if (field === 'topPercent') {
+          newTop = parseFloat((currentTop + delta).toFixed(2));
+        } else if (field === 'centerPercent') {
+          newCenter = parseFloat((currentCenter + delta).toFixed(2));
+        } else if (field === 'fontSize') {
+          newFont = Math.max(16, Math.min(50, currentFont + delta));
         }
-      };
+
+        return {
+          ...prev,
+          customNamePosition: {
+            topPercent: newTop,
+            centerPercent: newCenter,
+            fontSize: newFont,
+          }
+        };
+      } else {
+        const currentTop = prev.customTitlePosition?.topPercent ?? config.title.topPercent;
+        const currentCenter = prev.customTitlePosition?.centerPercent ?? config.title.centerPercent;
+        const currentFont = prev.customTitlePosition?.fontSize ?? defaultTitleFontSize;
+
+        let newTop = currentTop;
+        let newCenter = currentCenter;
+        let newFont = currentFont;
+
+        if (field === 'topPercent') {
+          newTop = parseFloat((currentTop + delta).toFixed(2));
+        } else if (field === 'centerPercent') {
+          newCenter = parseFloat((currentCenter + delta).toFixed(2));
+        } else if (field === 'fontSize') {
+          newFont = Math.max(18, Math.min(55, currentFont + delta));
+        }
+
+        return {
+          ...prev,
+          customTitlePosition: {
+            topPercent: newTop,
+            centerPercent: newCenter,
+            fontSize: newFont,
+          }
+        };
+      }
     });
   };
 
-  const handleSetDirect = (field: 'topPercent' | 'centerPercent' | 'fontSize', value: number) => {
-    setUserData(prev => ({
-      ...prev,
-      customNamePosition: {
-        topPercent: field === 'topPercent' ? value : (prev.customNamePosition?.topPercent ?? config.name.topPercent),
-        centerPercent: field === 'centerPercent' ? value : (prev.customNamePosition?.centerPercent ?? config.name.centerPercent),
-        fontSize: field === 'fontSize' ? value : (prev.customNamePosition?.fontSize ?? 34),
+  const handleSetDirect = (
+    target: 'name' | 'title',
+    field: 'topPercent' | 'centerPercent' | 'fontSize',
+    value: number
+  ) => {
+    setUserData(prev => {
+      if (target === 'name') {
+        return {
+          ...prev,
+          customNamePosition: {
+            topPercent: field === 'topPercent' ? value : (prev.customNamePosition?.topPercent ?? config.name.topPercent),
+            centerPercent: field === 'centerPercent' ? value : (prev.customNamePosition?.centerPercent ?? config.name.centerPercent),
+            fontSize: field === 'fontSize' ? value : (prev.customNamePosition?.fontSize ?? 34),
+          }
+        };
+      } else {
+        return {
+          ...prev,
+          customTitlePosition: {
+            topPercent: field === 'topPercent' ? value : (prev.customTitlePosition?.topPercent ?? config.title.topPercent),
+            centerPercent: field === 'centerPercent' ? value : (prev.customTitlePosition?.centerPercent ?? config.title.centerPercent),
+            fontSize: field === 'fontSize' ? value : (prev.customTitlePosition?.fontSize ?? defaultTitleFontSize),
+          }
+        };
       }
-    }));
+    });
   };
 
-  const handleReset = () => {
+  const handleReset = (target?: 'name' | 'title') => {
     setUserData(prev => {
       const next = { ...prev };
-      delete next.customNamePosition;
+      if (!target || target === 'name') {
+        delete next.customNamePosition;
+      }
+      if (!target || target === 'title') {
+        delete next.customTitlePosition;
+      }
       return next;
     });
   };
@@ -177,12 +236,12 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {/* 1. Top Banner: Poshakulu Title inside Dark Ornate Banner (Enlarged, no plates count) */}
         <div 
-          className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center text-center px-1.5 max-w-[55%] whitespace-nowrap"
+          className="absolute z-20 text-[#ffea79] font-black drop-shadow-md flex items-center justify-center text-center px-1.5 max-w-[58%] whitespace-nowrap"
           style={{ 
-            top: `${config.title.topPercent}%`, 
-            left: `${config.title.centerPercent}%`,
+            top: `${effectiveTitleTopPercent}%`, 
+            left: `${effectiveTitleCenterPercent}%`,
             transform: 'translate(-50%, -50%)', 
-            fontSize: lang === 'en' ? 'clamp(11px, 3.6cqi, 30px)' : 'clamp(12px, 4.2cqi, 36px)', 
+            fontSize: `clamp(${Math.round(effectiveTitleFontSize * 0.35)}px, ${(effectiveTitleFontSize / 10).toFixed(1)}cqi, ${effectiveTitleFontSize}px)`, 
             fontFamily,
             textShadow: '0 2px 6px rgba(0,0,0,0.85)'
           }}
@@ -223,16 +282,16 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
         )}
       </div>
 
-      {/* Manual Name Coordinates Adjuster Toggle & Card */}
+      {/* Manual Name & Title Coordinates Adjuster Toggle & Card */}
       <div className="w-full max-w-[420px] mt-3">
         <button
           type="button"
           onClick={() => setShowAdjustPanel(prev => !prev)}
-          className="w-full py-2 px-3.5 rounded-xl bg-[#4a1c0b]/80 hover:bg-[#4a1c0b] text-[#ffca08] border border-[#8b3d0b] text-xs font-semibold flex items-center justify-between transition-all shadow-md"
+          className="w-full py-2.5 px-3.5 rounded-xl bg-[#4a1c0b]/80 hover:bg-[#4a1c0b] text-[#ffca08] border border-[#8b3d0b] text-xs font-semibold flex items-center justify-between transition-all shadow-md"
         >
           <span className="flex items-center gap-1.5">
             <span>⚙️</span>
-            <span>Manual Name Position & Coordinates</span>
+            <span>Manual Position & Coordinates (Name & Title)</span>
           </span>
           <span className="text-[11px] bg-[#240b03] px-2 py-0.5 rounded text-orange-200">
             {showAdjustPanel ? 'Hide ▲' : 'Adjust ▼'}
@@ -241,127 +300,275 @@ export const AnnaprasadamPreview: React.FC<Props> = ({
 
         {showAdjustPanel && (
           <div className="mt-2 p-3.5 bg-[#2d0e04] rounded-2xl border border-[#ffca08]/30 shadow-xl flex flex-col gap-3 text-xs text-orange-100 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-[#8b3d0b]/40 pb-2">
-              <span className="font-bold text-[#ffca08]">Name Placement (Real-time Preview & Download)</span>
+            {/* Tabs for Name vs Title selection */}
+            <div className="grid grid-cols-2 gap-2 p-1 bg-[#1a0802] rounded-xl border border-[#8b3d0b]/40">
               <button
                 type="button"
-                onClick={handleReset}
-                className="text-[11px] px-2 py-0.5 rounded bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
+                onClick={() => setActiveAdjustTab('name')}
+                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  activeAdjustTab === 'name'
+                    ? 'bg-[#ffca08] text-[#3d1400] shadow'
+                    : 'text-orange-200/80 hover:text-white'
+                }`}
               >
-                ↺ Reset Default
+                <span>👤</span>
+                <span>Donor Name</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveAdjustTab('title')}
+                className={`py-1.5 px-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                  activeAdjustTab === 'title'
+                    ? 'bg-[#ffca08] text-[#3d1400] shadow'
+                    : 'text-orange-200/80 hover:text-white'
+                }`}
+              >
+                <span>👑</span>
+                <span>Title Banner</span>
               </button>
             </div>
 
-            {/* Vertical (Y) Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Vertical Position (Y):</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveTopPercent.toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', -0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Up"
-                >
-                  ▲ Up (-0.2%)
-                </button>
-                <input
-                  type="range"
-                  min="70.0"
-                  max="85.0"
-                  step="0.1"
-                  value={effectiveTopPercent}
-                  onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', 0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Down"
-                >
-                  ▼ Down (+0.2%)
-                </button>
-              </div>
+            {/* Sub-header with Reset button */}
+            <div className="flex items-center justify-between border-b border-[#8b3d0b]/40 pb-2">
+              <span className="font-bold text-[#ffca08]">
+                {activeAdjustTab === 'name' ? 'Name Placement' : 'Title Placement'} (Real-time Preview & Download)
+              </span>
+              <button
+                type="button"
+                onClick={() => handleReset(activeAdjustTab)}
+                className="text-[11px] px-2 py-0.5 rounded bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
+              >
+                ↺ Reset {activeAdjustTab === 'name' ? 'Name' : 'Title'}
+              </button>
             </div>
 
-            {/* Horizontal (X) Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveCenterPercent.toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', -0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Left"
-                >
-                  ◄ Left (-0.2%)
-                </button>
-                <input
-                  type="range"
-                  min="40.0"
-                  max="60.0"
-                  step="0.1"
-                  value={effectiveCenterPercent}
-                  onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', 0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Right"
-                >
-                  ► Right (+0.2%)
-                </button>
-              </div>
-            </div>
+            {activeAdjustTab === 'name' ? (
+              <>
+                {/* Vertical (Y) Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Vertical Position (Y):</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveTopPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'topPercent', -0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Up"
+                    >
+                      ▲ Up (-0.2%)
+                    </button>
+                    <input
+                      type="range"
+                      min="70.0"
+                      max="85.0"
+                      step="0.1"
+                      value={effectiveTopPercent}
+                      onChange={(e) => handleSetDirect('name', 'topPercent', parseFloat(e.target.value))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'topPercent', 0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Down"
+                    >
+                      ▼ Down (+0.2%)
+                    </button>
+                  </div>
+                </div>
 
-            {/* Font Size Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Font Size:</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveFontSize}px
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', -1)}
-                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Smaller"
-                >
-                  A-
-                </button>
-                <input
-                  type="range"
-                  min="20"
-                  max="48"
-                  step="1"
-                  value={effectiveFontSize}
-                  onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', 1)}
-                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Larger"
-                >
-                  A+
-                </button>
-              </div>
-            </div>
+                {/* Horizontal (X) Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveCenterPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'centerPercent', -0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Left"
+                    >
+                      ◄ Left (-0.2%)
+                    </button>
+                    <input
+                      type="range"
+                      min="40.0"
+                      max="60.0"
+                      step="0.1"
+                      value={effectiveCenterPercent}
+                      onChange={(e) => handleSetDirect('name', 'centerPercent', parseFloat(e.target.value))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'centerPercent', 0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Right"
+                    >
+                      ► Right (+0.2%)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Font Size Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Font Size:</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveFontSize}px
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'fontSize', -1)}
+                      className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Smaller"
+                    >
+                      A-
+                    </button>
+                    <input
+                      type="range"
+                      min="20"
+                      max="48"
+                      step="1"
+                      value={effectiveFontSize}
+                      onChange={(e) => handleSetDirect('name', 'fontSize', parseInt(e.target.value, 10))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('name', 'fontSize', 1)}
+                      className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Larger"
+                    >
+                      A+
+                    </button>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Title Vertical (Y) Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Vertical Position (Y):</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveTitleTopPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'topPercent', -0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Up"
+                    >
+                      ▲ Up (-0.2%)
+                    </button>
+                    <input
+                      type="range"
+                      min="35.0"
+                      max="55.0"
+                      step="0.1"
+                      value={effectiveTitleTopPercent}
+                      onChange={(e) => handleSetDirect('title', 'topPercent', parseFloat(e.target.value))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'topPercent', 0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Down"
+                    >
+                      ▼ Down (+0.2%)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Title Horizontal (X) Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveTitleCenterPercent.toFixed(1)}%
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'centerPercent', -0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Left"
+                    >
+                      ◄ Left (-0.2%)
+                    </button>
+                    <input
+                      type="range"
+                      min="40.0"
+                      max="60.0"
+                      step="0.1"
+                      value={effectiveTitleCenterPercent}
+                      onChange={(e) => handleSetDirect('title', 'centerPercent', parseFloat(e.target.value))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'centerPercent', 0.2)}
+                      className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Move Right"
+                    >
+                      ► Right (+0.2%)
+                    </button>
+                  </div>
+                </div>
+
+                {/* Title Font Size Adjust */}
+                <div className="flex flex-col gap-1.5">
+                  <div className="flex justify-between items-center text-[11px]">
+                    <span className="text-orange-200 font-medium">Font Size:</span>
+                    <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                      {effectiveTitleFontSize}px
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'fontSize', -1)}
+                      className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Smaller"
+                    >
+                      A-
+                    </button>
+                    <input
+                      type="range"
+                      min="20"
+                      max="55"
+                      step="1"
+                      value={effectiveTitleFontSize}
+                      onChange={(e) => handleSetDirect('title', 'fontSize', parseInt(e.target.value, 10))}
+                      className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAdjust('title', 'fontSize', 1)}
+                      className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                      title="Larger"
+                    >
+                      A+
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>

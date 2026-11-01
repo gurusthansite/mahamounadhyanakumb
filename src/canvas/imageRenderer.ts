@@ -81,12 +81,14 @@ export const generateImage = async (
 
           // 1. Top Banner: Poshakulu Title inside dark ornate banner (no plates displayed, enlarged text with auto-fit)
           const topText = titleText;
-          const titleX = Math.round(width * (annaprasadamConfig.title.centerPercent / 100));
-          const titleY = Math.round(height * (annaprasadamConfig.title.topPercent / 100));
-          let titleFontSize = lang === 'en' ? 34 : 38;
+          const titleEffectiveTop = userData.customTitlePosition?.topPercent ?? annaprasadamConfig.title.topPercent;
+          const titleEffectiveCenter = userData.customTitlePosition?.centerPercent ?? annaprasadamConfig.title.centerPercent;
+          const titleX = Math.round(width * (titleEffectiveCenter / 100));
+          const titleY = Math.round(height * (titleEffectiveTop / 100));
+          let titleFontSize = userData.customTitlePosition?.fontSize || (lang === 'en' ? 34 : 38);
           ctx.font = `bold ${titleFontSize}px ${fontFam}`;
           const maxTitleWidth = 460;
-          while (ctx.measureText(topText).width > maxTitleWidth && titleFontSize > 22) {
+          while (ctx.measureText(topText).width > maxTitleWidth && titleFontSize > 20) {
             titleFontSize -= 2;
             ctx.font = `bold ${titleFontSize}px ${fontFam}`;
           }

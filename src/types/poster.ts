@@ -35,6 +35,11 @@ export interface UserData {
     centerPercent?: number;
     fontSize?: number;
   };
+  customTitlePosition?: {
+    topPercent?: number;
+    centerPercent?: number;
+    fontSize?: number;
+  };
   templateType: 'video' | 'image';
   videoOffset?: { x: number; y: number };
   videoScale?: number;
