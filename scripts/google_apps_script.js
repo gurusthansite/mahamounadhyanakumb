@@ -74,7 +74,8 @@ function doPost(e) {
     var isPaymentSuccess = (
       action === "annaprasadam_payment" || 
       action === "payment_success" || 
-      data.status === "SUCCESS"
+      data.status === "SUCCESS" ||
+      data.isPaid === true
     );
 
     var cleanPhone = String(data.phoneNumber || "").replace(/\D/g, "").slice(-10);
@@ -170,6 +171,29 @@ function doPost(e) {
     // 2. LEAD / FORM SUBMISSION (Initial entry as PENDING)
     // =========================================================================
     else {
+      // Check if this donor already has a SUCCESS payment recorded (prevent duplicate PENDING rows)
+      var alreadyCompleted = false;
+      var lastR = sheet.getLastRow();
+      if (lastR > 1 && cleanPhone) {
+        var existingRange = sheet.getRange(2, 1, lastR - 1, 14);
+        var existingValues = existingRange.getValues();
+        for (var k = existingValues.length - 1; k >= 0; k--) {
+          var pCol = String(existingValues[k][6] || "").replace(/\D/g, "").slice(-10);
+          var sCol = String(existingValues[k][9] || "").toUpperCase();
+          if (pCol === cleanPhone && sCol === "SUCCESS") {
+            alreadyCompleted = true;
+            break;
+          }
+        }
+      }
+
+      if (alreadyCompleted) {
+        return ContentService.createTextOutput(JSON.stringify({
+          status: "success",
+          type: "ignored_duplicate_lead_after_success"
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+
       sheet.appendRow([
         nowTimestamp,
         donorName,

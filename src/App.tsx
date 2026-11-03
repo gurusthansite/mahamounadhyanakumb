@@ -230,6 +230,11 @@ function App() {
   };
 
   const submitToGoogleSheets = async () => {
+    // If Annaprasadam payment is already completed, AnnaprasadamForm already saved the SUCCESS row!
+    // Do not re-submit on Download/Share to prevent duplicate PENDING rows.
+    if (currentPage === 'annaprasadam' && userData.isPaid) return;
+    if (currentPage === 'manual') return;
+
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
 
     const isMahaMouna = userData.sevaCategory === 'mahamouna';
@@ -255,7 +260,7 @@ function App() {
       beneficiaryName: userData.contributionFor === 'other' && userData.beneficiaryName
         ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
         : '',
-      category: (currentPage === 'annaprasadam' || currentPage === 'manual') 
+      category: currentPage === 'annaprasadam' 
         ? (isMahaMouna ? 'Maha Mouna Dhyana Kumbh' : 'Annaprasadam Seva')
         : 'Poster Generator',
       timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
