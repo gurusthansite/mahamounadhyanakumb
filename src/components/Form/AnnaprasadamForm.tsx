@@ -77,7 +77,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
     setUserData(prev => ({ ...prev, dob: val }));
 
     if (!val) {
-      setDobError(t.dobRequired);
+      setDobError(null);
       return;
     }
     const dateObj = new Date(val);
@@ -162,17 +162,22 @@ export const AnnaprasadamForm: React.FC<Props> = ({
   // Handle Payment with Strict Plate Locking
   const handlePayment = async () => {
     if (!userData.fullName || !userData.fullName.trim()) {
-      alert("Please enter donor full name");
+      alert(lang === 'te' ? "దయచేసి దాత పూర్తి పేరు నమోదు చేయండి" : "Please enter donor full name");
       return;
     }
 
-    if (!userData.dob) {
-      setDobError(t.dobRequired);
-      alert(t.dobRequired);
+    const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
+    if (!cleanPhone || cleanPhone.length !== 10) {
+      alert(lang === 'te' ? "దయచేసి సరైన 10 అంకెల ఫోన్ నెంబర్ నమోదు చేయండి" : "Please enter a valid 10-digit phone number");
       return;
     }
 
-    if (dobError) {
+    if (!userData.location || !userData.location.trim()) {
+      alert(lang === 'te' ? "దయచేసి మీ ప్రాంతం / నగరం నమోదు చేయండి" : "Please enter your city/location");
+      return;
+    }
+
+    if (userData.dob && dobError) {
       alert(dobError);
       return;
     }
@@ -194,7 +199,6 @@ export const AnnaprasadamForm: React.FC<Props> = ({
     }
 
     const amountInRupees = isMahaMouna ? donationAmount : platesNum * 51;
-    const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
 
     if (!(window as any).Razorpay) {
       alert("Razorpay payment gateway is loading, please try again in a moment.");
@@ -247,6 +251,43 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       const options = {
         ...data.razorpayOptions,
         image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
+        config: {
+          display: {
+            blocks: {
+              qr: {
+                name: "UPI QR",
+                instruments: [
+                  {
+                    method: "upi",
+                    flows: ["qr"]
+                  }
+                ]
+              },
+              other: {
+                name: "All Payment Options",
+                instruments: [
+                  {
+                    method: "upi",
+                    flows: ["intent", "collect"]
+                  },
+                  {
+                    method: "card"
+                  },
+                  {
+                    method: "netbanking"
+                  },
+                  {
+                    method: "wallet"
+                  }
+                ]
+              }
+            },
+            sequence: ["block.qr", "block.other"],
+            preferences: {
+              show_default_blocks: true
+            }
+          }
+        },
         handler: async function (response: any) {
           // Verify payment
           try {
@@ -523,7 +564,6 @@ export const AnnaprasadamForm: React.FC<Props> = ({
                   ? 'border-rose-500 ring-1 ring-rose-500'
                   : 'border-[#8b3d0b]'
               } text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all cursor-pointer`}
-              required
             />
             {!userData.isPaid && (
               <button
@@ -694,6 +734,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
               type="tel"
               name="phoneNumber"
               maxLength={10}
+              required
               value={userData.phoneNumber}
               onChange={(e) => {
                 const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -711,6 +752,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
             <input
               type="text"
               name="location"
+              required
               value={userData.location}
               onChange={handleChange}
               className="w-full px-4 py-3 bg-[#240b03] border border-[#8b3d0b] text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50"

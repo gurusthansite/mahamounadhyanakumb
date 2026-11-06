@@ -307,8 +307,13 @@ function App() {
         alert("దయచేసి మీ పూర్తి పేరు నమోదు చేయండి (Please enter your full name)");
         return false;
       }
-      if (!userData.dob) {
-        alert("దయచేసి మీ పుట్టిన తేదీని నమోదు చేయండి (Please enter Date of Birth)");
+      const cleanPhone = (userData.phoneNumber || '').replace(/\D/g, '').slice(-10);
+      if (!cleanPhone || cleanPhone.length !== 10) {
+        alert("దయచేసి సరైన 10 అంకెల ఫోన్ నెంబర్ నమోదు చేయండి (Please enter a valid 10-digit phone number)");
+        return false;
+      }
+      if (!userData.location || !userData.location.trim()) {
+        alert("దయచేసి మీ ప్రాంతం / నగరం నమోదు చేయండి (Please enter your city/location)");
         return false;
       }
       const isMahaMouna = userData.sevaCategory === 'mahamouna';
