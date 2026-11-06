@@ -76,7 +76,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
     const val = e.target.value;
     setUserData(prev => ({ ...prev, dob: val }));
 
-    if (!val) {
+    if (!val || !val.trim()) {
       setDobError(null);
       return;
     }
@@ -177,7 +177,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       return;
     }
 
-    if (userData.dob && dobError) {
+    if (userData.dob && userData.dob.trim() && dobError) {
       alert(dobError);
       return;
     }
@@ -251,43 +251,6 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       const options = {
         ...data.razorpayOptions,
         image: "https://mahamounadhyanakumbposter.vercel.app/assets/logo.png",
-        config: {
-          display: {
-            blocks: {
-              qr: {
-                name: "UPI QR",
-                instruments: [
-                  {
-                    method: "upi",
-                    flows: ["qr"]
-                  }
-                ]
-              },
-              other: {
-                name: "All Payment Options",
-                instruments: [
-                  {
-                    method: "upi",
-                    flows: ["intent", "collect"]
-                  },
-                  {
-                    method: "card"
-                  },
-                  {
-                    method: "netbanking"
-                  },
-                  {
-                    method: "wallet"
-                  }
-                ]
-              }
-            },
-            sequence: ["block.qr", "block.other"],
-            preferences: {
-              show_default_blocks: true
-            }
-          }
-        },
         handler: async function (response: any) {
           // Verify payment
           try {
