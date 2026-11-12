@@ -23,6 +23,7 @@ export interface UserData {
   beneficiaryTitle?: string;
   beneficiaryName?: string;
   isPaid?: boolean;
+  paymentMode?: string;
   paymentId?: string;
   receiptNo?: string;
   receiptDate?: string;

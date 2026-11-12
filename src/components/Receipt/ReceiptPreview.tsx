@@ -58,7 +58,9 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
     plates: isMahaMouna ? 0 : initPlates,
     amount: initAmount,
     amountWords: initAmountWords,
-    paymentRef: userData.paymentId ? `Online / ${userData.paymentId}` : 'Online Payment',
+    paymentRef: userData.paymentId
+      ? (userData.paymentId.startsWith('CASH') ? `Cash / ${userData.paymentId}` : `Online / ${userData.paymentId}`)
+      : (userData.paymentMode === 'CASH' ? 'Cash Payment' : 'Online Payment'),
     sevaDescription: initSevaDescription,
     offsets: {}
   });

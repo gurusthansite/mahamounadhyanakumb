@@ -10,6 +10,7 @@ import { MmdkDataPage } from './components/FormPage/MmdkDataPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import { ManualPosterPage } from './components/ManualEntry/ManualPosterPage';
+import { CashPortalPage } from './components/CashEntry/CashPortalPage';
 import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
 import { DeveloperSignature } from './components/Footer/DeveloperSignature';
@@ -69,13 +70,25 @@ import {
     return 'guruprasadam';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'mmdk' | 'annaprasadam' | 'manual';
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'mmdk' | 'annaprasadam' | 'manual' | 'cash';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
+
+      // Check for Cash Payment Portal
+      if (
+        page === 'cash' ||
+        page === 'cash-portal' ||
+        page === 'annaprasadam-cash' ||
+        page === 'cashportal' ||
+        path.includes('/cash') ||
+        path.includes('/annaprasadam-cash')
+      ) {
+        return 'cash';
+      }
 
       // Check for Manual Entry Posters (mmts & Poster_language)
       if (
@@ -248,6 +261,7 @@ function App() {
     // Do not re-submit on Download/Share to prevent duplicate PENDING rows.
     if (currentPage === 'annaprasadam' && userData.isPaid) return;
     if (currentPage === 'manual') return;
+    if (currentPage === 'cash') return;
 
     if (!userData.fullName && !userData.phoneNumber && !userData.location) return;
 
@@ -533,6 +547,15 @@ function App() {
       setVideoProgress(null);
     }
   };
+
+  if (currentPage === 'cash') {
+    return (
+      <CashPortalPage
+        lang={currentLang}
+        onLangChange={handleLanguageChange}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#381609] text-white pb-12 font-sans selection:bg-[#ffca08] selection:text-[#381609]">
