@@ -146,6 +146,24 @@ export const ManualPosterPage: React.FC<Props> = ({
     }
   };
 
+  const guruRanges = [
+    '1 to 51 plates',
+    '52 to 111 plates',
+    '111 to 222 plates',
+    '222 to 502 plates',
+    '502 to 1000 plates',
+    '1000+ plates'
+  ];
+
+  const mahaMounaRanges = [
+    '₹1 to ₹5,000',
+    '₹5,000 to ₹25,000',
+    '₹25,000 to ₹50,000',
+    '₹50,000 to ₹75,000',
+    '₹75,000 to ₹1,00,000',
+    '₹1,00,000+'
+  ];
+
   const currentPresets = isMahaMouna 
     ? (presetTitlesByLang[lang]?.mahamouna || presetTitlesByLang.te.mahamouna)
     : (presetTitlesByLang[lang]?.guru || presetTitlesByLang.te.guru);
@@ -503,25 +521,37 @@ export const ManualPosterPage: React.FC<Props> = ({
                 )}
               </div>
 
-              {/* Quick preset pills */}
-              <div className="flex flex-wrap gap-1.5">
-                {currentPresets.map((preset) => {
+              {/* Quick preset pills with plates/amount variation */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {currentPresets.map((preset, idx) => {
                   const activeTitle = userData.customTitle || (isMahaMouna
                     ? getMahaMounaTitleByLang(parseInt(userData.donationAmount || '1', 10), lang)
                     : getPoshakuluTitleByLang(parseInt(userData.plates || '1', 10), lang));
                   const isSelected = activeTitle === preset;
+                  const rangeLabel = isMahaMouna ? mahaMounaRanges[idx] : guruRanges[idx];
                   return (
                     <button
                       key={preset}
                       type="button"
                       onClick={() => setUserData(prev => ({ ...prev, customTitle: preset }))}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
+                      className={`px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between gap-2 ${
                         isSelected
                           ? 'bg-[#ffca08] text-[#381609] font-bold shadow-sm'
                           : 'bg-[#240b03] text-orange-200 border border-[#8b3d0b] hover:bg-[#8b3d0b]/40'
                       }`}
                     >
-                      {preset}
+                      <span className="text-xs font-bold leading-tight">{preset}</span>
+                      {rangeLabel && (
+                        <span
+                          className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-md whitespace-nowrap shrink-0 ${
+                            isSelected
+                              ? 'bg-[#381609]/15 text-[#381609]'
+                              : 'bg-[#381609] text-amber-300/90 border border-[#8b3d0b]/60'
+                          }`}
+                        >
+                          {rangeLabel}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
