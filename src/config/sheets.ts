@@ -24,3 +24,6 @@ export const SRINAGAR_COLONY_SCRIPT_URL =
 
 export const ARUNACHALAM_SCRIPT_URL =
   "https://script.google.com/macros/s/AKfycbx54Q33jaoQJg4bvkTb1DAbJHlpkMTX5lIY9O-8AhuIYpQFARuVlZ344pju3NfZ7shs/exec";
+
+// MMDK Data Register Sheet (Paste deployed Google Apps Script Web App URL here)
+export const MMDK_DATA_SCRIPT_URL = "";

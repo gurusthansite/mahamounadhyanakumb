@@ -6,6 +6,7 @@ import { ActionButtons } from './components/GenerateButton/ActionButtons';
 import { StartingScreen } from './components/StartingScreen';
 import { ImageCropper } from './components/PhotoUpload/ImageCropper';
 import { RegistrationFormPage } from './components/FormPage/RegistrationFormPage';
+import { MmdkDataPage } from './components/FormPage/MmdkDataPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import { ManualPosterPage } from './components/ManualEntry/ManualPosterPage';
@@ -29,7 +30,8 @@ import {
   FORM_RESPONSES_SCRIPT_URL,
   SRINAGAR_COLONY_SCRIPT_URL,
   ARUNACHALAM_SCRIPT_URL,
-  ANNAPRASADAM_PAYMENTS_SHEET_URL
+  ANNAPRASADAM_PAYMENTS_SHEET_URL,
+  MMDK_DATA_SCRIPT_URL
 } from './config/sheets';
 
   const getInitialLang = (): SupportedLanguage => {
@@ -67,7 +69,7 @@ import {
     return 'guruprasadam';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'annaprasadam' | 'manual';
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'mmdk' | 'annaprasadam' | 'manual';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
@@ -98,6 +100,16 @@ import {
         path.includes('/seva')
       ) {
         return 'annaprasadam';
+      }
+
+      // Check for MMDK Data
+      if (
+        page === 'mmdk' ||
+        page === 'mmdk-data' ||
+        page === 'mmdkdata' ||
+        path.includes('/mmdk')
+      ) {
+        return 'mmdk';
       }
 
       // Check for Arunachalam
@@ -193,6 +205,8 @@ function App() {
         url.searchParams.set('page', 'srinagar-colony');
       } else if (page === 'arunachalam') {
         url.searchParams.set('page', 'arunachalam');
+      } else if (page === 'mmdk') {
+        url.searchParams.set('page', 'mmdk');
       } else if (page === 'annaprasadam') {
         url.searchParams.set('page', 'annaprasadam');
       } else {
@@ -644,6 +658,13 @@ function App() {
           subtitle="అరుణాచలం రిజిస్ట్రేషన్ డేటా - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
           includeAadhar={true}
           onNavigateToPoster={() => navigateTo('poster')} 
+        />
+      ) : currentPage === 'mmdk' ? (
+        <MmdkDataPage
+          googleScriptUrl={MMDK_DATA_SCRIPT_URL}
+          title="MMDK Data Register"
+          subtitle="మహా మౌన ధ్యాన కుంభ్ - ఫోన్ నెంబర్ తనిఖీ చేసి వివరాలు నమోదు చేయండి"
+          onNavigateToPoster={() => navigateTo('poster')}
         />
       ) : currentPage === 'annaprasadam' ? (
         <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 sm:mt-10">
