@@ -10,6 +10,7 @@ export interface UserData {
   phoneNumber: string;
   location: string;
   dob?: string;
+  aadhar?: string;
   plateNumber?: string;
   plateLockToken?: string;
   isPlateLocked?: boolean;

@@ -75,6 +75,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
     phoneNumber: '',
     location: '',
     dob: '',
+    aadhar: '',
     plates: '1',
     sevaCategory: 'guruprasadam',
     photoUrl: null,
@@ -147,6 +148,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
       phoneNumber: '',
       location: '',
       dob: '',
+      aadhar: '',
       plates: '1',
       sevaCategory: 'guruprasadam',
       photoUrl: null,
@@ -274,6 +276,12 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
       return;
     }
 
+    const cleanAadhar = (userData.aadhar || '').replace(/\D/g, '');
+    if (userData.aadhar && userData.aadhar.trim() && cleanAadhar.length !== 12) {
+      alert(lang === 'te' ? "దయచేసి సరైన 12 అంకెల ఆధార్ నెంబర్ నమోదు చేయండి లేదా ఖాళీగా ఉంచండి" : "Please enter a valid 12-digit Aadhar number or leave it empty");
+      return;
+    }
+
     const confirmMsg = lang === 'te'
       ? `రూ. ${totalAmount}/- నగదు స్వీకరించబడిందా?\nరశీదు & పోస్టర్ జారీ చేయడానికి ధృవీకరించండి.`
       : `Confirm receipt of ₹${totalAmount} in CASH?\nThis will generate the official 80G Receipt & Poster.`;
@@ -313,6 +321,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
           phoneNumber: cleanPhone,
           location: userData.location || '',
           dob: userData.dob || '',
+          aadhar: cleanAadhar || '',
           category: isMahaMouna ? 'Maha Mouna Dhyana Kumbh' : 'Guru Prasadam Annaprasadam',
           sevaType: isMahaMouna ? 'Maha Mouna Dhyana Kumbh (Cash)' : 'Guru Prasadam Annaprasadam (Cash)',
           contributionFor: userData.contributionFor === 'other' ? 'Someone Else' : 'Self',
@@ -748,6 +757,31 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
                 className="w-full px-3 py-2 bg-[#180601] border border-amber-500/40 rounded-xl text-xs sm:text-sm text-white focus:outline-none"
               />
               {dobError && <p className="text-red-400 text-xs mt-1">{dobError}</p>}
+            </div>
+
+            {/* 3. Aadhar Card Number Field (Optional) */}
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <label className="text-xs font-semibold text-amber-300">
+                  ఆధార్ కార్డ్ నంబర్ (Aadhar Number):
+                </label>
+                <span className="text-[11px] text-orange-200/60 italic">(ఐచ్ఛికం • Optional)</span>
+              </div>
+              <input
+                type="text"
+                disabled={Boolean(userData.isPaid)}
+                value={userData.aadhar || ''}
+                onChange={e => {
+                  const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+                  setUserData(prev => ({ ...prev, aadhar: digits }));
+                }}
+                maxLength={12}
+                placeholder="12 అంకెల ఆధార్ నంబర్"
+                className="w-full px-3 py-2 bg-[#180601] border border-amber-500/40 rounded-xl text-xs sm:text-sm text-white focus:outline-none tracking-widest font-mono"
+              />
+              <p className="text-[11px] text-orange-200/60 mt-1">
+                ℹ️ ఐచ్ఛికం • రికార్డుల కొరకు 12 అంకెల ఆధార్ సంఖ్య నమోదు చేయవచ్చు.
+              </p>
             </div>
 
             {/* 3. Seva Category Selector */}

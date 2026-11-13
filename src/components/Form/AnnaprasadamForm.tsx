@@ -182,6 +182,12 @@ export const AnnaprasadamForm: React.FC<Props> = ({
       return;
     }
 
+    const cleanAadhar = (userData.aadhar || '').replace(/\D/g, '');
+    if (userData.aadhar && userData.aadhar.trim() && cleanAadhar.length !== 12) {
+      alert(lang === 'te' ? "దయచేసి సరైన 12 అంకెల ఆధార్ నెంబర్ నమోదు చేయండి లేదా ఖాళీగా ఉంచండి" : "Please enter a valid 12-digit Aadhar number or leave it empty");
+      return;
+    }
+
     const isMahaMouna = userData.sevaCategory === 'mahamouna';
     const platesNum = parseInt(userData.plates || '0', 10);
     const donationAmount = parseInt(userData.donationAmount || '0', 10);
@@ -219,6 +225,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
           ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
           : '',
         dob: userData.dob || '',
+        aadhar: cleanAadhar || '',
         phoneNumber: cleanPhone || '',
         location: userData.location || '',
         plates: isMahaMouna ? undefined : platesNum,
@@ -297,6 +304,7 @@ export const AnnaprasadamForm: React.FC<Props> = ({
               ? `${userData.beneficiaryTitle ? userData.beneficiaryTitle + ' ' : ''}${userData.beneficiaryName}`.trim()
               : '',
             dob: userData.dob || '',
+            aadhar: cleanAadhar || '',
             phoneNumber: cleanPhone || '',
             location: userData.location || '',
             plates: isMahaMouna ? undefined : platesNum,
@@ -547,6 +555,36 @@ export const AnnaprasadamForm: React.FC<Props> = ({
               {t.dobHelp}
             </p>
           )}
+        </div>
+
+        {/* 3. Aadhar Card Number Field (Optional) */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-semibold text-orange-100">
+              {t.aadharLabel || 'ఆధార్ కార్డ్ నంబర్ (Aadhar Number):'}
+            </label>
+            <span className="text-[11px] text-orange-200/60 italic">(ఐచ్ఛికం • Optional)</span>
+          </div>
+          <input
+            type="text"
+            name="aadhar"
+            maxLength={12}
+            disabled={Boolean(userData.isPaid)}
+            value={userData.aadhar || ''}
+            onChange={(e) => {
+              const digits = e.target.value.replace(/\D/g, '').slice(0, 12);
+              setUserData(prev => ({ ...prev, aadhar: digits }));
+            }}
+            placeholder={t.aadharPlaceholder || '12 అంకెల ఆధార్ నంబర్'}
+            className={`w-full px-4 py-3 bg-[#240b03] border ${
+              userData.isPaid
+                ? 'border-emerald-500/70 text-emerald-300 bg-[#180601] cursor-not-allowed'
+                : 'border-[#8b3d0b]'
+            } text-white rounded-xl focus:ring-2 focus:ring-[#ffca08] focus:border-[#ffca08] outline-none transition-all placeholder-orange-700/50 font-mono tracking-wider`}
+          />
+          <p className="text-[11px] text-orange-200/60 mt-1">
+            {t.aadharHelp || 'ℹ️ ఐచ్ఛికం • రశీదు మరియు రికార్డుల కోసం మాత్రమే ఉపయోగించబడుతుంది.'}
+          </p>
         </div>
 
         {/* Seva Category Selector: Guru Prasadam / Maha Mouna Dhyana Kumbh */}

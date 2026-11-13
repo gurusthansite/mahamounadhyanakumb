@@ -273,6 +273,7 @@ function App() {
     const currentDataStr = JSON.stringify({
       fullName: userData.fullName,
       dob: userData.dob || '',
+      aadhar: userData.aadhar || '',
       phoneNumber: userData.phoneNumber,
       location: userData.location,
       hours: userData.hours || '',
