@@ -126,6 +126,8 @@ function doPost(e) {
             // Beneficiary (Col 13) & Contribution For (Col 14)
             if (beneficiaryName) sheet.getRange(rowIndex, 13).setValue(beneficiaryName);
             if (contributionFor) sheet.getRange(rowIndex, 14).setValue(contributionFor);
+            var cleanAadhar = String(data.aadhar || "").replace(/\D/g, "");
+            if (cleanAadhar) sheet.getRange(rowIndex, 15).setValue("'" + cleanAadhar);
 
             // Update timestamp
             sheet.getRange(rowIndex, 1).setValue(nowTimestamp);
@@ -138,6 +140,7 @@ function doPost(e) {
 
       // If no matching pending row was found, append as a fresh SUCCESS row
       if (!updated) {
+        var cleanAadhar = String(data.aadhar || "").replace(/\D/g, "");
         sheet.appendRow([
           nowTimestamp,
           donorName,
@@ -152,7 +155,8 @@ function doPost(e) {
           data.paymentId || "",
           data.receiptNo || "",
           beneficiaryName || "-",
-          contributionFor
+          contributionFor,
+          cleanAadhar ? "'" + cleanAadhar : ""
         ]);
 
         var newLast = sheet.getLastRow();
@@ -194,6 +198,7 @@ function doPost(e) {
         })).setMimeType(ContentService.MimeType.JSON);
       }
 
+      var cleanLeadAadhar = String(data.aadhar || "").replace(/\D/g, "");
       sheet.appendRow([
         nowTimestamp,
         donorName,
@@ -208,7 +213,8 @@ function doPost(e) {
         "",
         "",
         beneficiaryName || "-",
-        contributionFor
+        contributionFor,
+        cleanLeadAadhar ? "'" + cleanLeadAadhar : ""
       ]);
 
       var pendingRow = sheet.getLastRow();
@@ -250,7 +256,8 @@ function getOrCreateMainSheet(ss) {
     "Payment ID",
     "Receipt No",
     "Beneficiary (In Honor Of)",
-    "Contribution For"
+    "Contribution For",
+    "Aadhar Card"
   ];
 
   if (sheet.getLastRow() === 0) {
