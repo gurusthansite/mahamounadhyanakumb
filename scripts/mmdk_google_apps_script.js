@@ -33,12 +33,27 @@ function getOrCreateSheet() {
   let sheet = ss.getSheetByName(SHEET_NAME);
   if (!sheet) {
     sheet = ss.getSheets()[0];
+    sheet.setName(SHEET_NAME);
   }
   if (sheet.getLastRow() === 0) {
     sheet.appendRow(HEADERS);
-    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
+    sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold").setBackground("#c9daf8");
+    sheet.setFrozenRows(1);
   }
   return sheet;
+}
+
+// Optional: Run this once in Apps Script toolbar to create or fix headers immediately
+function setupSheetHeaders() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME) || ss.getSheets()[0];
+  sheet.setName(SHEET_NAME);
+  for (let i = 0; i < HEADERS.length; i++) {
+    sheet.getRange(1, i + 1).setValue(HEADERS[i]);
+  }
+  sheet.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold").setBackground("#c9daf8");
+  sheet.setFrozenRows(1);
+  Logger.log("MMDK Sheet and headers ready: " + sheet.getName());
 }
 
 function normalizePhone(val) {
