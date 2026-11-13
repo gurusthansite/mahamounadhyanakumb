@@ -22,6 +22,26 @@ interface CashPortalPageProps {
 const DEFAULT_PLATES = 1;
 const DEFAULT_AMOUNT = 501;
 
+// Helper to generate sequential unique receipt numbers for cash payments
+const getNextReceiptNumber = (): string => {
+  if (typeof window === 'undefined') return 'MK-C-0001';
+  const now = new Date();
+  const dayStr = String(now.getDate()).padStart(2, '0');
+  const monthStr = String(now.getMonth() + 1).padStart(2, '0');
+
+  let counter = parseInt(localStorage.getItem('cash_receipt_seq_counter') || '1001', 10);
+  if (isNaN(counter) || counter < 1) counter = 1001;
+
+  return `MK-C-${dayStr}${monthStr}-${counter}`;
+};
+
+const incrementReceiptCounter = () => {
+  if (typeof window === 'undefined') return;
+  let counter = parseInt(localStorage.getItem('cash_receipt_seq_counter') || '1001', 10);
+  if (isNaN(counter) || counter < 1) counter = 1001;
+  localStorage.setItem('cash_receipt_seq_counter', String(counter + 1));
+};
+
 export const CashPortalPage: React.FC<CashPortalPageProps> = ({
   lang,
   onLangChange
@@ -44,6 +64,8 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
     return (typeof window !== 'undefined' && localStorage.getItem('cash_volunteer_name')) || '';
   });
 
+  const [receiptNumberInput, setReceiptNumberInput] = useState<string>(() => getNextReceiptNumber());
+
   const [userData, setUserData] = useState<UserData>({
     fullName: '',
     titlePrefix: lang === 'en' ? 'Sri' : 'శ్రీ',
@@ -60,7 +82,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
     isPaid: false,
     paymentMode: 'CASH',
     paymentId: '',
-    receiptNo: ''
+    receiptNo: getNextReceiptNumber()
   });
 
   const [platesCount, setPlatesCount] = useState<number>(DEFAULT_PLATES);
@@ -114,6 +136,8 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
 
   // Reset form for next donor while keeping volunteer logged in
   const handleResetForNextDonor = () => {
+    const nextRecNo = getNextReceiptNumber();
+    setReceiptNumberInput(nextRecNo);
     setUserData({
       fullName: '',
       titlePrefix: lang === 'en' ? 'Sri' : 'శ్రీ',
@@ -131,7 +155,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
       isPaid: false,
       paymentMode: 'CASH',
       paymentId: '',
-      receiptNo: ''
+      receiptNo: nextRecNo
     });
     setPlatesCount(DEFAULT_PLATES);
     setCustomPlates('');
@@ -259,12 +283,9 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
     setIsSubmitting(true);
 
     try {
-      const now = new Date();
-      const dayStr = String(now.getDate()).padStart(2, '0');
-      const monthStr = String(now.getMonth() + 1).padStart(2, '0');
-      const randomFour = Math.floor(1000 + Math.random() * 9000);
-      const receiptNo = `MK-C-${dayStr}${monthStr}-${randomFour}`;
-      const paymentId = `CASH-${randomFour}`;
+      const finalReceiptNo = receiptNumberInput.trim() || getNextReceiptNumber();
+      const randomPart = finalReceiptNo.replace(/[^A-Za-z0-9]/g, '').slice(-4) || '108';
+      const paymentId = `CASH-${randomPart}`;
 
       // Update state
       setUserData(prev => ({
@@ -272,15 +293,18 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
         isPaid: true,
         paymentMode: 'CASH',
         paymentId: paymentId,
-        receiptNo: receiptNo,
+        receiptNo: finalReceiptNo,
         donationAmount: isMahaMouna ? String(donationAmount) : undefined,
         plates: isMahaMouna ? undefined : String(platesCount)
       }));
 
+      // Increment counter for next receipt
+      incrementReceiptCounter();
+
       // Post to dedicated Cash Payments Google Sheet
       if (ANNAPRASADAM_CASH_PAYMENTS_SHEET_URL) {
         const payload = {
-          receiptNo: receiptNo,
+          receiptNo: finalReceiptNo,
           donorName: `${userData.titlePrefix ? userData.titlePrefix + ' ' : ''}${userData.fullName}`.trim(),
           amount: totalAmount,
           plates: isMahaMouna ? undefined : platesCount,
@@ -298,7 +322,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
           volunteer: volunteerName || 'Counter Cash Desk',
           language: lang,
           status: 'CASH_COLLECTED',
-          timestamp: now.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
+          timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })
         };
 
         fetch(ANNAPRASADAM_CASH_PAYMENTS_SHEET_URL, {
@@ -309,7 +333,7 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
       }
 
       setActiveTab('receipt');
-      alert(lang === 'te' ? `✅ నగదు నమోదు పూర్తయింది!\nరశీదు సంఖ్య: ${receiptNo}` : `✅ Cash payment recorded!\nReceipt No: ${receiptNo}`);
+      alert(lang === 'te' ? `✅ నగదు నమోదు పూర్తయింది!\nరశీదు సంఖ్య: ${finalReceiptNo}` : `✅ Cash payment recorded!\nReceipt No: ${finalReceiptNo}`);
     } catch (err: any) {
       console.error('Cash recording error:', err);
       alert('Error recording payment: ' + (err.message || 'Unknown error'));
@@ -543,6 +567,48 @@ export const CashPortalPage: React.FC<CashPortalPageProps> = ({
                   + కొత్త నమోదు
                 </button>
               )}
+            </div>
+
+            {/* Receipt Number (Sequential Unique / Editable for Physical Receipt Book) */}
+            <div className="bg-[#180601] p-3 rounded-2xl border border-amber-500/50">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
+                  <span>🧾 రశీదు సంఖ్య (Unique Receipt No): *</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-mono font-bold">
+                    ఆటోమేటిక్ క్రమసంఖ్య (Auto Unique)
+                  </span>
+                </label>
+                {!userData.isPaid && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const next = getNextReceiptNumber();
+                      setReceiptNumberInput(next);
+                      setUserData(prev => ({ ...prev, receiptNo: next }));
+                    }}
+                    className="text-[11px] text-amber-400 hover:underline font-semibold"
+                  >
+                    🔄 రీసెట్ / తదుపరి నెంబర్
+                  </button>
+                )}
+              </div>
+              <input
+                type="text"
+                disabled={Boolean(userData.isPaid)}
+                value={receiptNumberInput}
+                onChange={e => {
+                  const val = e.target.value.toUpperCase();
+                  setReceiptNumberInput(val);
+                  setUserData(prev => ({ ...prev, receiptNo: val }));
+                }}
+                placeholder="ఉదా: MK-C-1311-1001"
+                className={`w-full px-3 py-2 bg-[#240b03] border rounded-xl text-xs sm:text-sm font-mono font-black text-amber-300 focus:outline-none focus:border-amber-400 ${
+                  userData.isPaid ? 'border-emerald-500/70 text-emerald-300 cursor-not-allowed' : 'border-amber-500/40'
+                }`}
+              />
+              <p className="text-[11px] text-orange-200/60 mt-1">
+                ℹ️ ప్రతి రశీదుకు ప్రత్యేకమైన నెంబర్ ఆటోమేటిక్‌గా వస్తుంది. (భౌతిక రశీదు పుస్తకం వాడుతుంటే ఇక్కడ మార్చుకోవచ్చు).
+              </p>
             </div>
 
             {/* 1. Donor Name & Title */}

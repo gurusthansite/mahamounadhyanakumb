@@ -65,6 +65,49 @@ export const ReceiptPreview: React.FC<ReceiptPreviewProps> = ({ userData, onBack
     offsets: {}
   });
 
+  // Sync customData with incoming userData updates (e.g. When receiptNo or payment is updated)
+  useEffect(() => {
+    const isMM = userData.sevaCategory === 'mahamouna';
+    const platesNum = parseInt(userData.plates || '1', 10) || 1;
+    const donationAmt = parseInt(userData.donationAmount || '0', 10) || 0;
+    const amt = isMM ? (donationAmt > 0 ? donationAmt : 1) : platesNum * 51;
+    const pfx = userData.titlePrefix ? `${userData.titlePrefix} ` : '';
+    const dName = `${pfx}${userData.fullName || 'Devotee'}`.trim();
+    const ph = userData.phoneNumber ? `+91 ${userData.phoneNumber.replace(/\D/g, '')}` : '';
+
+    setCustomData(prev => ({
+      ...prev,
+      receiptNo: userData.receiptNo || prev.receiptNo,
+      donorName: dName || prev.donorName,
+      dob: userData.dob || prev.dob,
+      location: userData.location || prev.location,
+      phoneNumber: ph || prev.phoneNumber,
+      plates: isMM ? 0 : platesNum,
+      amount: amt,
+      amountWords: isMM
+        ? `${numToWords(amt)} Rupees Only`
+        : `${numToWords(amt)} (${platesNum} ${platesNum === 1 ? 'Plate' : 'Plates'})`,
+      paymentRef: userData.paymentId
+        ? (userData.paymentId.startsWith('CASH') ? `Cash / ${userData.paymentId}` : `Online / ${userData.paymentId}`)
+        : (userData.paymentMode === 'CASH' ? 'Cash Payment' : prev.paymentRef),
+      sevaDescription: isMM
+        ? `Maha Mouna Dhyana Kumbh - Arunachalam`
+        : `Arunachalam Seva (${platesNum} Plates${userData.plateNumber ? ` • Plate #${userData.plateNumber}` : ''})`
+    }));
+  }, [
+    userData.receiptNo,
+    userData.paymentId,
+    userData.paymentMode,
+    userData.fullName,
+    userData.titlePrefix,
+    userData.phoneNumber,
+    userData.location,
+    userData.dob,
+    userData.plates,
+    userData.donationAmount,
+    userData.sevaCategory
+  ]);
+
   // Re-render canvas whenever customData or userData changes
   useEffect(() => {
     let isCancelled = false;
