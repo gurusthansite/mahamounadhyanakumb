@@ -29,4 +29,5 @@ export const ARUNACHALAM_SCRIPT_URL =
 export const MMDK_DATA_SCRIPT_URL = "";
 
 // Annaprasadam Cash Payments Sheet (Paste deployed Google Apps Script Web App URL here)
-export const ANNAPRASADAM_CASH_PAYMENTS_SHEET_URL = "";
+export const ANNAPRASADAM_CASH_PAYMENTS_SHEET_URL =
+  "https://script.google.com/macros/s/AKfycbyEEK6Ilw-DYKrXSrX0ui7FivrEcSW8G2ldTjIys_9C4UvJPIIWkQKkcb5q2EI5H-7DIA/exec";
