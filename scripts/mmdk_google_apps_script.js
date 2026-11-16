@@ -1,6 +1,7 @@
 /**
  * GOOGLE APPS SCRIPT FOR MMDK DATA REGISTER (/mmdk)
- * Setup with DOB: Name | Phone No. | Date of Birth | Aadhar card | Area | Timestamp
+ * Complete 6-Column Layout:
+ * Col A: Name | Col B: Phone No. | Col C: Date of Birth | Col D: Aadhar card | Col E: Area | Col F: Timestamp
  */
 
 // 1. ONE-CLICK SETUP FUNCTION (Run this once from Apps Script)
@@ -19,11 +20,7 @@ function setupMmdkSheet() {
     "Timestamp"
   ];
 
-  // Clear old row 1 completely
-  var lastCol = Math.max(sheet.getLastColumn(), 20);
-  sheet.getRange(1, 1, 1, lastCol).clearContent().setBackground(null);
-
-  // Set new headers
+  // Set the 6 headers in Row 1
   sheet.getRange(1, 1, 1, standardHeaders.length).setValues([standardHeaders]);
   sheet.getRange(1, 1, 1, standardHeaders.length)
        .setFontWeight("bold")
@@ -31,7 +28,7 @@ function setupMmdkSheet() {
        .setFontColor("#000000");
   
   sheet.setFrozenRows(1);
-  SpreadsheetApp.getUi().alert("✅ Success! Sheet has been updated with DOB in tab: " + sheet.getName());
+  SpreadsheetApp.getUi().alert("✅ Success! Row 1 is now set to 6 columns:\nName | Phone No. | Date of Birth | Aadhar card | Area | Timestamp");
 }
 
 function normalizePhone(val) {
@@ -71,6 +68,7 @@ function getColumnMapping(sheet) {
     if (key) colMap[key] = h + 1;
   }
 
+  // Find Aadhar specifically
   var cAadhar = 0;
   for (var i = 0; i < headers.length; i++) {
     var hText = String(headers[i] || '').toLowerCase().replace(/[^a-z]/g, '');
@@ -78,6 +76,14 @@ function getColumnMapping(sheet) {
       cAadhar = i + 1;
       break;
     }
+  }
+
+  // Auto-detect if Area column is missing from Row 1
+  if (!colMap['area'] && !colMap['city'] && !colMap['location']) {
+    sheet.getRange(1, 5).setValue("Area").setFontWeight("bold").setBackground("#c9daf8");
+    sheet.getRange(1, 6).setValue("Timestamp").setFontWeight("bold").setBackground("#c9daf8");
+    colMap['area'] = 5;
+    colMap['timestamp'] = 6;
   }
 
   return {
@@ -215,11 +221,15 @@ function doPost(e) {
       sheet.appendRow(rowData);
       var insertedRow = sheet.getLastRow();
 
+      // Direct cell writes to ensure Phone, Aadhar and Area are placed in their exact columns
       if (cleanPhone) {
         sheet.getRange(insertedRow, cols.cPhone).setValue("'" + cleanPhone);
       }
       if (cleanAadhar) {
         sheet.getRange(insertedRow, cols.cAadhar).setValue(cleanAadhar);
+      }
+      if (payload.area) {
+        sheet.getRange(insertedRow, cols.cArea).setValue((payload.area || "").trim());
       }
 
       return ContentService.createTextOutput(JSON.stringify({
