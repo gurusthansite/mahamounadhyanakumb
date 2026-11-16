@@ -1,25 +1,5 @@
 /**
- * ==============================================================================
- * GOOGLE APPS SCRIPT FOR ANNAPRASADAM & MAHA MOUNA DHYANA KUMBH (v3)
- * ==============================================================================
- * 
- * Features:
- * 1. Automatically records form leads as "PENDING".
- * 2. As soon as Razorpay payment completes, it instantly updates the matching 
- *    pending row to "SUCCESS" and fills in the Payment ID & Receipt Number!
- * 3. Records "Beneficiary / In Honor Of" name if contributed for someone else.
- * 4. Never loses any payment record even if concurrent requests arrive (LockService).
- * 
- * Instructions:
- * 1. In your Google Sheet, click Extensions > Apps Script.
- * 2. Delete all existing code and paste this entire script.
- * 3. Click Save (Ctrl+S / Cmd+S).
- * 4. Click "Deploy" > "Manage deployments" (or "New deployment").
- * 5. Edit deployment or create new "Web app":
- *    - Execute as: "Me"
- *    - Who has access: "Anyone" (CRITICAL: Do not select 'Only myself')
- * 6. Click Deploy.
- * ==============================================================================
+ * GOOGLE APPS SCRIPT FOR ANNAPRASADAM & MAHA MOUNA DHYANA KUMBH (v6 - Foolproof Aadhar & Column Mapping)
  */
 
 function doGet(e) {
@@ -29,20 +9,9 @@ function doGet(e) {
   })).setMimeType(ContentService.MimeType.JSON);
 }
 
-/**
- * 💡 RUN THIS ONCE TO IMMEDIATELY SET UP HEADERS IN YOUR SHEET:
- * Select "setupSheetHeaders" in the function dropdown at the top of Apps Script and click "Run".
- */
-function setupSheetHeaders() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var sheet = getOrCreateMainSheet(ss);
-  Logger.log("Headers successfully configured on sheet: " + sheet.getName());
-}
-
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
-    // Wait up to 30 seconds for concurrent requests
     lock.waitLock(30000);
   } catch (err) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -60,29 +29,69 @@ function doPost(e) {
       })).setMimeType(ContentService.MimeType.JSON);
     }
 
-    var data;
-    try {
-      data = JSON.parse(rawData);
-    } catch (parseErr) {
-      data = e.parameter || {};
+    var data = JSON.parse(rawData);
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var sheet = ss.getSheetByName("Form_Responses") || 
+                ss.getSheetByName("Payments") || 
+                ss.getSheetByName("Form_Registrations") || 
+                ss.getActiveSheet();
+
+    // Read up to 30 columns in Row 1 to find headers
+    var totalCols = Math.max(sheet.getLastColumn(), 25);
+    var headers = sheet.getRange(1, 1, 1, totalCols).getValues()[0];
+    var colMap = {};
+    for (var h = 0; h < headers.length; h++) {
+      var val = String(headers[h] || '').trim();
+      var key = val.toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (key) {
+        colMap[key] = h + 1; // 1-based column index
+      }
     }
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = getOrCreateMainSheet(ss);
+    var cTime        = colMap['timestamp'] || 1;
+    var cName        = colMap['donorname'] || colMap['fullname'] || colMap['name'] || 2;
+    var cCat         = colMap['sevacategory'] || colMap['category'] || 3;
+    var cAmt         = colMap['amount'] || 4;
+    var cPlates      = colMap['plates'] || colMap['platescount'] || 5;
+    var cDob         = colMap['dob'] || colMap['dateofbirth'] || 6;
+    var cPhone       = colMap['phonenumber'] || colMap['phone'] || colMap['mobile'] || 7;
+    var cLoc         = colMap['location'] || 8;
+    var cLang        = colMap['language'] || 9;
+    var cStatus      = colMap['status'] || colMap['paymentstatus'] || 10;
+    var cPayId       = colMap['paymentid'] || 11;
+    var cReceipt     = colMap['receiptno'] || colMap['receipt'] || 12;
+    var cBeneficiary = colMap['beneficiary'] || colMap['beneficiaryinhonorof'] || colMap['beneficiaryname'] || 13;
+    var cContrib     = colMap['contributionfor'] || 14;
 
-    var action = (data.action || "").toLowerCase();
-    var isPaymentSuccess = (
-      action === "annaprasadam_payment" || 
-      action === "payment_success" || 
-      data.status === "SUCCESS" ||
-      data.isPaid === true
-    );
+    // Robust search for Aadhar column (matches 'Aadhar Card', 'Aadhaar', 'Adhar', etc.)
+    var cAadhar = 0;
+    for (var h = 0; h < headers.length; h++) {
+      var hText = String(headers[h] || '').toLowerCase().replace(/[^a-z]/g, '');
+      if (hText.indexOf('aadhar') >= 0 || hText.indexOf('adhar') >= 0) {
+        cAadhar = h + 1;
+        break;
+      }
+    }
+    // If not found in headers, default to column after last known column or 16 (Column P)
+    if (!cAadhar) {
+      cAadhar = Math.max(sheet.getLastColumn() + 1, 16);
+      sheet.getRange(1, cAadhar).setValue("Aadhar Card").setFontWeight("bold");
+    }
 
     var cleanPhone = String(data.phoneNumber || "").replace(/\D/g, "").slice(-10);
+    var cleanAadhar = String(data.aadhar || data.aadharNumber || data.aadharCard || "").replace(/\D/g, "");
+    var aadharText = cleanAadhar ? "'" + cleanAadhar : "";
     var donorName = (data.donorName || data.fullName || "").trim();
     var beneficiaryName = (data.beneficiaryName || "").trim();
     var contributionFor = (data.contributionFor || (beneficiaryName ? "Someone Else" : "Self"));
     var nowTimestamp = data.timestamp || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+
+    var isPaymentSuccess = (
+      (data.action || "").toLowerCase() === "annaprasadam_payment" || 
+      (data.action || "").toLowerCase() === "payment_success" || 
+      data.status === "SUCCESS" ||
+      data.isPaid === true
+    );
 
     var sevaCategory = data.category || (data.plates ? "guruprasadam" : "mahamouna");
     var categoryDisplay = (sevaCategory === "mahamouna") 
@@ -92,45 +101,34 @@ function doPost(e) {
     var amountVal = data.amount || (data.plates ? data.plates * 51 : 0);
     var platesVal = data.plates || "-";
 
-    // =========================================================================
-    // 1. PAYMENT COMPLETED (Update PENDING row -> SUCCESS)
-    // =========================================================================
+    var lastRow = sheet.getLastRow();
+
+    // 1. PAYMENT COMPLETED -> Find matching PENDING row and update to SUCCESS
     if (isPaymentSuccess) {
       var updated = false;
-      var lastRow = sheet.getLastRow();
 
-      // Scan rows from bottom upwards to find matching PENDING row
       if (lastRow > 1) {
-        var range = sheet.getRange(2, 1, lastRow - 1, 14);
-        var values = range.getValues();
+        var values = sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), cAadhar)).getValues();
 
         for (var i = values.length - 1; i >= 0; i--) {
-          var rowPhone = String(values[i][6] || "").replace(/\D/g, "").slice(-10); // Col 7 (Phone)
-          var rowName = String(values[i][1] || "").trim();                       // Col 2 (Name)
-          var rowStatus = String(values[i][9] || "").toUpperCase();              // Col 10 (Status)
+          var rowPhone = String(values[i][cPhone - 1] || "").replace(/\D/g, "").slice(-10);
+          var rowName = String(values[i][cName - 1] || "").trim().toLowerCase();
+          var rowStatus = String(values[i][cStatus - 1] || "").trim().toUpperCase();
 
           var phoneMatches = (cleanPhone && rowPhone && cleanPhone === rowPhone);
-          var nameMatches = (donorName && rowName && donorName.toLowerCase() === rowName.toLowerCase());
+          var nameMatches = (donorName && rowName && donorName.toLowerCase().indexOf(rowName) >= 0);
 
           if ((phoneMatches || nameMatches) && rowStatus !== "SUCCESS") {
-            var rowIndex = i + 2; // 1-based index in sheet
+            var rowIndex = i + 2;
 
-            // Update Status to SUCCESS
-            sheet.getRange(rowIndex, 10).setValue("SUCCESS");
-            sheet.getRange(rowIndex, 10).setFontColor("#047857").setFontWeight("bold");
-
-            // Fill Payment ID (Col 11) & Receipt No (Col 12)
-            if (data.paymentId) sheet.getRange(rowIndex, 11).setValue(data.paymentId);
-            if (data.receiptNo) sheet.getRange(rowIndex, 12).setValue(data.receiptNo);
-
-            // Beneficiary (Col 13) & Contribution For (Col 14)
-            if (beneficiaryName) sheet.getRange(rowIndex, 13).setValue(beneficiaryName);
-            if (contributionFor) sheet.getRange(rowIndex, 14).setValue(contributionFor);
-            var cleanAadhar = String(data.aadhar || "").replace(/\D/g, "");
-            if (cleanAadhar) sheet.getRange(rowIndex, 15).setValue("'" + cleanAadhar);
-
-            // Update timestamp
-            sheet.getRange(rowIndex, 1).setValue(nowTimestamp);
+            sheet.getRange(rowIndex, cStatus).setValue("SUCCESS").setFontColor("#047857").setFontWeight("bold");
+            if (data.paymentId) sheet.getRange(rowIndex, cPayId).setValue(data.paymentId);
+            if (data.receiptNo) sheet.getRange(rowIndex, cReceipt).setValue(data.receiptNo);
+            if (donorName) sheet.getRange(rowIndex, cName).setValue(donorName);
+            if (beneficiaryName) sheet.getRange(rowIndex, cBeneficiary).setValue(beneficiaryName);
+            if (contributionFor) sheet.getRange(rowIndex, cContrib).setValue(contributionFor);
+            if (cleanAadhar) sheet.getRange(rowIndex, cAadhar).setValue(aadharText);
+            sheet.getRange(rowIndex, cTime).setValue(nowTimestamp);
 
             updated = true;
             break;
@@ -138,148 +136,90 @@ function doPost(e) {
         }
       }
 
-      // If no matching pending row was found, append as a fresh SUCCESS row
+      // If no pending row was found, insert as a new SUCCESS row
       if (!updated) {
-        var cleanAadhar = String(data.aadhar || "").replace(/\D/g, "");
-        sheet.appendRow([
-          nowTimestamp,
-          donorName,
-          categoryDisplay,
-          amountVal,
-          platesVal,
-          data.dob || "",
-          cleanPhone ? "'" + cleanPhone : "",
-          data.location || "",
-          data.language || "te",
-          "SUCCESS",
-          data.paymentId || "",
-          data.receiptNo || "",
-          beneficiaryName || "-",
-          contributionFor,
-          cleanAadhar ? "'" + cleanAadhar : ""
-        ]);
+        var numCols = Math.max(sheet.getLastColumn(), cAadhar);
+        var rowData = new Array(numCols).fill("");
+        rowData[cTime - 1] = nowTimestamp;
+        rowData[cName - 1] = donorName;
+        rowData[cCat - 1] = categoryDisplay;
+        rowData[cAmt - 1] = amountVal;
+        rowData[cPlates - 1] = platesVal;
+        rowData[cDob - 1] = data.dob || "";
+        rowData[cPhone - 1] = cleanPhone ? "'" + cleanPhone : "";
+        rowData[cLoc - 1] = data.location || "";
+        rowData[cLang - 1] = data.language || "te";
+        rowData[cStatus - 1] = "SUCCESS";
+        rowData[cPayId - 1] = data.paymentId || "";
+        rowData[cReceipt - 1] = data.receiptNo || "";
+        rowData[cBeneficiary - 1] = beneficiaryName || "-";
+        rowData[cContrib - 1] = contributionFor;
+        if (cleanAadhar) rowData[cAadhar - 1] = aadharText;
 
-        var newLast = sheet.getLastRow();
-        sheet.getRange(newLast, 10).setFontColor("#047857").setFontWeight("bold");
+        sheet.appendRow(rowData);
+        var newRow = sheet.getLastRow();
+        sheet.getRange(newRow, cStatus).setFontColor("#047857").setFontWeight("bold");
+        // Explicitly guarantee Aadhar is written to its specific column
+        if (cleanAadhar) {
+          sheet.getRange(newRow, cAadhar).setValue(aadharText);
+        }
       }
 
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        type: "payment_recorded",
-        receiptNo: data.receiptNo || "",
-        updatedExisting: updated
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", action: "payment_recorded" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // =========================================================================
-    // 2. LEAD / FORM SUBMISSION (Initial entry as PENDING)
-    // =========================================================================
+    // 2. FORM LEAD -> Record initial PENDING row (skip if already paid)
     else {
-      // Check if this donor already has a SUCCESS payment recorded (prevent duplicate PENDING rows)
-      var alreadyCompleted = false;
-      var lastR = sheet.getLastRow();
-      if (lastR > 1 && cleanPhone) {
-        var existingRange = sheet.getRange(2, 1, lastR - 1, 14);
-        var existingValues = existingRange.getValues();
-        for (var k = existingValues.length - 1; k >= 0; k--) {
-          var pCol = String(existingValues[k][6] || "").replace(/\D/g, "").slice(-10);
-          var sCol = String(existingValues[k][9] || "").toUpperCase();
-          if (pCol === cleanPhone && sCol === "SUCCESS") {
-            alreadyCompleted = true;
+      var alreadyPaid = false;
+      if (lastRow > 1 && cleanPhone) {
+        var vals = sheet.getRange(2, 1, lastRow - 1, Math.max(sheet.getLastColumn(), cAadhar)).getValues();
+        for (var k = vals.length - 1; k >= 0; k--) {
+          var p = String(vals[k][cPhone - 1] || "").replace(/\D/g, "").slice(-10);
+          var st = String(vals[k][cStatus - 1] || "").toUpperCase();
+          if (p === cleanPhone && st === "SUCCESS") {
+            alreadyPaid = true;
             break;
           }
         }
       }
 
-      if (alreadyCompleted) {
-        return ContentService.createTextOutput(JSON.stringify({
-          status: "success",
-          type: "ignored_duplicate_lead_after_success"
-        })).setMimeType(ContentService.MimeType.JSON);
+      if (!alreadyPaid) {
+        var numCols = Math.max(sheet.getLastColumn(), cAadhar);
+        var pendingRow = new Array(numCols).fill("");
+        pendingRow[cTime - 1] = nowTimestamp;
+        pendingRow[cName - 1] = donorName;
+        pendingRow[cCat - 1] = categoryDisplay;
+        pendingRow[cAmt - 1] = amountVal;
+        pendingRow[cPlates - 1] = platesVal;
+        pendingRow[cDob - 1] = data.dob || "";
+        pendingRow[cPhone - 1] = cleanPhone ? "'" + cleanPhone : "";
+        pendingRow[cLoc - 1] = data.location || "";
+        pendingRow[cLang - 1] = data.language || "te";
+        pendingRow[cStatus - 1] = "PENDING";
+        pendingRow[cPayId - 1] = "";
+        pendingRow[cReceipt - 1] = "";
+        pendingRow[cBeneficiary - 1] = beneficiaryName || "-";
+        pendingRow[cContrib - 1] = contributionFor;
+        if (cleanAadhar) pendingRow[cAadhar - 1] = aadharText;
+
+        sheet.appendRow(pendingRow);
+        var insertedRow = sheet.getLastRow();
+        sheet.getRange(insertedRow, cStatus).setFontColor("#b45309").setFontWeight("bold");
+        // Explicitly guarantee Aadhar is written to its specific column
+        if (cleanAadhar) {
+          sheet.getRange(insertedRow, cAadhar).setValue(aadharText);
+        }
       }
 
-      var cleanLeadAadhar = String(data.aadhar || "").replace(/\D/g, "");
-      sheet.appendRow([
-        nowTimestamp,
-        donorName,
-        categoryDisplay,
-        amountVal,
-        platesVal,
-        data.dob || "",
-        cleanPhone ? "'" + cleanPhone : "",
-        data.location || "",
-        data.language || "te",
-        "PENDING",
-        "",
-        "",
-        beneficiaryName || "-",
-        contributionFor,
-        cleanLeadAadhar ? "'" + cleanLeadAadhar : ""
-      ]);
-
-      var pendingRow = sheet.getLastRow();
-      sheet.getRange(pendingRow, 10).setFontColor("#b45309").setFontWeight("bold");
-
-      return ContentService.createTextOutput(JSON.stringify({
-        status: "success",
-        type: "lead_recorded",
-        row: pendingRow
-      })).setMimeType(ContentService.MimeType.JSON);
+      return ContentService.createTextOutput(JSON.stringify({ status: "success", action: "lead_recorded" }))
+        .setMimeType(ContentService.MimeType.JSON);
     }
 
   } catch (error) {
-    return ContentService.createTextOutput(JSON.stringify({
-      status: "error",
-      error: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: error.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
   } finally {
     lock.releaseLock();
   }
-}
-
-/**
- * Ensures the main sheet exists and has all 14 standard headers.
- */
-function getOrCreateMainSheet(ss) {
-  var sheet = ss.getSheetByName("Form_Registrations") || ss.getSheets()[0];
-  var headers = [
-    "Timestamp",
-    "Donor Name",
-    "Seva Category",
-    "Amount (₹)",
-    "Plates",
-    "D.O.B",
-    "Phone Number",
-    "Location",
-    "Language",
-    "Status",
-    "Payment ID",
-    "Receipt No",
-    "Beneficiary (In Honor Of)",
-    "Contribution For",
-    "Aadhar Card"
-  ];
-
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(headers);
-    var headerRange = sheet.getRange(1, 1, 1, headers.length);
-    headerRange.setFontWeight("bold");
-    headerRange.setBackground("#381609");
-    headerRange.setFontColor("#ffca08");
-    sheet.setFrozenRows(1);
-  } else {
-    // Check if extra headers (Payment ID, Receipt No, etc.) are missing and add them
-    var currentHeaderCount = sheet.getLastColumn();
-    if (currentHeaderCount < headers.length) {
-      for (var col = currentHeaderCount + 1; col <= headers.length; col++) {
-        var cell = sheet.getRange(1, col);
-        cell.setValue(headers[col - 1]);
-        cell.setFontWeight("bold");
-        cell.setBackground("#381609");
-        cell.setFontColor("#ffca08");
-      }
-    }
-  }
-
-  return sheet;
 }

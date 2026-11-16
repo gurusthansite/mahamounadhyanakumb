@@ -97,6 +97,38 @@ export const MmdkDataPage: React.FC<Props> = ({
     }
   };
 
+  // Handle DOB / MRD auto-segregation with '/' slashes (e.g. 15081995 -> 15/08/1995)
+  const handleDobMrdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+
+    // If user enters letters (like "MRD", "mrd 108"), allow custom text freely
+    if (/[a-zA-Z]/.test(val)) {
+      setDobMrd(val);
+      return;
+    }
+
+    // Handle backspacing smoothly when ending with '/'
+    const rawVal = val.length < dobMrd.length && val.endsWith('/') 
+      ? val.slice(0, -1) 
+      : val;
+
+    const digits = rawVal.replace(/\D/g, '').slice(0, 8); // max 8 digits DDMMYYYY
+    if (!digits) {
+      setDobMrd('');
+      return;
+    }
+
+    let formatted = digits.slice(0, 2);
+    if (digits.length > 2) {
+      formatted += '/' + digits.slice(2, 4);
+    }
+    if (digits.length > 4) {
+      formatted += '/' + digits.slice(4, 8);
+    }
+
+    setDobMrd(formatted);
+  };
+
   // Check if phone number already exists
   const checkPhoneExistence = async (phoneDigits: string) => {
     if (cachedRecords.has(phoneDigits)) {
@@ -457,19 +489,28 @@ export const MmdkDataPage: React.FC<Props> = ({
               />
             </div>
 
-            {/* 6. DOB / MRD */}
+            {/* 6. DOB / MRD (Auto-segregated with / slashes) */}
             <div>
-              <label htmlFor="mmdk-dob-mrd" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                DOB / MRD
-              </label>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="mmdk-dob-mrd" className="block text-xs font-bold text-[#ffca08]">
+                  DOB / MRD
+                </label>
+                <span className="text-[10px] text-amber-300/80 font-mono">
+                  ఆటోమేటిక్ / (Auto Format)
+                </span>
+              </div>
               <input
                 id="mmdk-dob-mrd"
                 type="text"
                 value={dobMrd}
-                onChange={(e) => setDobMrd(e.target.value)}
-                placeholder="DD/MM/YYYY or MRD"
-                className={inputClass}
+                onChange={handleDobMrdChange}
+                placeholder="ఉదా: 15/08/1995 లేదా MRD"
+                maxLength={15}
+                className={`${inputClass} tracking-wider font-mono`}
               />
+              <p className="text-[10px] text-orange-200/60 mt-1">
+                ℹ️ అంకెలు మాత్రమే కొట్టండి (ఉదా: 15081995), ఆటోమేటిక్‌గా 15/08/1995 గా మారుతుంది.
+              </p>
             </div>
 
             {/* 7. Room Number */}
