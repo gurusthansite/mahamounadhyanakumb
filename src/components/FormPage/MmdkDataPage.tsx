@@ -10,6 +10,7 @@ interface Props {
 export interface MmdkRecord {
   name?: string;
   contact?: string;
+  dob?: string;
   aadhar?: string;
   area?: string;
   timestamp?: string;
@@ -20,9 +21,10 @@ export const MmdkDataPage: React.FC<Props> = ({
   title = 'MMDK Data Register',
   subtitle = 'మహా మౌన ధ్యాన కుంభ్ - సందర్శకుల వివరాల నమోదు & తనిఖీ',
 }) => {
-  // Form State (Only Name, Phone No, Aadhar Card, Area)
+  // Form State: Name, Phone No, DOB, Aadhar Card, Area
   const [contact, setContact] = useState('');
   const [name, setName] = useState('');
+  const [dob, setDob] = useState('');
   const [aadhar, setAadhar] = useState('');
   const [area, setArea] = useState('');
 
@@ -85,6 +87,32 @@ export const MmdkDataPage: React.FC<Props> = ({
     }
   };
 
+  // Handle DOB auto-segregation with '/' slashes (e.g. 15081995 -> 15/08/1995)
+  const handleDobChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+
+    // Handle backspacing smoothly when ending with '/'
+    const rawVal = val.length < dob.length && val.endsWith('/') 
+      ? val.slice(0, -1) 
+      : val;
+
+    const digits = rawVal.replace(/\D/g, '').slice(0, 8); // max 8 digits DDMMYYYY
+    if (!digits) {
+      setDob('');
+      return;
+    }
+
+    let formatted = digits.slice(0, 2);
+    if (digits.length > 2) {
+      formatted += '/' + digits.slice(2, 4);
+    }
+    if (digits.length > 4) {
+      formatted += '/' + digits.slice(4, 8);
+    }
+
+    setDob(formatted);
+  };
+
   // Check if phone number already exists
   const checkPhoneExistence = async (phoneDigits: string) => {
     if (cachedRecords.has(phoneDigits)) {
@@ -124,6 +152,7 @@ export const MmdkDataPage: React.FC<Props> = ({
   const handleResetForNextEntry = () => {
     setContact('');
     setName('');
+    setDob('');
     setAadhar('');
     setArea('');
     setExistingRecord(null);
@@ -171,6 +200,7 @@ export const MmdkDataPage: React.FC<Props> = ({
     const newRecord: MmdkRecord = {
       name: name.trim(),
       contact: contact.trim(),
+      dob: dob.trim(),
       aadhar: aadhar.replace(/\D/g, '').trim(),
       area: area.trim(),
       timestamp: nowStr,
@@ -187,6 +217,7 @@ export const MmdkDataPage: React.FC<Props> = ({
             action: 'submit',
             name: newRecord.name,
             contact: newRecord.contact,
+            dob: newRecord.dob || '',
             aadhar: newRecord.aadhar || '',
             area: newRecord.area,
             timestamp: nowStr,
@@ -218,6 +249,7 @@ export const MmdkDataPage: React.FC<Props> = ({
     return (
       (v.name || '').toLowerCase().includes(q) ||
       (v.contact || '').includes(q) ||
+      (v.dob || '').includes(q) ||
       (v.area || '').toLowerCase().includes(q) ||
       (v.aadhar || '').includes(q)
     );
@@ -262,7 +294,10 @@ export const MmdkDataPage: React.FC<Props> = ({
                 </div>
                 <p className="text-xs sm:text-sm text-emerald-200/90 mt-1">
                   పేరు: <strong className="text-white">{savedRecordSummary.name}</strong> | 
-                  ఫోన్: <strong className="text-amber-300 font-mono">{savedRecordSummary.contact}</strong> | 
+                  ఫోన్: <strong className="text-amber-300 font-mono">{savedRecordSummary.contact}</strong>
+                  {savedRecordSummary.dob && (
+                    <> | పుట్టిన తేదీ: <strong className="text-amber-300 font-mono">{savedRecordSummary.dob}</strong></>
+                  )} | 
                   ప్రాంతం: <strong className="text-white">{savedRecordSummary.area}</strong>
                   {savedRecordSummary.aadhar && (
                     <> | ఆధార్: <strong className="text-amber-300 font-mono">{savedRecordSummary.aadhar}</strong></>
@@ -301,6 +336,7 @@ export const MmdkDataPage: React.FC<Props> = ({
             <div className="bg-[#240b03] p-3.5 rounded-xl border border-[#8b3d0b] grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
               <p className="text-white"><strong className="text-[#ffca08]">Name:</strong> {existingRecord.name || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Phone:</strong> {existingRecord.contact || '-'}</p>
+              <p className="text-white"><strong className="text-[#ffca08]">DOB:</strong> {existingRecord.dob || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Area:</strong> {existingRecord.area || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Aadhar:</strong> {existingRecord.aadhar || '-'}</p>
             </div>
@@ -317,7 +353,7 @@ export const MmdkDataPage: React.FC<Props> = ({
         )}
 
         {/* ==================================================== */}
-        {/* VISITOR ENTRY REGISTRATION FORM (Only 4 Fields)       */}
+        {/* VISITOR ENTRY REGISTRATION FORM                      */}
         {/* ==================================================== */}
         <form onSubmit={handleSaveToSheet} className="bg-[#240b03] rounded-3xl p-5 sm:p-7 border-2 border-[#8b3d0b] relative z-10 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-[#8b3d0b]/80 pb-3">
@@ -376,7 +412,31 @@ export const MmdkDataPage: React.FC<Props> = ({
               />
             </div>
 
-            {/* 3. Aadhar card */}
+            {/* 3. Date of Birth (DOB - with auto / slashes) */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="mmdk-dob" className="block text-xs font-bold text-[#ffca08]">
+                  పుట్టిన తేదీ (Date of Birth)
+                </label>
+                <span className="text-[10px] text-amber-300/80 font-mono">
+                  ఆటోమేటిక్ / (Auto Format)
+                </span>
+              </div>
+              <input
+                id="mmdk-dob"
+                type="text"
+                value={dob}
+                onChange={handleDobChange}
+                placeholder="DD/MM/YYYY (ఉదా: 15/08/1995)"
+                maxLength={10}
+                className={`${inputClass} tracking-wider font-mono`}
+              />
+              <p className="text-[10px] text-orange-200/60 mt-1">
+                ℹ️ కేవలం అంకెలు కొట్టండి (ఉదా: 15081995), ఆటోమేటిక్‌గా / వస్తుంది.
+              </p>
+            </div>
+
+            {/* 4. Aadhar card */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label htmlFor="mmdk-aadhar" className="block text-xs font-bold text-[#ffca08]">
@@ -398,8 +458,8 @@ export const MmdkDataPage: React.FC<Props> = ({
               </p>
             </div>
 
-            {/* 4. Area / City */}
-            <div>
+            {/* 5. Area / City */}
+            <div className="sm:col-span-2">
               <label htmlFor="mmdk-area" className="block text-xs font-bold text-[#ffca08] mb-1.5">
                 ప్రాంతం / నగరం (Area / City) <span className="text-rose-400">*</span>
               </label>
@@ -489,6 +549,7 @@ export const MmdkDataPage: React.FC<Props> = ({
                   <tr className="border-b border-[#8b3d0b] text-amber-400 font-bold bg-[#180601]/80">
                     <th className="py-2.5 px-3">పేరు (Name)</th>
                     <th className="py-2.5 px-3">ఫోన్ (Phone)</th>
+                    <th className="py-2.5 px-3">పుట్టిన తేదీ (DOB)</th>
                     <th className="py-2.5 px-3">ఆధార్ కార్డ్ (Aadhar)</th>
                     <th className="py-2.5 px-3">ప్రాంతం (Area)</th>
                     <th className="py-2.5 px-3">నమోదైన సమయం</th>
@@ -499,6 +560,7 @@ export const MmdkDataPage: React.FC<Props> = ({
                     <tr key={idx} className="hover:bg-[#180601]/50 transition-colors">
                       <td className="py-2.5 px-3 font-semibold text-white">{rec.name || '-'}</td>
                       <td className="py-2.5 px-3 font-mono text-amber-300">{rec.contact || '-'}</td>
+                      <td className="py-2.5 px-3 font-mono text-orange-200/90">{rec.dob || '-'}</td>
                       <td className="py-2.5 px-3 font-mono text-orange-200/90">{rec.aadhar || '-'}</td>
                       <td className="py-2.5 px-3 text-orange-200/90">{rec.area || '-'}</td>
                       <td className="py-2.5 px-3 text-orange-200/60 text-xs">{rec.timestamp || '-'}</td>

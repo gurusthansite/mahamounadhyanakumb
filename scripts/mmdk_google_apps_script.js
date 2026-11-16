@@ -1,6 +1,6 @@
 /**
  * GOOGLE APPS SCRIPT FOR MMDK DATA REGISTER (/mmdk)
- * Simplified to 4 Fields: Name, Phone No., Aadhar card, Area (+ Timestamp)
+ * Setup with DOB: Name | Phone No. | Date of Birth | Aadhar card | Area | Timestamp
  */
 
 // 1. ONE-CLICK SETUP FUNCTION (Run this once from Apps Script)
@@ -13,11 +13,17 @@ function setupMmdkSheet() {
   var standardHeaders = [
     "Name",
     "Phone No.",
+    "Date of Birth",
     "Aadhar card",
     "Area",
     "Timestamp"
   ];
 
+  // Clear old row 1 completely
+  var lastCol = Math.max(sheet.getLastColumn(), 20);
+  sheet.getRange(1, 1, 1, lastCol).clearContent().setBackground(null);
+
+  // Set new headers
   sheet.getRange(1, 1, 1, standardHeaders.length).setValues([standardHeaders]);
   sheet.getRange(1, 1, 1, standardHeaders.length)
        .setFontWeight("bold")
@@ -25,7 +31,7 @@ function setupMmdkSheet() {
        .setFontColor("#000000");
   
   sheet.setFrozenRows(1);
-  Logger.log("MMDK Sheet headers created successfully in tab: " + sheet.getName());
+  SpreadsheetApp.getUi().alert("✅ Success! Sheet has been updated with DOB in tab: " + sheet.getName());
 }
 
 function normalizePhone(val) {
@@ -47,10 +53,9 @@ function getMmdkSheet() {
 
 function getColumnMapping(sheet) {
   var standardHeaders = [
-    "Name", "Phone No.", "Aadhar card", "Area", "Timestamp"
+    "Name", "Phone No.", "Date of Birth", "Aadhar card", "Area", "Timestamp"
   ];
 
-  // If Row 1 is empty or has default "Column 1", write proper headers automatically
   var firstCell = String(sheet.getRange(1, 1).getValue() || '').trim().toLowerCase();
   if (firstCell === "" || firstCell === "column 1") {
     sheet.getRange(1, 1, 1, standardHeaders.length).setValues([standardHeaders]);
@@ -58,7 +63,7 @@ function getColumnMapping(sheet) {
     sheet.setFrozenRows(1);
   }
 
-  var totalCols = Math.max(sheet.getLastColumn(), standardHeaders.length, 10);
+  var totalCols = Math.max(sheet.getLastColumn(), standardHeaders.length, 12);
   var headers = sheet.getRange(1, 1, 1, totalCols).getValues()[0];
   var colMap = {};
   for (var h = 0; h < headers.length; h++) {
@@ -66,7 +71,6 @@ function getColumnMapping(sheet) {
     if (key) colMap[key] = h + 1;
   }
 
-  // Find Aadhar specifically
   var cAadhar = 0;
   for (var i = 0; i < headers.length; i++) {
     var hText = String(headers[i] || '').toLowerCase().replace(/[^a-z]/g, '');
@@ -79,10 +83,11 @@ function getColumnMapping(sheet) {
   return {
     cName:        colMap['name'] || colMap['visitorname'] || colMap['fullname'] || 1,
     cPhone:       colMap['phoneno'] || colMap['phone'] || colMap['contact'] || colMap['mobile'] || 2,
-    cAadhar:      cAadhar || colMap['aadharcard'] || colMap['aadhar'] || 3,
-    cArea:        colMap['area'] || colMap['city'] || colMap['location'] || 4,
-    cTime:        colMap['timestamp'] || colMap['date'] || 5,
-    totalCols:    Math.max(sheet.getLastColumn(), 5)
+    cDob:         colMap['dateofbirth'] || colMap['dob'] || colMap['dobmrd'] || 3,
+    cAadhar:      cAadhar || colMap['aadharcard'] || colMap['aadhar'] || 4,
+    cArea:        colMap['area'] || colMap['city'] || colMap['location'] || 5,
+    cTime:        colMap['timestamp'] || colMap['date'] || 6,
+    totalCols:    Math.max(sheet.getLastColumn(), 6)
   };
 }
 
@@ -110,6 +115,7 @@ function doGet(e) {
             records.push({
               name: rawName,
               contact: phone || String(rawPhone || '').trim(),
+              dob: String(row[cols.cDob - 1] || '').trim(),
               aadhar: String(row[cols.cAadhar - 1] || '').trim(),
               area: String(row[cols.cArea - 1] || '').trim(),
               timestamp: String(row[cols.cTime - 1] || '').trim()
@@ -176,6 +182,7 @@ function doPost(e) {
               data: {
                 name: String(row[cols.cName - 1] || '').trim(),
                 contact: rowPhone,
+                dob: String(row[cols.cDob - 1] || '').trim(),
                 aadhar: String(row[cols.cAadhar - 1] || '').trim(),
                 area: String(row[cols.cArea - 1] || '').trim(),
                 timestamp: String(row[cols.cTime - 1] || '').trim()
@@ -195,11 +202,12 @@ function doPost(e) {
       var cleanPhone = normalizePhone(payload.contact);
       var cleanAadhar = normalizeAadhar(payload.aadhar);
 
-      var numCols = Math.max(sheet.getLastColumn(), cols.totalCols, 5);
+      var numCols = Math.max(sheet.getLastColumn(), cols.totalCols, 6);
       var rowData = new Array(numCols).fill("");
 
       rowData[cols.cName - 1]     = (payload.name || "").trim();
       rowData[cols.cPhone - 1]    = cleanPhone ? "'" + cleanPhone : "";
+      rowData[cols.cDob - 1]      = (payload.dob || "").trim();
       rowData[cols.cAadhar - 1]   = cleanAadhar;
       rowData[cols.cArea - 1]     = (payload.area || "").trim();
       rowData[cols.cTime - 1]     = timestamp;
@@ -207,7 +215,6 @@ function doPost(e) {
       sheet.appendRow(rowData);
       var insertedRow = sheet.getLastRow();
 
-      // Explicit direct cell write to guarantee Phone and Aadhar formatting
       if (cleanPhone) {
         sheet.getRange(insertedRow, cols.cPhone).setValue("'" + cleanPhone);
       }
