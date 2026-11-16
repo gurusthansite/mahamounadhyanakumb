@@ -12,12 +12,6 @@ export interface MmdkRecord {
   contact?: string;
   aadhar?: string;
   area?: string;
-  noOfPersons?: string;
-  dobMrd?: string;
-  roomNo?: string;
-  checkIn?: string;
-  checkOut?: string;
-  checkoutStatus?: string;
   timestamp?: string;
 }
 
@@ -26,17 +20,11 @@ export const MmdkDataPage: React.FC<Props> = ({
   title = 'MMDK Data Register',
   subtitle = 'మహా మౌన ధ్యాన కుంభ్ - సందర్శకుల వివరాల నమోదు & తనిఖీ',
 }) => {
-  // Form State
+  // Form State (Only Name, Phone No, Aadhar Card, Area)
   const [contact, setContact] = useState('');
   const [name, setName] = useState('');
   const [aadhar, setAadhar] = useState('');
   const [area, setArea] = useState('');
-  const [noOfPersons, setNoOfPersons] = useState('1');
-  const [dobMrd, setDobMrd] = useState('');
-  const [roomNo, setRoomNo] = useState('');
-  const [checkIn, setCheckIn] = useState(() => new Date().toISOString().split('T')[0]);
-  const [checkOut, setCheckOut] = useState('');
-  const [checkoutStatus, setCheckoutStatus] = useState('Checked In');
 
   // Visitors list & Cache
   const [allVisitors, setAllVisitors] = useState<MmdkRecord[]>([]);
@@ -97,38 +85,6 @@ export const MmdkDataPage: React.FC<Props> = ({
     }
   };
 
-  // Handle DOB / MRD auto-segregation with '/' slashes (e.g. 15081995 -> 15/08/1995)
-  const handleDobMrdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-
-    // If user enters letters (like "MRD", "mrd 108"), allow custom text freely
-    if (/[a-zA-Z]/.test(val)) {
-      setDobMrd(val);
-      return;
-    }
-
-    // Handle backspacing smoothly when ending with '/'
-    const rawVal = val.length < dobMrd.length && val.endsWith('/') 
-      ? val.slice(0, -1) 
-      : val;
-
-    const digits = rawVal.replace(/\D/g, '').slice(0, 8); // max 8 digits DDMMYYYY
-    if (!digits) {
-      setDobMrd('');
-      return;
-    }
-
-    let formatted = digits.slice(0, 2);
-    if (digits.length > 2) {
-      formatted += '/' + digits.slice(2, 4);
-    }
-    if (digits.length > 4) {
-      formatted += '/' + digits.slice(4, 8);
-    }
-
-    setDobMrd(formatted);
-  };
-
   // Check if phone number already exists
   const checkPhoneExistence = async (phoneDigits: string) => {
     if (cachedRecords.has(phoneDigits)) {
@@ -170,12 +126,6 @@ export const MmdkDataPage: React.FC<Props> = ({
     setName('');
     setAadhar('');
     setArea('');
-    setNoOfPersons('1');
-    setDobMrd('');
-    setRoomNo('');
-    setCheckIn(new Date().toISOString().split('T')[0]);
-    setCheckOut('');
-    setCheckoutStatus('Checked In');
     setExistingRecord(null);
     setIsSavedSuccess(false);
     setSavedRecordSummary(null);
@@ -223,12 +173,6 @@ export const MmdkDataPage: React.FC<Props> = ({
       contact: contact.trim(),
       aadhar: aadhar.replace(/\D/g, '').trim(),
       area: area.trim(),
-      noOfPersons: (noOfPersons || '1').toString().trim(),
-      dobMrd: dobMrd.trim(),
-      roomNo: roomNo.trim(),
-      checkIn: checkIn.trim(),
-      checkOut: checkOut.trim(),
-      checkoutStatus: checkoutStatus.trim(),
       timestamp: nowStr,
     };
 
@@ -245,12 +189,6 @@ export const MmdkDataPage: React.FC<Props> = ({
             contact: newRecord.contact,
             aadhar: newRecord.aadhar || '',
             area: newRecord.area,
-            noOfPersons: newRecord.noOfPersons || '1',
-            dobMrd: newRecord.dobMrd || '',
-            roomNo: newRecord.roomNo || '',
-            checkIn: newRecord.checkIn || '',
-            checkOut: newRecord.checkOut || '',
-            checkoutStatus: newRecord.checkoutStatus || 'Checked In',
             timestamp: nowStr,
           }),
         });
@@ -281,7 +219,7 @@ export const MmdkDataPage: React.FC<Props> = ({
       (v.name || '').toLowerCase().includes(q) ||
       (v.contact || '').includes(q) ||
       (v.area || '').toLowerCase().includes(q) ||
-      (v.roomNo || '').toLowerCase().includes(q)
+      (v.aadhar || '').includes(q)
     );
   });
 
@@ -289,7 +227,7 @@ export const MmdkDataPage: React.FC<Props> = ({
     'w-full bg-[#1c0802] border-2 border-[#8b3d0b] focus:border-[#ffca08] rounded-xl px-4 py-3 text-white placeholder-orange-200/30 focus:outline-none transition-all shadow-inner text-sm sm:text-base';
 
   return (
-    <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
+    <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10">
       <div className="bg-[#4a1c0b] rounded-3xl p-5 sm:p-8 shadow-2xl border-2 border-[#8b3d0b] relative overflow-hidden">
         <div className="absolute top-0 right-0 w-80 h-80 bg-[#ffca08] opacity-10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#d97706] opacity-10 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2"></div>
@@ -325,9 +263,10 @@ export const MmdkDataPage: React.FC<Props> = ({
                 <p className="text-xs sm:text-sm text-emerald-200/90 mt-1">
                   పేరు: <strong className="text-white">{savedRecordSummary.name}</strong> | 
                   ఫోన్: <strong className="text-amber-300 font-mono">{savedRecordSummary.contact}</strong> | 
-                  ప్రాంతం: <strong className="text-white">{savedRecordSummary.area}</strong> | 
-                  రూమ్: <strong className="text-amber-300">{savedRecordSummary.roomNo || 'N/A'}</strong> | 
-                  స్థితి: <strong className="text-emerald-400">{savedRecordSummary.checkoutStatus}</strong>
+                  ప్రాంతం: <strong className="text-white">{savedRecordSummary.area}</strong>
+                  {savedRecordSummary.aadhar && (
+                    <> | ఆధార్: <strong className="text-amber-300 font-mono">{savedRecordSummary.aadhar}</strong></>
+                  )}
                 </p>
               </div>
               <button
@@ -363,11 +302,7 @@ export const MmdkDataPage: React.FC<Props> = ({
               <p className="text-white"><strong className="text-[#ffca08]">Name:</strong> {existingRecord.name || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Phone:</strong> {existingRecord.contact || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Area:</strong> {existingRecord.area || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Room:</strong> {existingRecord.roomNo || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Persons:</strong> {existingRecord.noOfPersons || '1'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Status:</strong> {existingRecord.checkoutStatus || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Check In:</strong> {existingRecord.checkIn || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Check Out:</strong> {existingRecord.checkOut || '-'}</p>
+              <p className="text-white"><strong className="text-[#ffca08]">Aadhar:</strong> {existingRecord.aadhar || '-'}</p>
             </div>
             <div className="mt-3 flex gap-2">
               <button
@@ -382,7 +317,7 @@ export const MmdkDataPage: React.FC<Props> = ({
         )}
 
         {/* ==================================================== */}
-        {/* VISITOR ENTRY REGISTRATION FORM (Always Visible)      */}
+        {/* VISITOR ENTRY REGISTRATION FORM (Only 4 Fields)       */}
         {/* ==================================================== */}
         <form onSubmit={handleSaveToSheet} className="bg-[#240b03] rounded-3xl p-5 sm:p-7 border-2 border-[#8b3d0b] relative z-10 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-[#8b3d0b]/80 pb-3">
@@ -398,7 +333,7 @@ export const MmdkDataPage: React.FC<Props> = ({
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* 1. Phone Number */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
@@ -441,7 +376,29 @@ export const MmdkDataPage: React.FC<Props> = ({
               />
             </div>
 
-            {/* 3. Area / City */}
+            {/* 3. Aadhar card */}
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="mmdk-aadhar" className="block text-xs font-bold text-[#ffca08]">
+                  ఆధార్ కార్డ్ (Aadhar Card)
+                </label>
+                <span className="text-[11px] text-orange-200/60 italic">(ఐచ్ఛికం • Optional)</span>
+              </div>
+              <input
+                id="mmdk-aadhar"
+                type="text"
+                maxLength={12}
+                value={aadhar}
+                onChange={(e) => setAadhar(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                placeholder="12 అంకెల ఆధార్ నెంబర్"
+                className={`${inputClass} tracking-widest font-mono`}
+              />
+              <p className="text-[10px] text-orange-200/60 mt-1">
+                ℹ️ ఐచ్ఛికం • రికార్డుల కొరకు 12 అంకెల సంఖ్య నమోదు చేయవచ్చు.
+              </p>
+            </div>
+
+            {/* 4. Area / City */}
             <div>
               <label htmlFor="mmdk-area" className="block text-xs font-bold text-[#ffca08] mb-1.5">
                 ప్రాంతం / నగరం (Area / City) <span className="text-rose-400">*</span>
@@ -455,123 +412,6 @@ export const MmdkDataPage: React.FC<Props> = ({
                 required
                 className={inputClass}
               />
-            </div>
-
-            {/* 4. Aadhar card */}
-            <div>
-              <label htmlFor="mmdk-aadhar" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                ఆధార్ కార్డ్ (Aadhar - <span className="text-orange-200/60 font-normal">ఐచ్ఛికం</span>)
-              </label>
-              <input
-                id="mmdk-aadhar"
-                type="text"
-                maxLength={12}
-                value={aadhar}
-                onChange={(e) => setAadhar(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                placeholder="12 అంకెల ఆధార్ నెంబర్"
-                className={`${inputClass} tracking-widest font-mono`}
-              />
-            </div>
-
-            {/* 5. Number of Persons */}
-            <div>
-              <label htmlFor="mmdk-persons" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                వ్యక్తుల సంఖ్య (No. of persons)
-              </label>
-              <input
-                id="mmdk-persons"
-                type="number"
-                min="1"
-                value={noOfPersons}
-                onChange={(e) => setNoOfPersons(e.target.value)}
-                placeholder="1"
-                className={inputClass}
-              />
-            </div>
-
-            {/* 6. DOB / MRD (Auto-segregated with / slashes) */}
-            <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label htmlFor="mmdk-dob-mrd" className="block text-xs font-bold text-[#ffca08]">
-                  DOB / MRD
-                </label>
-                <span className="text-[10px] text-amber-300/80 font-mono">
-                  ఆటోమేటిక్ / (Auto Format)
-                </span>
-              </div>
-              <input
-                id="mmdk-dob-mrd"
-                type="text"
-                value={dobMrd}
-                onChange={handleDobMrdChange}
-                placeholder="ఉదా: 15/08/1995 లేదా MRD"
-                maxLength={15}
-                className={`${inputClass} tracking-wider font-mono`}
-              />
-              <p className="text-[10px] text-orange-200/60 mt-1">
-                ℹ️ అంకెలు మాత్రమే కొట్టండి (ఉదా: 15081995), ఆటోమేటిక్‌గా 15/08/1995 గా మారుతుంది.
-              </p>
-            </div>
-
-            {/* 7. Room Number */}
-            <div>
-              <label htmlFor="mmdk-room" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                రూమ్ నెం. (Room no.)
-              </label>
-              <input
-                id="mmdk-room"
-                type="text"
-                value={roomNo}
-                onChange={(e) => setRoomNo(e.target.value)}
-                placeholder="ఉదా: 108 / Hall-A"
-                className={inputClass}
-              />
-            </div>
-
-            {/* 8. Check in Date */}
-            <div>
-              <label htmlFor="mmdk-checkin" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                చెక్ ఇన్ తేదీ (Check in)
-              </label>
-              <input
-                id="mmdk-checkin"
-                type="date"
-                value={checkIn}
-                onChange={(e) => setCheckIn(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            {/* 9. Check out Date */}
-            <div>
-              <label htmlFor="mmdk-checkout" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                చెక్ అవుట్ తేదీ (Check out)
-              </label>
-              <input
-                id="mmdk-checkout"
-                type="date"
-                value={checkOut}
-                onChange={(e) => setCheckOut(e.target.value)}
-                className={inputClass}
-              />
-            </div>
-
-            {/* 10. Checkout Status */}
-            <div className="sm:col-span-2 lg:col-span-3">
-              <label htmlFor="mmdk-status" className="block text-xs font-bold text-[#ffca08] mb-1.5">
-                చెక్-అవుట్ స్థితి (Checkout status)
-              </label>
-              <select
-                id="mmdk-status"
-                value={checkoutStatus}
-                onChange={(e) => setCheckoutStatus(e.target.value)}
-                className={inputClass}
-              >
-                <option value="Checked In">Checked In (హాజరయ్యారు)</option>
-                <option value="Checked Out">Checked Out (నిష్క్రమించారు)</option>
-                <option value="Reserved">Reserved (ముందస్తు బుకింగ్)</option>
-                <option value="Pending">Pending (పెండింగ్)</option>
-              </select>
             </div>
           </div>
 
@@ -621,7 +461,7 @@ export const MmdkDataPage: React.FC<Props> = ({
                 type="text"
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                placeholder="పేరు / ఫోన్ / రూమ్ వెతకండి"
+                placeholder="పేరు / ఫోన్ / ఊరు వెతకండి"
                 className="px-3 py-1.5 bg-[#180601] border border-amber-500/40 rounded-xl text-xs text-white placeholder-orange-300/40 focus:outline-none w-44 sm:w-56"
               />
               <button
@@ -649,10 +489,8 @@ export const MmdkDataPage: React.FC<Props> = ({
                   <tr className="border-b border-[#8b3d0b] text-amber-400 font-bold bg-[#180601]/80">
                     <th className="py-2.5 px-3">పేరు (Name)</th>
                     <th className="py-2.5 px-3">ఫోన్ (Phone)</th>
+                    <th className="py-2.5 px-3">ఆధార్ కార్డ్ (Aadhar)</th>
                     <th className="py-2.5 px-3">ప్రాంతం (Area)</th>
-                    <th className="py-2.5 px-3">వ్యక్తులు</th>
-                    <th className="py-2.5 px-3">రూమ్ నెం.</th>
-                    <th className="py-2.5 px-3">స్థితి (Status)</th>
                     <th className="py-2.5 px-3">నమోదైన సమయం</th>
                   </tr>
                 </thead>
@@ -661,20 +499,8 @@ export const MmdkDataPage: React.FC<Props> = ({
                     <tr key={idx} className="hover:bg-[#180601]/50 transition-colors">
                       <td className="py-2.5 px-3 font-semibold text-white">{rec.name || '-'}</td>
                       <td className="py-2.5 px-3 font-mono text-amber-300">{rec.contact || '-'}</td>
+                      <td className="py-2.5 px-3 font-mono text-orange-200/90">{rec.aadhar || '-'}</td>
                       <td className="py-2.5 px-3 text-orange-200/90">{rec.area || '-'}</td>
-                      <td className="py-2.5 px-3 text-center text-orange-200/90">{rec.noOfPersons || '1'}</td>
-                      <td className="py-2.5 px-3 font-mono text-amber-400">{rec.roomNo || '-'}</td>
-                      <td className="py-2.5 px-3">
-                        <span
-                          className={`px-2 py-0.5 rounded text-[11px] font-bold ${
-                            rec.checkoutStatus === 'Checked Out'
-                              ? 'bg-rose-950 text-rose-300 border border-rose-600/50'
-                              : 'bg-emerald-950 text-emerald-300 border border-emerald-600/50'
-                          }`}
-                        >
-                          {rec.checkoutStatus || 'Checked In'}
-                        </span>
-                      </td>
                       <td className="py-2.5 px-3 text-orange-200/60 text-xs">{rec.timestamp || '-'}</td>
                     </tr>
                   ))}

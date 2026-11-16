@@ -1,6 +1,6 @@
 /**
  * GOOGLE APPS SCRIPT FOR MMDK DATA REGISTER (/mmdk)
- * Supports: Visitor Entries, Live Phone Check, Visitors List Retrieval, Auto Column Mapping
+ * Simplified to 4 Fields: Name, Phone No., Aadhar card, Area (+ Timestamp)
  */
 
 // 1. ONE-CLICK SETUP FUNCTION (Run this once from Apps Script)
@@ -15,12 +15,6 @@ function setupMmdkSheet() {
     "Phone No.",
     "Aadhar card",
     "Area",
-    "No.of persons",
-    "DOB/MRD",
-    "Roomno.",
-    "Check in",
-    "Check out",
-    "Checkout status",
     "Timestamp"
   ];
 
@@ -53,8 +47,7 @@ function getMmdkSheet() {
 
 function getColumnMapping(sheet) {
   var standardHeaders = [
-    "Name", "Phone No.", "Aadhar card", "Area", "No.of persons",
-    "DOB/MRD", "Roomno.", "Check in", "Check out", "Checkout status", "Timestamp"
+    "Name", "Phone No.", "Aadhar card", "Area", "Timestamp"
   ];
 
   // If Row 1 is empty or has default "Column 1", write proper headers automatically
@@ -65,7 +58,7 @@ function getColumnMapping(sheet) {
     sheet.setFrozenRows(1);
   }
 
-  var totalCols = Math.max(sheet.getLastColumn(), standardHeaders.length, 15);
+  var totalCols = Math.max(sheet.getLastColumn(), standardHeaders.length, 10);
   var headers = sheet.getRange(1, 1, 1, totalCols).getValues()[0];
   var colMap = {};
   for (var h = 0; h < headers.length; h++) {
@@ -88,14 +81,8 @@ function getColumnMapping(sheet) {
     cPhone:       colMap['phoneno'] || colMap['phone'] || colMap['contact'] || colMap['mobile'] || 2,
     cAadhar:      cAadhar || colMap['aadharcard'] || colMap['aadhar'] || 3,
     cArea:        colMap['area'] || colMap['city'] || colMap['location'] || 4,
-    cPersons:     colMap['noofpersons'] || colMap['persons'] || colMap['members'] || 5,
-    cDobMrd:      colMap['dobmrd'] || colMap['dob'] || colMap['mrd'] || 6,
-    cRoom:        colMap['roomno'] || colMap['room'] || 7,
-    cCheckIn:     colMap['checkin'] || colMap['checkindate'] || 8,
-    cCheckOut:    colMap['checkout'] || colMap['checkoutdate'] || 9,
-    cStatus:      colMap['checkoutstatus'] || colMap['status'] || 10,
-    cTime:        colMap['timestamp'] || colMap['date'] || 11,
-    totalCols:    Math.max(sheet.getLastColumn(), 11)
+    cTime:        colMap['timestamp'] || colMap['date'] || 5,
+    totalCols:    Math.max(sheet.getLastColumn(), 5)
   };
 }
 
@@ -125,12 +112,6 @@ function doGet(e) {
               contact: phone || String(rawPhone || '').trim(),
               aadhar: String(row[cols.cAadhar - 1] || '').trim(),
               area: String(row[cols.cArea - 1] || '').trim(),
-              noOfPersons: String(row[cols.cPersons - 1] || '1').trim(),
-              dobMrd: String(row[cols.cDobMrd - 1] || '').trim(),
-              roomNo: String(row[cols.cRoom - 1] || '').trim(),
-              checkIn: String(row[cols.cCheckIn - 1] || '').trim(),
-              checkOut: String(row[cols.cCheckOut - 1] || '').trim(),
-              checkoutStatus: String(row[cols.cStatus - 1] || 'Checked In').trim(),
               timestamp: String(row[cols.cTime - 1] || '').trim()
             });
           }
@@ -197,12 +178,6 @@ function doPost(e) {
                 contact: rowPhone,
                 aadhar: String(row[cols.cAadhar - 1] || '').trim(),
                 area: String(row[cols.cArea - 1] || '').trim(),
-                noOfPersons: String(row[cols.cPersons - 1] || '1').trim(),
-                dobMrd: String(row[cols.cDobMrd - 1] || '').trim(),
-                roomNo: String(row[cols.cRoom - 1] || '').trim(),
-                checkIn: String(row[cols.cCheckIn - 1] || '').trim(),
-                checkOut: String(row[cols.cCheckOut - 1] || '').trim(),
-                checkoutStatus: String(row[cols.cStatus - 1] || 'Checked In').trim(),
                 timestamp: String(row[cols.cTime - 1] || '').trim()
               }
             })).setMimeType(ContentService.MimeType.JSON);
@@ -220,32 +195,25 @@ function doPost(e) {
       var cleanPhone = normalizePhone(payload.contact);
       var cleanAadhar = normalizeAadhar(payload.aadhar);
 
-      var numCols = Math.max(sheet.getLastColumn(), cols.totalCols, 11);
+      var numCols = Math.max(sheet.getLastColumn(), cols.totalCols, 5);
       var rowData = new Array(numCols).fill("");
 
       rowData[cols.cName - 1]     = (payload.name || "").trim();
       rowData[cols.cPhone - 1]    = cleanPhone ? "'" + cleanPhone : "";
       rowData[cols.cAadhar - 1]   = cleanAadhar;
       rowData[cols.cArea - 1]     = (payload.area || "").trim();
-      rowData[cols.cPersons - 1]  = (payload.noOfPersons || "1").toString().trim();
-      rowData[cols.cDobMrd - 1]   = (payload.dobMrd || "").trim();
-      rowData[cols.cRoom - 1]     = (payload.roomNo || "").trim();
-      rowData[cols.cCheckIn - 1]  = (payload.checkIn || "").trim();
-      rowData[cols.cCheckOut - 1] = (payload.checkOut || "").trim();
-      rowData[cols.cStatus - 1]   = (payload.checkoutStatus || "Checked In").trim();
       rowData[cols.cTime - 1]     = timestamp;
 
       sheet.appendRow(rowData);
       var insertedRow = sheet.getLastRow();
 
-      // Explicit direct cell write to guarantee Phone and Aadhar are never lost
+      // Explicit direct cell write to guarantee Phone and Aadhar formatting
       if (cleanPhone) {
         sheet.getRange(insertedRow, cols.cPhone).setValue("'" + cleanPhone);
       }
       if (cleanAadhar) {
         sheet.getRange(insertedRow, cols.cAadhar).setValue(cleanAadhar);
       }
-      sheet.getRange(insertedRow, cols.cStatus).setFontWeight("bold");
 
       return ContentService.createTextOutput(JSON.stringify({
         status: "saved",
