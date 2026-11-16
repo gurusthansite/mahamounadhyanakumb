@@ -207,29 +207,34 @@ function doPost(e) {
       var timestamp = payload.timestamp || new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
       var cleanPhone = normalizePhone(payload.contact);
       var cleanAadhar = normalizeAadhar(payload.aadhar);
+      var cleanDob = (payload.dob || "").trim();
+      var cleanArea = (payload.area || "").trim();
 
       var numCols = Math.max(sheet.getLastColumn(), cols.totalCols, 6);
       var rowData = new Array(numCols).fill("");
 
       rowData[cols.cName - 1]     = (payload.name || "").trim();
       rowData[cols.cPhone - 1]    = cleanPhone ? "'" + cleanPhone : "";
-      rowData[cols.cDob - 1]      = (payload.dob || "").trim();
+      rowData[cols.cDob - 1]      = cleanDob ? "'" + cleanDob : "";
       rowData[cols.cAadhar - 1]   = cleanAadhar;
-      rowData[cols.cArea - 1]     = (payload.area || "").trim();
+      rowData[cols.cArea - 1]     = cleanArea;
       rowData[cols.cTime - 1]     = timestamp;
 
       sheet.appendRow(rowData);
       var insertedRow = sheet.getLastRow();
 
-      // Direct cell writes to ensure Phone, Aadhar and Area are placed in their exact columns
+      // Direct cell writes to ensure Phone, DOB, Aadhar and Area are placed in their exact columns
       if (cleanPhone) {
         sheet.getRange(insertedRow, cols.cPhone).setValue("'" + cleanPhone);
+      }
+      if (cleanDob) {
+        sheet.getRange(insertedRow, cols.cDob).setValue("'" + cleanDob);
       }
       if (cleanAadhar) {
         sheet.getRange(insertedRow, cols.cAadhar).setValue(cleanAadhar);
       }
-      if (payload.area) {
-        sheet.getRange(insertedRow, cols.cArea).setValue((payload.area || "").trim());
+      if (cleanArea) {
+        sheet.getRange(insertedRow, cols.cArea).setValue(cleanArea);
       }
 
       return ContentService.createTextOutput(JSON.stringify({

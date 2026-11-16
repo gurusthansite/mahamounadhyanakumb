@@ -16,6 +16,23 @@ export interface MmdkRecord {
   timestamp?: string;
 }
 
+// Format date for clean display (handles Date objects or GMT strings)
+const formatDobDisplay = (val?: string): string => {
+  if (!val) return '-';
+  const str = String(val).trim();
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return str;
+  if (str.includes('GMT') || str.includes('T')) {
+    const d = new Date(str);
+    if (!isNaN(d.getTime())) {
+      const day = String(d.getDate()).padStart(2, '0');
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const year = d.getFullYear();
+      return `${day}/${month}/${year}`;
+    }
+  }
+  return str;
+};
+
 export const MmdkDataPage: React.FC<Props> = ({
   googleScriptUrl,
   title = 'MMDK Data Register',
@@ -336,7 +353,7 @@ export const MmdkDataPage: React.FC<Props> = ({
             <div className="bg-[#240b03] p-3.5 rounded-xl border border-[#8b3d0b] grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
               <p className="text-white"><strong className="text-[#ffca08]">Name:</strong> {existingRecord.name || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Phone:</strong> {existingRecord.contact || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">DOB:</strong> {existingRecord.dob || '-'}</p>
+              <p className="text-white"><strong className="text-[#ffca08]">DOB:</strong> {formatDobDisplay(existingRecord.dob)}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Area:</strong> {existingRecord.area || '-'}</p>
               <p className="text-white"><strong className="text-[#ffca08]">Aadhar:</strong> {existingRecord.aadhar || '-'}</p>
             </div>
@@ -560,7 +577,7 @@ export const MmdkDataPage: React.FC<Props> = ({
                     <tr key={idx} className="hover:bg-[#180601]/50 transition-colors">
                       <td className="py-2.5 px-3 font-semibold text-white">{rec.name || '-'}</td>
                       <td className="py-2.5 px-3 font-mono text-amber-300">{rec.contact || '-'}</td>
-                      <td className="py-2.5 px-3 font-mono text-orange-200/90">{rec.dob || '-'}</td>
+                      <td className="py-2.5 px-3 font-mono text-orange-200/90">{formatDobDisplay(rec.dob)}</td>
                       <td className="py-2.5 px-3 font-mono text-orange-200/90">{rec.aadhar || '-'}</td>
                       <td className="py-2.5 px-3 text-orange-200/90">{rec.area || '-'}</td>
                       <td className="py-2.5 px-3 text-orange-200/60 text-xs">{rec.timestamp || '-'}</td>
