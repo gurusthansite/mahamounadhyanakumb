@@ -169,7 +169,7 @@ function doPost(e) {
     var sheet = getMmdkSheet();
     var cols = getColumnMapping(sheet);
 
-    // 1. CHECK PHONE NUMBER EXISTENCE
+    // 1. CHECK PHONE NUMBER EXISTENCE (Finds all matching visitors for this number)
     if (payload.action === "check") {
       var target = normalizePhone(payload.contact);
       var lastRow = sheet.getLastRow();
@@ -177,24 +177,30 @@ function doPost(e) {
       if (lastRow > 1 && target) {
         var numCols = Math.max(sheet.getLastColumn(), cols.totalCols);
         var values = sheet.getRange(2, 1, lastRow - 1, numCols).getValues();
+        var matches = [];
 
         for (var i = 0; i < values.length; i++) {
           var row = values[i];
           var rowPhone = normalizePhone(row[cols.cPhone - 1]);
 
           if (rowPhone === target) {
-            return ContentService.createTextOutput(JSON.stringify({
-              status: "exists",
-              data: {
-                name: String(row[cols.cName - 1] || '').trim(),
-                contact: rowPhone,
-                dob: String(row[cols.cDob - 1] || '').trim(),
-                aadhar: String(row[cols.cAadhar - 1] || '').trim(),
-                area: String(row[cols.cArea - 1] || '').trim(),
-                timestamp: String(row[cols.cTime - 1] || '').trim()
-              }
-            })).setMimeType(ContentService.MimeType.JSON);
+            matches.push({
+              name: String(row[cols.cName - 1] || '').trim(),
+              contact: rowPhone,
+              dob: String(row[cols.cDob - 1] || '').trim(),
+              aadhar: String(row[cols.cAadhar - 1] || '').trim(),
+              area: String(row[cols.cArea - 1] || '').trim(),
+              timestamp: String(row[cols.cTime - 1] || '').trim()
+            });
           }
+        }
+
+        if (matches.length > 0) {
+          return ContentService.createTextOutput(JSON.stringify({
+            status: "exists",
+            data: matches,
+            count: matches.length
+          })).setMimeType(ContentService.MimeType.JSON);
         }
       }
 

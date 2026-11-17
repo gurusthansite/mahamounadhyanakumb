@@ -47,14 +47,14 @@ export const MmdkDataPage: React.FC<Props> = ({
 
   // Visitors list & Cache
   const [allVisitors, setAllVisitors] = useState<MmdkRecord[]>([]);
-  const [cachedRecords, setCachedRecords] = useState<Map<string, MmdkRecord>>(new Map());
+  const [cachedRecords, setCachedRecords] = useState<Map<string, MmdkRecord[]>>(new Map());
   const [isLoadingVisitors, setIsLoadingVisitors] = useState(false);
   const [searchFilter, setSearchFilter] = useState('');
 
   // UI status
   const [isChecking, setIsChecking] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [existingRecord, setExistingRecord] = useState<MmdkRecord | null>(null);
+  const [existingRecords, setExistingRecords] = useState<MmdkRecord[]>([]);
   const [isSavedSuccess, setIsSavedSuccess] = useState(false);
   const [savedRecordSummary, setSavedRecordSummary] = useState<MmdkRecord | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -72,10 +72,14 @@ export const MmdkDataPage: React.FC<Props> = ({
         const records: MmdkRecord[] = json.records;
         setAllVisitors(records);
 
-        const map = new Map<string, MmdkRecord>();
+        const map = new Map<string, MmdkRecord[]>();
         records.forEach((rec) => {
           const clean = (rec.contact || '').toString().replace(/\D/g, '').slice(-10);
-          if (clean) map.set(clean, rec);
+          if (clean) {
+            const list = map.get(clean) || [];
+            list.push(rec);
+            map.set(clean, list);
+          }
         });
         setCachedRecords(map);
       }
@@ -100,7 +104,7 @@ export const MmdkDataPage: React.FC<Props> = ({
     if (digits.length === 10) {
       checkPhoneExistence(digits);
     } else {
-      setExistingRecord(null);
+      setExistingRecords([]);
     }
   };
 
@@ -133,7 +137,7 @@ export const MmdkDataPage: React.FC<Props> = ({
   // Check if phone number already exists
   const checkPhoneExistence = async (phoneDigits: string) => {
     if (cachedRecords.has(phoneDigits)) {
-      setExistingRecord(cachedRecords.get(phoneDigits) || null);
+      setExistingRecords(cachedRecords.get(phoneDigits) || []);
       return;
     }
 
@@ -153,10 +157,11 @@ export const MmdkDataPage: React.FC<Props> = ({
       });
       const result = await response.json();
       if (result.status === 'exists' && result.data) {
-        setExistingRecord(result.data);
-        setCachedRecords((prev) => new Map(prev).set(phoneDigits, result.data));
+        const list: MmdkRecord[] = Array.isArray(result.data) ? result.data : [result.data];
+        setExistingRecords(list);
+        setCachedRecords((prev) => new Map(prev).set(phoneDigits, list));
       } else {
-        setExistingRecord(null);
+        setExistingRecords([]);
       }
     } catch (err) {
       console.warn('Live phone check warning:', err);
@@ -165,20 +170,40 @@ export const MmdkDataPage: React.FC<Props> = ({
     }
   };
 
-  // Reset form for next entry
+  // Reset form for next entry (clears all)
   const handleResetForNextEntry = () => {
     setContact('');
     setName('');
     setDob('');
     setAadhar('');
     setArea('');
-    setExistingRecord(null);
+    setExistingRecords([]);
     setIsSavedSuccess(false);
     setSavedRecordSummary(null);
     setErrorMessage(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
       phoneInputRef.current?.focus();
+    }, 150);
+  };
+
+  // Reset for adding another member with the SAME phone number
+  const handleAddFamilyMemberSamePhone = () => {
+    const keepPhone = contact || savedRecordSummary?.contact || '';
+    const keepArea = area || savedRecordSummary?.area || '';
+    setName('');
+    setDob('');
+    setAadhar('');
+    setArea(keepArea);
+    setIsSavedSuccess(false);
+    setSavedRecordSummary(null);
+    setErrorMessage(null);
+    if (keepPhone) {
+      checkPhoneExistence(keepPhone);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setTimeout(() => {
+      document.getElementById('mmdk-name')?.focus();
     }, 150);
   };
 
@@ -242,12 +267,17 @@ export const MmdkDataPage: React.FC<Props> = ({
         });
       }
 
-      // Update local state and visitors list
-      setCachedRecords((prev) => new Map(prev).set(contact.trim(), newRecord));
+      // Update local state and visitors list (keeps all records for this phone number)
+      setCachedRecords((prev) => {
+        const next = new Map(prev);
+        const currentList = next.get(contact.trim()) || [];
+        next.set(contact.trim(), [newRecord, ...currentList]);
+        return next;
+      });
       setAllVisitors((prev) => [newRecord, ...prev]);
       setSavedRecordSummary(newRecord);
       setIsSavedSuccess(true);
-      setExistingRecord(null);
+      setExistingRecords([]);
 
       // Scroll to top to see confirmation
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -303,7 +333,7 @@ export const MmdkDataPage: React.FC<Props> = ({
 
         {/* Success Alert Banner */}
         {isSavedSuccess && savedRecordSummary && (
-          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-emerald-950 to-[#180601] border-2 border-emerald-500 shadow-2xl animate-fadeIn relative z-10">
+          <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-emerald-950 via-[#180601] to-emerald-950/80 border-2 border-emerald-500 shadow-2xl animate-fadeIn relative z-10">
             <div className="flex flex-wrap items-center justify-between gap-4">
               <div>
                 <div className="flex items-center gap-2 text-emerald-300 font-black text-base sm:text-lg">
@@ -321,14 +351,22 @@ export const MmdkDataPage: React.FC<Props> = ({
                   )}
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={handleResetForNextEntry}
-                className="py-2.5 px-5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-stone-950 font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-2"
-              >
-                <span>➕ తర్వాతి సందర్శకుని నమోదు</span>
-                <span className="text-xs font-normal opacity-80">(Next Visitor)</span>
-              </button>
+              <div className="flex flex-wrap gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleAddFamilyMemberSamePhone}
+                  className="py-2 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-1.5 transform active:scale-98"
+                >
+                  <span>👥 ఇదే నెంబర్‌తో కుటుంబ సభ్యుని నమోదు</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetForNextEntry}
+                  className="py-2 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-stone-950 font-black text-xs sm:text-sm shadow-md transition-all flex items-center gap-1.5 transform active:scale-98"
+                >
+                  <span>➕ కొత్త నెంబర్ నమోదు</span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -343,29 +381,66 @@ export const MmdkDataPage: React.FC<Props> = ({
           </div>
         )}
 
-        {/* Existing Visitor Alert Banner */}
-        {existingRecord && (
-          <div className="mb-6 p-5 bg-[#1c0802] rounded-2xl border-2 border-rose-500 relative z-10 shadow-xl animate-fadeIn">
-            <div className="flex items-center gap-2 text-rose-400 font-bold text-base sm:text-lg mb-3">
-              <span className="text-xl">⚠️</span>
-              <span>ఈ ఫోన్ నెంబర్ ఇప్పటికే ఎక్సెల్‌లో నమోదై ఉంది! (Already Registered)</span>
+        {/* Existing Visitor Info Banner (Supports Repeated Phone Numbers / Family Members) */}
+        {existingRecords.length > 0 && (
+          <div className="mb-6 p-4 sm:p-5 bg-gradient-to-r from-[#2a1306] via-[#1c0802] to-[#2a1306] rounded-2xl border-2 border-amber-500/80 relative z-10 shadow-xl animate-fadeIn">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+              <div className="flex items-center gap-2 text-amber-300 font-bold text-sm sm:text-base">
+                <span className="text-xl">👥</span>
+                <span>
+                  ఈ ఫోన్ నెంబర్‌తో ఇప్పటికే <strong>{existingRecords.length}</strong> నమోదు(లు) ఉన్నాయి
+                </span>
+                <span className="text-xs text-orange-200/80">({contact})</span>
+              </div>
+              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-bold">
+                ✓ ఇంకొకరిని నమోదు చేయవచ్చు (Add Another Member)
+              </span>
             </div>
-            <div className="bg-[#240b03] p-3.5 rounded-xl border border-[#8b3d0b] grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs sm:text-sm">
-              <p className="text-white"><strong className="text-[#ffca08]">Name:</strong> {existingRecord.name || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Phone:</strong> {existingRecord.contact || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">DOB:</strong> {formatDobDisplay(existingRecord.dob)}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Area:</strong> {existingRecord.area || '-'}</p>
-              <p className="text-white"><strong className="text-[#ffca08]">Aadhar:</strong> {existingRecord.aadhar || '-'}</p>
+
+            {/* List of members with this number */}
+            <div className="space-y-2 mb-3">
+              {existingRecords.map((item, idx) => (
+                <div
+                  key={idx}
+                  className="bg-[#240b03] p-2.5 sm:p-3 rounded-xl border border-[#8b3d0b] flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm"
+                >
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                    <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-[#ffca08] font-mono font-bold text-xs">
+                      #{idx + 1}
+                    </span>
+                    <span className="text-white font-bold">{item.name || '-'}</span>
+                    {item.dob && (
+                      <span className="text-orange-200/80">
+                        పుట్టిన తేదీ: <strong className="text-amber-300 font-mono">{formatDobDisplay(item.dob)}</strong>
+                      </span>
+                    )}
+                    {item.area && (
+                      <span className="text-orange-200/80">
+                        ఊరు: <strong className="text-white">{item.area}</strong>
+                      </span>
+                    )}
+                    {item.aadhar && (
+                      <span className="text-orange-200/70 font-mono text-xs">
+                        ఆధార్: {item.aadhar}
+                      </span>
+                    )}
+                  </div>
+                  {item.area && area !== item.area && (
+                    <button
+                      type="button"
+                      onClick={() => setArea(item.area || '')}
+                      className="py-1 px-2.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 rounded-lg text-xs font-bold transition-all flex items-center gap-1"
+                    >
+                      <span>📍 ఇదే ఊరు ({item.area})</span>
+                    </button>
+                  )}
+                </div>
+              ))}
             </div>
-            <div className="mt-3 flex gap-2">
-              <button
-                type="button"
-                onClick={handleResetForNextEntry}
-                className="py-1.5 px-4 bg-rose-700 hover:bg-rose-600 text-white font-bold rounded-lg text-xs"
-              >
-                కొత్త నెంబర్ నమోదు చేయండి (Clear & New)
-              </button>
-            </div>
+
+            <p className="text-xs text-amber-200/80">
+              💡 కుటుంబ సభ్యుల కోసం క్రింద వారి <strong>పేరు, పుట్టిన తేదీ, ఆధార్</strong> నమోదు చేసి నేరుగా సేవ్ చేయండి.
+            </p>
           </div>
         )}
 
