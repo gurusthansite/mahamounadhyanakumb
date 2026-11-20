@@ -184,6 +184,152 @@ export const generateImage = async (
   });
 };
 
+// ============================================================================
+// MAHADEEPOTSAVAM CONTRIBUTORS FLYER RENDERER (1200 x 2100)
+// ============================================================================
+export const DEEPOTSAVAM_TEMPLATE_WIDTH = 1200;
+export const DEEPOTSAVAM_TEMPLATE_HEIGHT = 2100;
+export const DEEPOTSAVAM_PHOTO_AREA = { x: 394, y: 1004, width: 414, height: 369 };
+export const DEEPOTSAVAM_NAME_RIBBON = {
+  x: 280,
+  y: 1395,
+  width: 640,
+  height: 73,
+  centerPercent: 50.0,
+  topPercent: 68.17, // 1431.5 / 2100
+};
+
+export const generateDeepotsavamImage = async (
+  userData: {
+    fullName: string;
+    location?: string;
+    titlePrefix?: string;
+    contributionFor?: 'self' | 'other';
+    beneficiaryName?: string;
+    beneficiaryTitle?: string;
+    displayFormat?: 'name_only' | 'name_location' | 'two_lines';
+    photoUrl: string | null;
+    customNamePosition?: {
+      topPercent?: number;
+      centerPercent?: number;
+      fontSize?: number;
+    };
+  },
+  templateUrl: string = '/assets/Mahadeepotsavam Contributors Template.png'
+): Promise<Blob> => {
+  return new Promise((resolve, reject) => {
+    const width = DEEPOTSAVAM_TEMPLATE_WIDTH;
+    const height = DEEPOTSAVAM_TEMPLATE_HEIGHT;
+    const photoArea = DEEPOTSAVAM_PHOTO_AREA;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return reject(new Error("No canvas context"));
+
+    const templateImg = new Image();
+    templateImg.crossOrigin = "anonymous";
+    templateImg.src = templateUrl;
+
+    templateImg.onload = () => {
+      const renderLayers = (userImg?: HTMLImageElement) => {
+        // 1. Draw contributor photo inside the photo frame cutout
+        if (userImg) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.rect(photoArea.x, photoArea.y, photoArea.width, photoArea.height);
+          ctx.clip();
+          ctx.drawImage(userImg, photoArea.x, photoArea.y, photoArea.width, photoArea.height);
+          ctx.restore();
+        }
+
+        // 2. Draw template overlay (template has transparent frame window)
+        ctx.drawImage(templateImg, 0, 0, width, height);
+
+        // 3. Render Contributor Name in the Name Ribbon
+        const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
+        const activePrefix = isOther
+          ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : 'శ్రీమతి ')
+          : (userData.titlePrefix ? `${userData.titlePrefix} ` : 'శ్రీ ');
+        const targetName = isOther ? userData.beneficiaryName!.trim() : userData.fullName.trim();
+        const loc = userData.location?.trim() || '';
+
+        let primaryText = targetName ? `${activePrefix}${targetName}` : '';
+        let secondaryText = '';
+
+        if (primaryText) {
+          if (userData.displayFormat === 'name_location' && loc) {
+            primaryText = `${primaryText}, ${loc}`;
+          } else if (userData.displayFormat === 'two_lines' && loc) {
+            secondaryText = loc;
+          }
+
+          const effectiveTopPercent = userData.customNamePosition?.topPercent ?? DEEPOTSAVAM_NAME_RIBBON.topPercent;
+          const effectiveCenterPercent = userData.customNamePosition?.centerPercent ?? DEEPOTSAVAM_NAME_RIBBON.centerPercent;
+          const nameX = Math.round(width * (effectiveCenterPercent / 100));
+          const nameY = Math.round(height * (effectiveTopPercent / 100));
+
+          let baseFontSize = userData.customNamePosition?.fontSize || 38;
+          ctx.font = `bold ${baseFontSize}px "Noto Sans Telugu", sans-serif`;
+
+          const maxRibbonWidth = 600;
+          while (ctx.measureText(primaryText).width > maxRibbonWidth && baseFontSize > 20) {
+            baseFontSize -= 2;
+            ctx.font = `bold ${baseFontSize}px "Noto Sans Telugu", sans-serif`;
+          }
+
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+
+          if (secondaryText) {
+            const line1Y = nameY - 14;
+            const line2Y = nameY + 16;
+
+            // Line 1: Name
+            ctx.font = `bold ${Math.min(baseFontSize, 32)}px "Noto Sans Telugu", sans-serif`;
+            ctx.fillStyle = '#ffea79';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
+            ctx.shadowBlur = 6;
+            ctx.fillText(primaryText, nameX, line1Y);
+
+            // Line 2: Location
+            ctx.font = `bold ${Math.min(baseFontSize - 6, 26)}px "Noto Sans Telugu", sans-serif`;
+            ctx.fillStyle = '#ffffff';
+            ctx.shadowBlur = 6;
+            ctx.fillText(secondaryText, nameX, line2Y);
+          } else {
+            // Single Line centered
+            ctx.fillStyle = '#ffea79';
+            ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+            ctx.shadowBlur = 8;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 2;
+            ctx.fillText(primaryText, nameX, nameY);
+          }
+          ctx.shadowBlur = 0;
+        }
+
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob);
+          else reject(new Error("Blob generation failed"));
+        }, 'image/png');
+      };
+
+      if (userData.photoUrl) {
+        const userImg = new Image();
+        userImg.crossOrigin = "anonymous";
+        userImg.onload = () => renderLayers(userImg);
+        userImg.onerror = () => renderLayers();
+        userImg.src = userData.photoUrl;
+      } else {
+        renderLayers();
+      }
+    };
+    templateImg.onerror = () => reject(new Error("Failed to load template image."));
+  });
+};
+
 
 
 

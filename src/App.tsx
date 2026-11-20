@@ -10,6 +10,7 @@ import { MmdkDataPage } from './components/FormPage/MmdkDataPage';
 import { AnnaprasadamForm } from './components/Form/AnnaprasadamForm';
 import { AnnaprasadamPreview } from './components/PosterPreview/AnnaprasadamPreview';
 import { ManualPosterPage } from './components/ManualEntry/ManualPosterPage';
+import { DeepotsavamPosterPage } from './components/Deepotsavam/DeepotsavamPosterPage';
 import { CashPortalPage } from './components/CashEntry/CashPortalPage';
 import { ReceiptPreview } from './components/Receipt/ReceiptPreview';
 import { ComplianceFooter } from './components/Footer/ComplianceFooter';
@@ -70,13 +71,26 @@ import {
     return 'guruprasadam';
   };
 
-  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'mmdk' | 'annaprasadam' | 'manual' | 'cash';
+  type PageType = 'poster' | 'srnagar' | 'srinagar_colony' | 'arunachalam' | 'mmdk' | 'annaprasadam' | 'manual' | 'cash' | 'deepotsavam';
 
   const getInitialPage = (): PageType => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const page = (params.get('page') || params.get('view') || '').toLowerCase();
       const path = window.location.pathname.toLowerCase();
+
+      // Check for Mahadeepotsavam Contributors Flyer Generator
+      if (
+        page === 'deepotsavam' ||
+        page === 'mahadeepotsavam' ||
+        page === 'deepam' ||
+        page === 'contributors' ||
+        path.includes('/deepotsavam') ||
+        path.includes('/mahadeepotsavam') ||
+        path.includes('/contributors')
+      ) {
+        return 'deepotsavam';
+      }
 
       // Check for Cash Payment Portal
       if (
@@ -212,7 +226,11 @@ function App() {
     }
     if (typeof window !== 'undefined') {
       const url = new URL(window.location.href);
-      if (page === 'srnagar') {
+      if (page === 'deepotsavam') {
+        url.searchParams.set('page', 'deepotsavam');
+      } else if (page === 'manual') {
+        url.searchParams.set('page', 'manual');
+      } else if (page === 'srnagar') {
         url.searchParams.set('page', 'srnagar');
       } else if (page === 'srinagar_colony') {
         url.searchParams.set('page', 'srinagar-colony');
@@ -630,6 +648,28 @@ function App() {
                     >
                       <span>{t.navAnnaprasadam}</span>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('deepotsavam')}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-2 ${
+                        currentPage === 'deepotsavam'
+                          ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                          : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                      } ${fontClass}`}
+                    >
+                      <span>🪔 {currentLang === 'en' ? 'Deepotsavam' : 'మహాదీపోత్సవం'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => navigateTo('manual')}
+                      className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-md flex items-center gap-1.5 ${
+                        currentPage === 'manual'
+                          ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/60 shadow-amber-500/20 scale-[1.02]'
+                          : 'bg-[#240b03]/80 hover:bg-[#8b3d0b] text-orange-200 border border-[#8b3d0b]'
+                      } ${fontClass}`}
+                    >
+                      <span>✍️ {currentLang === 'en' ? 'Manual Poster' : 'మాన్యువల్ పోస్టర్'}</span>
+                    </button>
 
                   </div>
                 </>
@@ -640,7 +680,13 @@ function App() {
           <div className="flex-shrink-0 relative group mt-8 lg:mt-0">
             <div className="absolute inset-0 bg-[#ffca08] rounded-3xl blur-2xl opacity-15 group-hover:opacity-25 transition-opacity duration-500"></div>
             <img 
-              src={currentPage === 'annaprasadam' || currentPage === 'manual' ? getAnnaprasadamHeroImage(currentLang) : '/assets/mouna_banner.jpg'} 
+              src={
+                currentPage === 'deepotsavam'
+                  ? '/assets/Mahadeepotsavam Contributors Template.png'
+                  : currentPage === 'annaprasadam' || currentPage === 'manual'
+                  ? getAnnaprasadamHeroImage(currentLang) 
+                  : '/assets/mouna_banner.jpg'
+              } 
               alt={currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
@@ -649,7 +695,11 @@ function App() {
       </header>
 
 
-      {currentPage === 'manual' ? (
+      {currentPage === 'deepotsavam' ? (
+        <DeepotsavamPosterPage 
+          onNavigateHome={() => navigateTo('poster')}
+        />
+      ) : currentPage === 'manual' ? (
         <ManualPosterPage 
           userData={userData}
           setUserData={setUserData}
