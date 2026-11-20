@@ -17,9 +17,6 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
     contributionFor: 'self',
     beneficiaryTitle: 'శ్రీమతి',
     beneficiaryName: '',
-    categoryTitle: 'దీప దాత',
-    deepamCount: '108 దీపాలు',
-    displayFormat: 'name_location',
     photoUrl: null,
     rawMediaUrl: null,
   });
@@ -138,9 +135,6 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
       contributionFor: 'self',
       beneficiaryTitle: 'శ్రీమతి',
       beneficiaryName: '',
-      categoryTitle: data.categoryTitle || 'దీప దాత',
-      deepamCount: data.deepamCount || '108 దీపాలు',
-      displayFormat: data.displayFormat || 'name_location',
       photoUrl: null,
       rawMediaUrl: null,
     });
@@ -249,19 +243,6 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
     { id: 'కుమారి', label: 'కుమారి (Kumari)' },
     { id: 'డాక్టర్', label: 'డాక్టర్ (Dr.)' },
     { id: '', label: 'ఏదీ వద్దు (None)' },
-  ];
-
-  const categoryPresets = [
-    '108 దీపాలు',
-    '365 దీపాలు',
-    '516 దీపాలు',
-    '1,008 దీపాలు',
-    '5,116 దీపాలు',
-    'సహస్ర దీప దాత',
-    'లక్ష దీప దాత',
-    'దీప దాత',
-    'మహాదీపోత్సవ దాత',
-    'మహాదీపోత్సవ పోషకులు',
   ];
 
   return (
@@ -465,74 +446,6 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
                 placeholder="ఉదా: హైదరాబాద్ / తిరువణ్ణామలై / బెంగళూరు"
                 className="w-full px-3 py-2 rounded-xl bg-[#1c0802] border border-[#8b3d0b] text-white text-xs sm:text-sm focus:outline-none focus:border-[#ffca08]"
               />
-            </div>
-
-            {/* Display Format on Flyer */}
-            <div className="flex flex-col gap-1.5 pt-1">
-              <label className="block text-xs font-semibold text-orange-200/90">
-                ఫ్లైయర్‌పై పేరు ప్రదర్శించే విధానం (Display Format on Ribbon):
-              </label>
-              <div className="grid grid-cols-3 gap-2 text-xs">
-                <button
-                  type="button"
-                  onClick={() => setData((prev) => ({ ...prev, displayFormat: 'name_location' }))}
-                  className={`py-2 px-2 rounded-xl font-bold transition-all text-center border ${
-                    data.displayFormat === 'name_location'
-                      ? 'bg-[#ffca08] text-[#381609] border-[#ffca08] shadow-sm'
-                      : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:bg-[#8b3d0b]/40'
-                  }`}
-                >
-                  పేరు & ఊరు
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setData((prev) => ({ ...prev, displayFormat: 'name_only' }))}
-                  className={`py-2 px-2 rounded-xl font-bold transition-all text-center border ${
-                    data.displayFormat === 'name_only'
-                      ? 'bg-[#ffca08] text-[#381609] border-[#ffca08] shadow-sm'
-                      : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:bg-[#8b3d0b]/40'
-                  }`}
-                >
-                  పేరు మాత్రమే
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setData((prev) => ({ ...prev, displayFormat: 'two_lines' }))}
-                  className={`py-2 px-2 rounded-xl font-bold transition-all text-center border ${
-                    data.displayFormat === 'two_lines'
-                      ? 'bg-[#ffca08] text-[#381609] border-[#ffca08] shadow-sm'
-                      : 'bg-[#240b03] text-orange-200 border-[#8b3d0b] hover:bg-[#8b3d0b]/40'
-                  }`}
-                >
-                  రెండు వరుసలలో
-                </button>
-              </div>
-            </div>
-
-            {/* Deepotsavam Category / Deepam Presets */}
-            <div className="flex flex-col gap-2 pt-2 border-t border-[#8b3d0b]/60">
-              <label className="block text-xs font-semibold text-orange-200/90">
-                దీపోత్సవ సేవ / సంకల్పం (Deepotsavam Category Presets):
-              </label>
-              <div className="flex flex-wrap gap-1.5">
-                {categoryPresets.map((preset) => {
-                  const isSelected = data.deepamCount === preset;
-                  return (
-                    <button
-                      key={preset}
-                      type="button"
-                      onClick={() => setData((prev) => ({ ...prev, deepamCount: preset }))}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all ${
-                        isSelected
-                          ? 'bg-[#ffca08] text-[#381609] font-bold shadow-sm'
-                          : 'bg-[#240b03] text-orange-200 border border-[#8b3d0b] hover:bg-[#8b3d0b]/40'
-                      }`}
-                    >
-                      {preset}
-                    </button>
-                  );
-                })}
-              </div>
             </div>
 
             {/* Photo Selection Section */}

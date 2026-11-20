@@ -259,10 +259,8 @@ export const generateDeepotsavamImage = async (
         let secondaryText = '';
 
         if (primaryText) {
-          if (userData.displayFormat === 'name_location' && loc) {
+          if (loc) {
             primaryText = `${primaryText}, ${loc}`;
-          } else if (userData.displayFormat === 'two_lines' && loc) {
-            secondaryText = loc;
           }
 
           const effectiveTopPercent = userData.customNamePosition?.topPercent ?? DEEPOTSAVAM_NAME_RIBBON.topPercent;

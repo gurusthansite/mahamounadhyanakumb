@@ -187,9 +187,9 @@ export function getAnnaprasadamTemplate(lang: SupportedLanguage = 'te', isMahaMo
 
 export const TRANSLATIONS = {
   te: {
-    heroTitle1: 'మహా మౌన',
-    heroTitle2: 'ధ్యాన కుంభ్',
-    heroTagline: 'తరలిరండి అరుణాచలం.',
+    heroTitle1: 'మహా',
+    heroTitle2: 'దీపోత్సవం',
+    heroTagline: 'మహా అన్న ప్రసాద వితరణ సేవ',
     heroDates: 'నవంబర్ 11 - 15',
     heroLocation: 'అరుణాచలం',
     navPoster: '🎥 🖼️ పోస్టర్ / వీడియో (Poster & Video)',
@@ -273,9 +273,9 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 వాట్సాప్‌లో షేర్ చేయడానికి ముందుగా పేమెంట్ పూర్తి చేయండి'
   },
   en: {
-    heroTitle1: 'Maha Mouna',
-    heroTitle2: 'Dhyana Kumbh',
-    heroTagline: 'Join Us at Arunachalam.',
+    heroTitle1: 'Maha',
+    heroTitle2: 'Deepotsavam',
+    heroTagline: 'Maha Annaprasada Vitharana Seva',
     heroDates: 'November 11 - 15',
     heroLocation: 'Arunachalam',
     navPoster: '🎥 🖼️ Poster & Video',
@@ -359,9 +359,9 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 Complete payment to unlock WhatsApp share'
   },
   ta: {
-    heroTitle1: 'மகா மௌன',
-    heroTitle2: 'தியான கும்ப்',
-    heroTagline: 'அனைவரும் வருக அருணாச்சலம்.',
+    heroTitle1: 'மகா',
+    heroTitle2: 'தீபோத்சவம்',
+    heroTagline: 'மகா அன்ன பிரசாத விநியோக சேவை',
     heroDates: 'நவம்பர் 11 - 15',
     heroLocation: 'அருணாச்சலம்',
     navPoster: '🎥 🖼️ போஸ்டர் / வீடியோ (Poster & Video)',
@@ -445,9 +445,9 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 வாட்ஸ்அப்பில் பகிர மேலே உள்ள கட்டணத்தை முடிக்கவும்'
   },
   hi: {
-    heroTitle1: 'महा मौन',
-    heroTitle2: 'ध्यान कुंभ',
-    heroTagline: 'पधारें अरुणाचलम.',
+    heroTitle1: 'महा',
+    heroTitle2: 'दीपोत्सव',
+    heroTagline: 'महा अन्न प्रसाद वितरण सेवा',
     heroDates: '11 - 15 नवंबर',
     heroLocation: 'अरुणाचलम',
     navPoster: '🎥 🖼️ पोस्टर / वीडियो (Poster & Video)',
@@ -531,9 +531,9 @@ export const TRANSLATIONS = {
     shareUnlockPrompt: '🔒 व्हाट्सएप पर शेयर करने के लिए ऊपर भुगतान पूरा करें'
   },
   kn: {
-    heroTitle1: 'ಮಹಾ ಮೌನ',
-    heroTitle2: 'ಧ್ಯಾನ ಕುಂಭ',
-    heroTagline: 'ಬನ್ನಿ ಅರುಣಾಚಲಕ್ಕೆ.',
+    heroTitle1: 'ಮಹಾ',
+    heroTitle2: 'ದೀಪೋತ್ಸವ',
+    heroTagline: 'ಮಹಾ ಅನ್ನ ಪ್ರಸಾದ ವಿತರಣಾ ಸೇವೆ',
     heroDates: 'ನವೆಂಬರ್ 11 - 15',
     heroLocation: 'ಅರುಣಾಚಲ',
     navPoster: '🎥 🖼️ ಪೋಸ್ಟರ್ / ವಿಡಿಯೋ (Poster & Video)',

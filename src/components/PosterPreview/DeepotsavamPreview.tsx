@@ -59,12 +59,8 @@ export const DeepotsavamPreview: React.FC<Props> = ({
   const loc = data.location?.trim() || '';
 
   let primaryText = nameWithPrefix || 'శ్రీ దాత పేరు';
-  let secondaryText = '';
-
-  if (data.displayFormat === 'name_location' && loc) {
+  if (loc) {
     primaryText = `${primaryText}, ${loc}`;
-  } else if (data.displayFormat === 'two_lines' && loc) {
-    secondaryText = loc;
   }
 
   const handleAdjust = (field: 'topPercent' | 'centerPercent' | 'fontSize', delta: number) => {
@@ -96,6 +92,18 @@ export const DeepotsavamPreview: React.FC<Props> = ({
     });
   };
 
+  const handleSetDirect = (field: 'topPercent' | 'centerPercent' | 'fontSize', val: number) => {
+    setData(prev => ({
+      ...prev,
+      customNamePosition: {
+        topPercent: prev.customNamePosition?.topPercent ?? defaultTopPercent,
+        centerPercent: prev.customNamePosition?.centerPercent ?? defaultCenterPercent,
+        fontSize: prev.customNamePosition?.fontSize ?? defaultFontSize,
+        [field]: val,
+      }
+    }));
+  };
+
   const handleResetPosition = () => {
     setData(prev => ({
       ...prev,
@@ -105,7 +113,7 @@ export const DeepotsavamPreview: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Visual Adjust Toolbar Button */}
+      {/* Live Preview Label & Quick Toggle */}
       <div className="w-full max-w-[440px] flex items-center justify-between mb-2 px-1">
         <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
           <span>🪔</span>
@@ -120,96 +128,10 @@ export const DeepotsavamPreview: React.FC<Props> = ({
               : 'bg-[#240b03] hover:bg-[#8b3d0b] text-orange-200 border border-[#ffca08]/40'
           }`}
         >
-          <span>⚙️ పేరు స్థానం సర్దుబాటు</span>
+          <span>⚙️ సర్దుబాటు (Adjust)</span>
           <span className="text-[10px]">{showAdjustPanel ? '▲' : '▼'}</span>
         </button>
       </div>
-
-      {/* Floating Micro Adjust Panel */}
-      {showAdjustPanel && (
-        <div className="w-full max-w-[440px] bg-[#240b03] border-2 border-[#ffca08]/60 p-3.5 rounded-2xl shadow-2xl mb-3 flex flex-col gap-2.5 animate-fadeIn z-30">
-          <div className="flex items-center justify-between border-b border-[#8b3d0b]/70 pb-2">
-            <span className="text-xs font-bold text-[#ffca08]">
-              ✍️ పేరు పొజిషన్ & సైజ్ సర్దుబాటు (Name Ribbon Adjustments):
-            </span>
-            <button
-              type="button"
-              onClick={handleResetPosition}
-              className="text-[11px] text-amber-300 hover:underline font-semibold"
-            >
-              🔄 రీసెట్ (Reset)
-            </button>
-          </div>
-
-          <div className="grid grid-cols-3 gap-2 text-xs">
-            {/* Vertical (Up/Down) */}
-            <div className="flex flex-col gap-1 items-center bg-[#1c0802] p-2 rounded-xl border border-[#8b3d0b]/40">
-              <span className="text-[11px] text-orange-200/80 font-medium">పైకి / క్రిందికి (Y)</span>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', -0.2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  ▲
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', 0.2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  ▼
-                </button>
-              </div>
-              <span className="text-[10px] text-amber-300/80 font-mono">{effectiveTopPercent.toFixed(1)}%</span>
-            </div>
-
-            {/* Horizontal (Left/Right) */}
-            <div className="flex flex-col gap-1 items-center bg-[#1c0802] p-2 rounded-xl border border-[#8b3d0b]/40">
-              <span className="text-[11px] text-orange-200/80 font-medium">ఎడమ / కుడి (X)</span>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', -0.2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  ◀
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', 0.2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  ▶
-                </button>
-              </div>
-              <span className="text-[10px] text-amber-300/80 font-mono">{effectiveCenterPercent.toFixed(1)}%</span>
-            </div>
-
-            {/* Font Size */}
-            <div className="flex flex-col gap-1 items-center bg-[#1c0802] p-2 rounded-xl border border-[#8b3d0b]/40">
-              <span className="text-[11px] text-orange-200/80 font-medium">ఫాంట్ సైజ్ (Size)</span>
-              <div className="flex gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', -2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  A-
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', 2)}
-                  className="w-7 h-7 rounded-lg bg-[#381609] hover:bg-[#ffca08] hover:text-[#381609] text-white font-bold text-xs transition-colors flex items-center justify-center border border-[#8b3d0b]"
-                >
-                  A+
-                </button>
-              </div>
-              <span className="text-[10px] text-amber-300/80 font-mono">{effectiveFontSize}px</span>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main Flyer Canvas Container (Maintains 1200 x 2100 Aspect Ratio) */}
       <div 
@@ -275,39 +197,161 @@ export const DeepotsavamPreview: React.FC<Props> = ({
             maxHeight: '4.5%',
           }}
         >
-          {secondaryText ? (
-            <>
-              <span 
-                className="font-extrabold text-[#ffea79] tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)]"
-                style={{
-                  fontSize: `clamp(11px, ${effectiveFontSize * 0.44}px, 22px)`,
-                  fontFamily: '"Noto Sans Telugu", sans-serif',
-                }}
-              >
-                {primaryText}
-              </span>
-              <span 
-                className="font-bold text-white tracking-normal whitespace-nowrap overflow-hidden text-ellipsis max-w-full drop-shadow-[0_2px_4px_rgba(0,0,0,0.9)] mt-0.5"
-                style={{
-                  fontSize: `clamp(9px, ${(effectiveFontSize - 8) * 0.44}px, 17px)`,
-                  fontFamily: '"Noto Sans Telugu", sans-serif',
-                }}
-              >
-                {secondaryText}
-              </span>
-            </>
-          ) : (
-            <span 
-              className="font-extrabold text-[#ffea79] tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-full drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]"
-              style={{
-                fontSize: `clamp(12px, ${effectiveFontSize * 0.46}px, 26px)`,
-                fontFamily: '"Noto Sans Telugu", sans-serif',
-              }}
-            >
-              {primaryText}
-            </span>
-          )}
+          <span 
+            className="font-extrabold text-[#ffea79] tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-full drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]"
+            style={{
+              fontSize: `clamp(12px, ${effectiveFontSize * 0.46}px, 26px)`,
+              fontFamily: '"Noto Sans Telugu", sans-serif',
+            }}
+          >
+            {primaryText}
+          </span>
         </div>
+      </div>
+
+      {/* Manual Position & Font Adjustments Panel (Like Manual Poster Page) */}
+      <div className="w-full max-w-[440px] mt-3">
+        <button
+          type="button"
+          onClick={() => setShowAdjustPanel(prev => !prev)}
+          className="w-full py-2.5 px-3.5 rounded-xl bg-[#4a1c0b]/80 hover:bg-[#4a1c0b] text-[#ffca08] border border-[#8b3d0b] text-xs font-semibold flex items-center justify-between transition-all shadow-md"
+        >
+          <span className="flex items-center gap-1.5">
+            <span>⚙️</span>
+            <span>Manual Position & Font Adjustments (పేరు & ఫాంట్ సర్దుబాటు)</span>
+          </span>
+          <span className="text-[11px] bg-[#240b03] px-2 py-0.5 rounded text-orange-200">
+            {showAdjustPanel ? 'Hide ▲' : 'Adjust ▼'}
+          </span>
+        </button>
+
+        {showAdjustPanel && (
+          <div className="mt-2 p-4 bg-[#2d0e04] rounded-2xl border border-[#ffca08]/30 shadow-xl flex flex-col gap-3.5 text-xs text-orange-100 animate-fadeIn">
+            <div className="flex items-center justify-between border-b border-[#8b3d0b]/50 pb-2">
+              <span className="font-bold text-[#ffca08] text-xs">
+                ✍️ పేరు స్థానం & సైజ్ సర్దుబాటు (Real-time Preview & Download):
+              </span>
+              <button
+                type="button"
+                onClick={handleResetPosition}
+                className="text-[11px] px-2 py-0.5 rounded bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
+              >
+                ↺ Reset
+              </button>
+            </div>
+
+            {/* Height / Vertical (Y) Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Height / Vertical (Y):</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveTopPercent.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('topPercent', -0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Up"
+                >
+                  ▲ Up (-0.2%)
+                </button>
+                <input
+                  type="range"
+                  min="60.0"
+                  max="76.0"
+                  step="0.1"
+                  value={effectiveTopPercent}
+                  onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('topPercent', 0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Down"
+                >
+                  ▼ Down (+0.2%)
+                </button>
+              </div>
+            </div>
+
+            {/* Horizontal Center (X) Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveCenterPercent.toFixed(1)}%
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('centerPercent', -0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Left"
+                >
+                  ◄ Left (-0.2%)
+                </button>
+                <input
+                  type="range"
+                  min="40.0"
+                  max="60.0"
+                  step="0.1"
+                  value={effectiveCenterPercent}
+                  onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('centerPercent', 0.2)}
+                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Move Right"
+                >
+                  ► Right (+0.2%)
+                </button>
+              </div>
+            </div>
+
+            {/* Font Size Adjust */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex justify-between items-center text-[11px]">
+                <span className="text-orange-200 font-medium">Font Size (సైజ్):</span>
+                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                  {effectiveFontSize}px
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('fontSize', -1)}
+                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Smaller"
+                >
+                  A-
+                </button>
+                <input
+                  type="range"
+                  min="20"
+                  max="55"
+                  step="1"
+                  value={effectiveFontSize}
+                  onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
+                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleAdjust('fontSize', 1)}
+                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                  title="Larger"
+                >
+                  A+
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
