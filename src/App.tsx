@@ -682,12 +682,12 @@ function App() {
             <img 
               src={
                 currentPage === 'deepotsavam'
-                  ? '/assets/Mahadeepotsavam Contributors Template.png'
+                  ? '/assets/deeposthavam_heroimage.jpeg'
                   : currentPage === 'annaprasadam' || currentPage === 'manual'
                   ? getAnnaprasadamHeroImage(currentLang) 
                   : '/assets/mouna_banner.jpg'
               } 
-              alt={currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
+              alt={currentPage === 'deepotsavam' ? "Maha Deepotsavam" : currentPage === 'annaprasadam' ? (TRANSLATIONS[currentLang] || TRANSLATIONS.te).bannerTitle : "Maha Mouna Dhyana Kumbh"} 
               className="relative w-full max-w-[420px] rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border-2 border-[#ffca08]/30 object-contain"
             />
           </div>

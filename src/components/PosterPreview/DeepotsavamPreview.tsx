@@ -137,7 +137,7 @@ export const DeepotsavamPreview: React.FC<Props> = ({
       <div 
         ref={containerRef}
         className="relative w-full max-w-[440px] rounded-3xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] border-2 border-[#ffca08]/40 overflow-hidden bg-[#1c0802] select-none group"
-        style={{ aspectRatio: '1200 / 2100' }}
+        style={{ aspectRatio: '1200 / 2100', containerType: 'inline-size' }}
       >
         {/* Layer 0: Contributor Photo (Behind the transparent cutout) */}
         <div 
@@ -188,20 +188,21 @@ export const DeepotsavamPreview: React.FC<Props> = ({
 
         {/* Layer 2: Contributor Name inside the Golden Maroon Ribbon */}
         <div 
-          className="absolute z-20 pointer-events-none text-center px-4 flex flex-col items-center justify-center leading-tight transition-all"
+          className="absolute z-20 pointer-events-none text-center px-2 flex items-center justify-center leading-tight transition-all"
           style={{
             left: `${effectiveCenterPercent}%`,
             top: `${effectiveTopPercent}%`,
             transform: 'translate(-50%, -50%)',
-            width: '68%',
+            width: '60%',
             maxHeight: '4.5%',
           }}
         >
           <span 
             className="font-extrabold text-[#ffea79] tracking-wide whitespace-nowrap overflow-hidden text-ellipsis max-w-full drop-shadow-[0_2px_6px_rgba(0,0,0,0.95)]"
             style={{
-              fontSize: `clamp(12px, ${effectiveFontSize * 0.46}px, 26px)`,
-              fontFamily: '"Noto Sans Telugu", sans-serif',
+              fontSize: `${(effectiveFontSize / 12).toFixed(3)}cqi`,
+              fontFamily: '"Noto Sans Telugu", "Noto Sans", sans-serif',
+              fontWeight: 800,
             }}
           >
             {primaryText}

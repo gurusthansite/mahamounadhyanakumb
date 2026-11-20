@@ -217,6 +217,22 @@ export const generateDeepotsavamImage = async (
   },
   templateUrl: string = '/assets/Mahadeepotsavam Contributors Template.png'
 ): Promise<Blob> => {
+  // Ensure "Noto Sans Telugu" and "Noto Sans" are preloaded before drawing to canvas
+  if (typeof document !== 'undefined' && document.fonts) {
+    try {
+      await document.fonts.ready;
+      const targetFontSize = userData.customNamePosition?.fontSize || 38;
+      await Promise.allSettled([
+        document.fonts.load(`800 ${targetFontSize}px "Noto Sans Telugu"`),
+        document.fonts.load(`bold ${targetFontSize}px "Noto Sans Telugu"`),
+        document.fonts.load(`800 ${targetFontSize}px "Noto Sans"`),
+        document.fonts.load(`bold ${targetFontSize}px "Noto Sans"`),
+      ]);
+    } catch (e) {
+      console.warn("Font loading wait failed", e);
+    }
+  }
+
   return new Promise((resolve, reject) => {
     const width = DEEPOTSAVAM_TEMPLATE_WIDTH;
     const height = DEEPOTSAVAM_TEMPLATE_HEIGHT;
@@ -269,12 +285,13 @@ export const generateDeepotsavamImage = async (
           const nameY = Math.round(height * (effectiveTopPercent / 100));
 
           let baseFontSize = userData.customNamePosition?.fontSize || 38;
-          ctx.font = `bold ${baseFontSize}px "Noto Sans Telugu", sans-serif`;
+          const fontFam = '"Noto Sans Telugu", "Noto Sans", sans-serif';
+          ctx.font = `800 ${baseFontSize}px ${fontFam}`;
 
-          const maxRibbonWidth = 600;
-          while (ctx.measureText(primaryText).width > maxRibbonWidth && baseFontSize > 20) {
+          const maxRibbonWidth = 720;
+          while (ctx.measureText(primaryText).width > maxRibbonWidth && baseFontSize > 18) {
             baseFontSize -= 2;
-            ctx.font = `bold ${baseFontSize}px "Noto Sans Telugu", sans-serif`;
+            ctx.font = `800 ${baseFontSize}px ${fontFam}`;
           }
 
           ctx.textAlign = 'center';
@@ -285,14 +302,14 @@ export const generateDeepotsavamImage = async (
             const line2Y = nameY + 16;
 
             // Line 1: Name
-            ctx.font = `bold ${Math.min(baseFontSize, 32)}px "Noto Sans Telugu", sans-serif`;
+            ctx.font = `800 ${Math.min(baseFontSize, 32)}px ${fontFam}`;
             ctx.fillStyle = '#ffea79';
             ctx.shadowColor = 'rgba(0, 0, 0, 0.9)';
             ctx.shadowBlur = 6;
             ctx.fillText(primaryText, nameX, line1Y);
 
             // Line 2: Location
-            ctx.font = `bold ${Math.min(baseFontSize - 6, 26)}px "Noto Sans Telugu", sans-serif`;
+            ctx.font = `800 ${Math.min(baseFontSize - 6, 26)}px ${fontFam}`;
             ctx.fillStyle = '#ffffff';
             ctx.shadowBlur = 6;
             ctx.fillText(secondaryText, nameX, line2Y);
