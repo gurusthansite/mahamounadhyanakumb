@@ -113,8 +113,8 @@ export const DeepotsavamPreview: React.FC<Props> = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      {/* Live Preview Label & Quick Toggle */}
-      <div className="w-full max-w-[440px] flex items-center justify-between mb-2 px-1">
+      {/* Live Preview Header with Adjust Toggle */}
+      <div className="w-full max-w-[440px] flex items-center justify-between mb-2.5 px-1">
         <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
           <span>🪔</span>
           <span>లైవ్ ఫ్లైయర్ ప్రివ్యూ (Live Preview)</span>
@@ -122,16 +122,147 @@ export const DeepotsavamPreview: React.FC<Props> = ({
         <button
           type="button"
           onClick={() => setShowAdjustPanel(prev => !prev)}
-          className={`px-3 py-1 rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm ${
+          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md ${
             showAdjustPanel
-              ? 'bg-[#ffca08] text-[#381609]'
-              : 'bg-[#240b03] hover:bg-[#8b3d0b] text-orange-200 border border-[#ffca08]/40'
+              ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/70'
+              : 'bg-[#240b03] hover:bg-[#8b3d0b] text-[#ffca08] border border-[#ffca08]/40'
           }`}
+          title="Toggle adjustments panel above the flyer"
         >
           <span>⚙️ సర్దుబాటు (Adjust)</span>
-          <span className="text-[10px]">{showAdjustPanel ? '▲' : '▼'}</span>
+          <span className="text-[10px]">{showAdjustPanel ? '▲ Close' : '▼ Open'}</span>
         </button>
       </div>
+
+      {/* Manual Position & Font Adjustments Panel (PLACED ABOVE THE FLYER FOR IMMEDIATE VISIBILITY) */}
+      {showAdjustPanel && (
+        <div className="w-full max-w-[440px] mb-3 p-3.5 sm:p-4 bg-[#240b03] rounded-2xl border-2 border-[#ffca08]/60 shadow-2xl flex flex-col gap-3 text-xs text-orange-100 animate-fadeIn">
+          <div className="flex items-center justify-between border-b border-[#8b3d0b]/60 pb-2">
+            <span className="font-bold text-[#ffca08] text-xs flex items-center gap-1.5">
+              <span>✍️</span>
+              <span>పేరు & ఫాంట్ సర్దుబాటు (Adjust Above Flyer):</span>
+            </span>
+            <button
+              type="button"
+              onClick={handleResetPosition}
+              className="text-[11px] px-2.5 py-0.5 rounded bg-red-950/70 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
+            >
+              ↺ Reset
+            </button>
+          </div>
+
+          {/* Height / Vertical (Y) Adjust */}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center text-[11px]">
+              <span className="text-orange-200 font-medium">Height / Vertical (Y):</span>
+              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                {effectiveTopPercent.toFixed(1)}%
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleAdjust('topPercent', -0.2)}
+                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Move Up"
+              >
+                ▲ Up (-0.2%)
+              </button>
+              <input
+                type="range"
+                min="60.0"
+                max="76.0"
+                step="0.1"
+                value={effectiveTopPercent}
+                onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
+                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => handleAdjust('topPercent', 0.2)}
+                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Move Down"
+              >
+                ▼ Down (+0.2%)
+              </button>
+            </div>
+          </div>
+
+          {/* Horizontal Center (X) Adjust */}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center text-[11px]">
+              <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
+              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                {effectiveCenterPercent.toFixed(1)}%
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleAdjust('centerPercent', -0.2)}
+                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Move Left"
+              >
+                ◄ Left (-0.2%)
+              </button>
+              <input
+                type="range"
+                min="40.0"
+                max="60.0"
+                step="0.1"
+                value={effectiveCenterPercent}
+                onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
+                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => handleAdjust('centerPercent', 0.2)}
+                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Move Right"
+              >
+                ► Right (+0.2%)
+              </button>
+            </div>
+          </div>
+
+          {/* Font Size Adjust */}
+          <div className="flex flex-col gap-1.5">
+            <div className="flex justify-between items-center text-[11px]">
+              <span className="text-orange-200 font-medium">Font Size (సైజ్):</span>
+              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
+                {effectiveFontSize}px
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleAdjust('fontSize', -1)}
+                className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Smaller"
+              >
+                A-
+              </button>
+              <input
+                type="range"
+                min="20"
+                max="55"
+                step="1"
+                value={effectiveFontSize}
+                onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
+                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
+              />
+              <button
+                type="button"
+                onClick={() => handleAdjust('fontSize', 1)}
+                className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
+                title="Larger"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Flyer Canvas Container (Maintains 1200 x 2100 Aspect Ratio) */}
       <div 
@@ -208,151 +339,6 @@ export const DeepotsavamPreview: React.FC<Props> = ({
             {primaryText}
           </span>
         </div>
-      </div>
-
-      {/* Manual Position & Font Adjustments Panel (Like Manual Poster Page) */}
-      <div className="w-full max-w-[440px] mt-3">
-        <button
-          type="button"
-          onClick={() => setShowAdjustPanel(prev => !prev)}
-          className="w-full py-2.5 px-3.5 rounded-xl bg-[#4a1c0b]/80 hover:bg-[#4a1c0b] text-[#ffca08] border border-[#8b3d0b] text-xs font-semibold flex items-center justify-between transition-all shadow-md"
-        >
-          <span className="flex items-center gap-1.5">
-            <span>⚙️</span>
-            <span>Manual Position & Font Adjustments (పేరు & ఫాంట్ సర్దుబాటు)</span>
-          </span>
-          <span className="text-[11px] bg-[#240b03] px-2 py-0.5 rounded text-orange-200">
-            {showAdjustPanel ? 'Hide ▲' : 'Adjust ▼'}
-          </span>
-        </button>
-
-        {showAdjustPanel && (
-          <div className="mt-2 p-4 bg-[#2d0e04] rounded-2xl border border-[#ffca08]/30 shadow-xl flex flex-col gap-3.5 text-xs text-orange-100 animate-fadeIn">
-            <div className="flex items-center justify-between border-b border-[#8b3d0b]/50 pb-2">
-              <span className="font-bold text-[#ffca08] text-xs">
-                ✍️ పేరు స్థానం & సైజ్ సర్దుబాటు (Real-time Preview & Download):
-              </span>
-              <button
-                type="button"
-                onClick={handleResetPosition}
-                className="text-[11px] px-2 py-0.5 rounded bg-red-950/60 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
-              >
-                ↺ Reset
-              </button>
-            </div>
-
-            {/* Height / Vertical (Y) Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Height / Vertical (Y):</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveTopPercent.toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', -0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Up"
-                >
-                  ▲ Up (-0.2%)
-                </button>
-                <input
-                  type="range"
-                  min="60.0"
-                  max="76.0"
-                  step="0.1"
-                  value={effectiveTopPercent}
-                  onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('topPercent', 0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Down"
-                >
-                  ▼ Down (+0.2%)
-                </button>
-              </div>
-            </div>
-
-            {/* Horizontal Center (X) Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveCenterPercent.toFixed(1)}%
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', -0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Left"
-                >
-                  ◄ Left (-0.2%)
-                </button>
-                <input
-                  type="range"
-                  min="40.0"
-                  max="60.0"
-                  step="0.1"
-                  value={effectiveCenterPercent}
-                  onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('centerPercent', 0.2)}
-                  className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Move Right"
-                >
-                  ► Right (+0.2%)
-                </button>
-              </div>
-            </div>
-
-            {/* Font Size Adjust */}
-            <div className="flex flex-col gap-1.5">
-              <div className="flex justify-between items-center text-[11px]">
-                <span className="text-orange-200 font-medium">Font Size (సైజ్):</span>
-                <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                  {effectiveFontSize}px
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', -1)}
-                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Smaller"
-                >
-                  A-
-                </button>
-                <input
-                  type="range"
-                  min="20"
-                  max="55"
-                  step="1"
-                  value={effectiveFontSize}
-                  onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
-                  className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAdjust('fontSize', 1)}
-                  className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                  title="Larger"
-                >
-                  A+
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

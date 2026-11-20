@@ -557,7 +557,7 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
         {/* ==================================================== */}
         {/* RIGHT COLUMN: LIVE FLYER PREVIEW & ACTIONS           */}
         {/* ==================================================== */}
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center lg:sticky lg:top-4 self-start">
           <DeepotsavamPreview
             data={data}
             setData={setData}
