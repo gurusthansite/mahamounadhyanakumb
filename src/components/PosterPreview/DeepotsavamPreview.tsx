@@ -111,6 +111,18 @@ export const DeepotsavamPreview: React.FC<Props> = ({
     }));
   };
 
+  const toggleAdjustPanel = () => {
+    setShowAdjustPanel(prev => {
+      const next = !prev;
+      if (next) {
+        setTimeout(() => {
+          containerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 80);
+      }
+      return next;
+    });
+  };
+
   return (
     <div className="flex flex-col items-center w-full">
       {/* Live Preview Header with Adjust Toggle */}
@@ -121,148 +133,18 @@ export const DeepotsavamPreview: React.FC<Props> = ({
         </span>
         <button
           type="button"
-          onClick={() => setShowAdjustPanel(prev => !prev)}
+          onClick={toggleAdjustPanel}
           className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md ${
             showAdjustPanel
               ? 'bg-[#ffca08] text-[#381609] ring-2 ring-[#ffca08]/70'
               : 'bg-[#240b03] hover:bg-[#8b3d0b] text-[#ffca08] border border-[#ffca08]/40'
           }`}
-          title="Toggle adjustments panel above the flyer"
+          title="Open adjustment controls"
         >
           <span>⚙️ సర్దుబాటు (Adjust)</span>
-          <span className="text-[10px]">{showAdjustPanel ? '▲ Close' : '▼ Open'}</span>
+          <span className="text-[10px]">{showAdjustPanel ? '▲ Active' : '▼ Adjust'}</span>
         </button>
       </div>
-
-      {/* Manual Position & Font Adjustments Panel (PLACED ABOVE THE FLYER FOR IMMEDIATE VISIBILITY) */}
-      {showAdjustPanel && (
-        <div className="w-full max-w-[440px] mb-3 p-3.5 sm:p-4 bg-[#240b03] rounded-2xl border-2 border-[#ffca08]/60 shadow-2xl flex flex-col gap-3 text-xs text-orange-100 animate-fadeIn">
-          <div className="flex items-center justify-between border-b border-[#8b3d0b]/60 pb-2">
-            <span className="font-bold text-[#ffca08] text-xs flex items-center gap-1.5">
-              <span>✍️</span>
-              <span>పేరు & ఫాంట్ సర్దుబాటు (Adjust Above Flyer):</span>
-            </span>
-            <button
-              type="button"
-              onClick={handleResetPosition}
-              className="text-[11px] px-2.5 py-0.5 rounded bg-red-950/70 hover:bg-red-900 border border-red-700/50 text-red-200 transition-colors"
-            >
-              ↺ Reset
-            </button>
-          </div>
-
-          {/* Height / Vertical (Y) Adjust */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-[11px]">
-              <span className="text-orange-200 font-medium">Height / Vertical (Y):</span>
-              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                {effectiveTopPercent.toFixed(1)}%
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleAdjust('topPercent', -0.2)}
-                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Move Up"
-              >
-                ▲ Up (-0.2%)
-              </button>
-              <input
-                type="range"
-                min="60.0"
-                max="76.0"
-                step="0.1"
-                value={effectiveTopPercent}
-                onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
-                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-              />
-              <button
-                type="button"
-                onClick={() => handleAdjust('topPercent', 0.2)}
-                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Move Down"
-              >
-                ▼ Down (+0.2%)
-              </button>
-            </div>
-          </div>
-
-          {/* Horizontal Center (X) Adjust */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-[11px]">
-              <span className="text-orange-200 font-medium">Horizontal Center (X):</span>
-              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                {effectiveCenterPercent.toFixed(1)}%
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleAdjust('centerPercent', -0.2)}
-                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Move Left"
-              >
-                ◄ Left (-0.2%)
-              </button>
-              <input
-                type="range"
-                min="40.0"
-                max="60.0"
-                step="0.1"
-                value={effectiveCenterPercent}
-                onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
-                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-              />
-              <button
-                type="button"
-                onClick={() => handleAdjust('centerPercent', 0.2)}
-                className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Move Right"
-              >
-                ► Right (+0.2%)
-              </button>
-            </div>
-          </div>
-
-          {/* Font Size Adjust */}
-          <div className="flex flex-col gap-1.5">
-            <div className="flex justify-between items-center text-[11px]">
-              <span className="text-orange-200 font-medium">Font Size (సైజ్):</span>
-              <span className="font-mono text-[#ffca08] bg-[#1a0802] px-1.5 py-0.5 rounded border border-[#8b3d0b]/40">
-                {effectiveFontSize}px
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => handleAdjust('fontSize', -1)}
-                className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Smaller"
-              >
-                A-
-              </button>
-              <input
-                type="range"
-                min="20"
-                max="55"
-                step="1"
-                value={effectiveFontSize}
-                onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
-                className="flex-1 accent-[#ffca08] h-1.5 bg-[#1a0802] rounded cursor-pointer"
-              />
-              <button
-                type="button"
-                onClick={() => handleAdjust('fontSize', 1)}
-                className="px-3 py-1 bg-[#4a1c0b] hover:bg-[#6b280f] rounded-lg border border-[#8b3d0b] text-white font-bold"
-                title="Larger"
-              >
-                A+
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Main Flyer Canvas Container (Maintains 1200 x 2100 Aspect Ratio) */}
       <div 
@@ -339,7 +221,144 @@ export const DeepotsavamPreview: React.FC<Props> = ({
             {primaryText}
           </span>
         </div>
+
+        {/* Quick Floating Adjust Button on Flyer top-right corner */}
+        <button
+          type="button"
+          onClick={toggleAdjustPanel}
+          className="absolute top-3 right-3 z-30 px-2.5 py-1.5 rounded-xl bg-black/80 hover:bg-black text-[#ffca08] border border-[#ffca08]/60 text-[11px] font-bold backdrop-blur-md shadow-lg flex items-center gap-1 transition-all active:scale-95"
+          title="Open adjustment controls"
+        >
+          <span>⚙️ సర్దుబాటు</span>
+        </button>
       </div>
+
+      {/* FLOATING ADJUSTMENT DOCK AT BOTTOM OF SCREEN */}
+      {/* Docked fixed at bottom so user can watch the flyer update in real-time with ZERO SCROLLING */}
+      {showAdjustPanel && (
+        <div className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[96%] max-w-lg bg-[#240b03]/95 backdrop-blur-md rounded-2xl border-2 border-[#ffca08] shadow-[0_12px_45px_rgba(0,0,0,0.95)] p-3 sm:p-4 flex flex-col gap-2.5 text-xs text-orange-100 animate-fadeIn">
+          {/* Header row with values, Reset & Done button */}
+          <div className="flex items-center justify-between border-b border-[#8b3d0b]/80 pb-2">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-[#ffca08] text-xs flex items-center gap-1">
+                <span>⚙️</span>
+                <span>సర్దుబాటు (Adjust)</span>
+              </span>
+              <span className="text-[10px] text-orange-200/90 font-mono bg-[#1c0802] px-2 py-0.5 rounded border border-[#8b3d0b]/50">
+                Y: {effectiveTopPercent.toFixed(1)}% | Size: {effectiveFontSize}px
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleResetPosition}
+                className="text-[11px] px-2 py-1 rounded bg-red-950/70 hover:bg-red-900 border border-red-700/50 text-red-200 font-semibold transition-colors"
+                title="Reset to default position and size"
+              >
+                ↺ Reset
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAdjustPanel(false)}
+                className="text-[11px] px-3 py-1 rounded-lg bg-[#ffca08] hover:bg-amber-400 text-[#381609] font-black shadow transition-all flex items-center gap-1 active:scale-95"
+                title="Close adjustments dock"
+              >
+                <span>✓ పూర్తయింది (Done)</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Height / Vertical (Y) Adjust */}
+          <div className="flex items-center gap-2">
+            <span className="w-16 text-[11px] text-orange-200 font-medium shrink-0">Height (Y):</span>
+            <button
+              type="button"
+              onClick={() => handleAdjust('topPercent', -0.2)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Move Up"
+            >
+              ▲
+            </button>
+            <input
+              type="range"
+              min="60.0"
+              max="76.0"
+              step="0.1"
+              value={effectiveTopPercent}
+              onChange={(e) => handleSetDirect('topPercent', parseFloat(e.target.value))}
+              className="flex-1 accent-[#ffca08] h-2 bg-[#1c0802] rounded cursor-pointer"
+            />
+            <button
+              type="button"
+              onClick={() => handleAdjust('topPercent', 0.2)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Move Down"
+            >
+              ▼
+            </button>
+          </div>
+
+          {/* Font Size Adjust */}
+          <div className="flex items-center gap-2">
+            <span className="w-16 text-[11px] text-orange-200 font-medium shrink-0">Size (ఫాంట్):</span>
+            <button
+              type="button"
+              onClick={() => handleAdjust('fontSize', -1)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Smaller font"
+            >
+              A-
+            </button>
+            <input
+              type="range"
+              min="20"
+              max="55"
+              step="1"
+              value={effectiveFontSize}
+              onChange={(e) => handleSetDirect('fontSize', parseInt(e.target.value, 10))}
+              className="flex-1 accent-[#ffca08] h-2 bg-[#1c0802] rounded cursor-pointer"
+            />
+            <button
+              type="button"
+              onClick={() => handleAdjust('fontSize', 1)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Larger font"
+            >
+              A+
+            </button>
+          </div>
+
+          {/* Horizontal Center (X) Adjust */}
+          <div className="flex items-center gap-2">
+            <span className="w-16 text-[11px] text-orange-200 font-medium shrink-0">Center (X):</span>
+            <button
+              type="button"
+              onClick={() => handleAdjust('centerPercent', -0.2)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Move Left"
+            >
+              ◄
+            </button>
+            <input
+              type="range"
+              min="40.0"
+              max="60.0"
+              step="0.1"
+              value={effectiveCenterPercent}
+              onChange={(e) => handleSetDirect('centerPercent', parseFloat(e.target.value))}
+              className="flex-1 accent-[#ffca08] h-2 bg-[#1c0802] rounded cursor-pointer"
+            />
+            <button
+              type="button"
+              onClick={() => handleAdjust('centerPercent', 0.2)}
+              className="px-2.5 py-1 bg-[#4a1c0b] hover:bg-[#ffca08] hover:text-[#381609] rounded-lg border border-[#8b3d0b] text-white font-bold transition-colors"
+              title="Move Right"
+            >
+              ►
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
