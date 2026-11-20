@@ -578,7 +578,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-[#381609] text-white pb-12 font-sans selection:bg-[#ffca08] selection:text-[#381609]">
-      <StartingScreen />
+      {currentPage !== 'deepotsavam' && <StartingScreen />}
       
       <header className="w-full bg-gradient-to-b from-[#240b03] to-[#4a1c0b] shadow-2xl border-b border-[#8b3d0b] relative overflow-hidden">
         <div className="absolute top-0 left-0 w-96 h-96 bg-[#ffca08] opacity-10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none"></div>
