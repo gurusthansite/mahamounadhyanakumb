@@ -189,14 +189,14 @@ export const generateImage = async (
 // ============================================================================
 export const DEEPOTSAVAM_TEMPLATE_WIDTH = 1200;
 export const DEEPOTSAVAM_TEMPLATE_HEIGHT = 2100;
-export const DEEPOTSAVAM_PHOTO_AREA = { x: 394, y: 1004, width: 414, height: 369 };
+export const DEEPOTSAVAM_PHOTO_AREA = { x: 394, y: 1004, width: 415, height: 346 };
 export const DEEPOTSAVAM_NAME_RIBBON = {
-  x: 280,
-  y: 1395,
-  width: 640,
-  height: 73,
+  x: 200,
+  y: 1370,
+  width: 850,
+  height: 95,
   centerPercent: 50.0,
-  topPercent: 68.17, // 1431.5 / 2100
+  topPercent: 67.5, // 1417.5 / 2100
 };
 
 export const generateDeepotsavamImage = async (

@@ -251,7 +251,7 @@ export const DeepotsavamPosterPage: React.FC<Props> = ({ onNavigateHome }) => {
       {isCropperOpen && data.rawMediaUrl && (
         <ImageCropper
           mediaSrc={data.rawMediaUrl}
-          aspectRatio={DEEPOTSAVAM_PHOTO_AREA.width / DEEPOTSAVAM_PHOTO_AREA.height} // 414 / 369 = 1.12195
+          aspectRatio={DEEPOTSAVAM_PHOTO_AREA.width / DEEPOTSAVAM_PHOTO_AREA.height} // 415 / 346 = 1.1994
           lang="te"
           onComplete={handleCropComplete}
           onCancel={() => setIsCropperOpen(false)}

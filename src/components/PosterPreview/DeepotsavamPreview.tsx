@@ -34,14 +34,14 @@ export const DeepotsavamPreview: React.FC<Props> = ({
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Exact coordinates matching the template (1200 x 2100)
-  // Photo frame bounds: x=394, y=1004, w=414, h=369
+  // Photo frame bounds: x=394, y=1004, w=415, h=346
   const photoLeft = `${(394 / 1200) * 100}%`;
   const photoTop = `${(1004 / 2100) * 100}%`;
-  const photoWidth = `${(414 / 1200) * 100}%`;
-  const photoHeight = `${(369 / 2100) * 100}%`;
+  const photoWidth = `${(415 / 1200) * 100}%`;
+  const photoHeight = `${(346 / 2100) * 100}%`;
 
-  // Name ribbon center: y = 1431.5 / 2100 = 68.17%, x = 600 / 1200 = 50.0%
-  const defaultTopPercent = 68.17;
+  // Name ribbon center: y = 1417.5 / 2100 = 67.5%, x = 600 / 1200 = 50.0%
+  const defaultTopPercent = 67.5;
   const defaultCenterPercent = 50.0;
   const defaultFontSize = 38;
 
