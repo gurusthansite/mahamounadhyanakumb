@@ -266,8 +266,8 @@ export const generateDeepotsavamImage = async (
         // 3. Render Contributor Name in the Name Ribbon
         const isOther = userData.contributionFor === 'other' && Boolean(userData.beneficiaryName?.trim());
         const activePrefix = isOther
-          ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : 'శ్రీమతి ')
-          : (userData.titlePrefix ? `${userData.titlePrefix} ` : 'శ్రీ ');
+          ? (userData.beneficiaryTitle !== undefined ? (userData.beneficiaryTitle ? `${userData.beneficiaryTitle} ` : '') : 'శ్రీమతి ')
+          : (userData.titlePrefix !== undefined ? (userData.titlePrefix ? `${userData.titlePrefix} ` : '') : 'శ్రీ ');
         const targetName = isOther ? userData.beneficiaryName!.trim() : userData.fullName.trim();
         const loc = userData.location?.trim() || '';
 

@@ -283,6 +283,9 @@ export const ManualPosterPage: React.FC<Props> = ({
     { id: 'శ్రీ', label: 'శ్రీ (Sri)' },
     { id: 'శ్రీమతి', label: 'శ్రీమతి (Srimathi)' },
     { id: 'శ్రీ & శ్రీమతి', label: 'శ్రీ & శ్రీమతి (Sri & Smt)' },
+    { id: 'చిరంజీవి', label: 'చిరంజీవి (Chiranjeevi)' },
+    { id: 'చిన్నారి', label: 'చిన్నారి (Chinnari)' },
+    { id: 'చిన్నారులు', label: 'చిన్నారులు (Chinnarulu)' },
     { id: 'కుమారి', label: 'కుమారి (Kumari)' }
   ];
 

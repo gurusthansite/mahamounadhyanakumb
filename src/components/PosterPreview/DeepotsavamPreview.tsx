@@ -51,8 +51,8 @@ export const DeepotsavamPreview: React.FC<Props> = ({
 
   const isOther = data.contributionFor === 'other' && Boolean(data.beneficiaryName?.trim());
   const activePrefix = isOther
-    ? (data.beneficiaryTitle ? `${data.beneficiaryTitle} ` : 'శ్రీమతి ')
-    : (data.titlePrefix ? `${data.titlePrefix} ` : 'శ్రీ ');
+    ? (data.beneficiaryTitle !== undefined ? (data.beneficiaryTitle ? `${data.beneficiaryTitle} ` : '') : 'శ్రీమతి ')
+    : (data.titlePrefix !== undefined ? (data.titlePrefix ? `${data.titlePrefix} ` : '') : 'శ్రీ ');
   const targetName = isOther ? data.beneficiaryName!.trim() : data.fullName.trim();
   const nameWithPrefix = targetName ? `${activePrefix}${targetName}` : '';
   const loc = data.location?.trim() || '';
